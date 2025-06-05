@@ -8,10 +8,10 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px;
-            background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%);
+            padding: 40px; /* Keep original padding */
+            background: #f8f9fa; /* Changed background to light gray */
             min-height: 100vh;
-            color: white;
+            color: #333; /* Changed text color to dark gray */
         }
         
         .container {
@@ -19,9 +19,10 @@
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
             padding: 40px;
-            border-radius: 20px;
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            border-radius: 20px; /* Keep original border radius */
+            /* backdrop-filter: blur(10px); Removed as container is now solid */
+            /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); Replaced with new shadow */
+            background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid #e9ecef; /* Changed container background, added shadow and border */
         }
         
         .back-link {
@@ -29,7 +30,7 @@
             margin-bottom: 20px;
             color: white;
             text-decoration: none;
-            opacity: 0.8;
+            opacity: 0.8; /* Keep original opacity */
             transition: opacity 0.3s ease;
         }
         
@@ -54,12 +55,12 @@
         }
         
         .activity-item {
-            background: rgba(255, 255, 255, 0.15);
+            background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%); /* Changed card background to orange gradient */
             margin-bottom: 15px;
             border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
-        }
+        } /* Keep original transition */
         
         .activity-item:hover {
             background: rgba(255, 255, 255, 0.25);
@@ -68,7 +69,7 @@
         .activity-link {
             display: block;
             padding: 20px;
-            color: white;
+            color: white; /* Keep text color white for contrast on orange */
             text-decoration: none;
         }
         

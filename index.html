@@ -8,7 +8,7 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 20px; /* Reduced padding slightly for a cleaner look */
+            padding: 40px; /* Keep original padding */
             background: #f8f9fa; /* Changed background to light gray */
             min-height: 100vh;
             color: #333; /* Changed text color to dark gray */
@@ -19,12 +19,10 @@
             margin: 0 auto;
             background: rgba(255, 255, 255, 0.1);
             padding: 40px;
-            border-radius: 12px; /* Slightly smaller border radius */
+            border-radius: 20px; /* Keep original border radius */
             /* backdrop-filter: blur(10px); Removed as container is now solid */
             /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); Replaced with new shadow */
-            background: white; /* Changed container background to white */
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); /* Added subtle shadow */
-            border: 1px solid #e9ecef; /* Added light border */
+            background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid #e9ecef; /* Changed container background, added shadow and border */
         }
         
         h1 {
@@ -53,14 +51,14 @@
             padding: 25px;
             border-radius: 15px;
             text-decoration: none;
-            color: white; /* Kept text color white for contrast on orange */
+            color: white;
             transition: all 0.3s ease;
             /* border: 1px solid rgba(255, 255, 255, 0.2); Removed border as gradient is solid */
-            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); /* Added subtle shadow to cards */
+            /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1); Not requested in this turn */
         }
         
         .workshop-card:hover {
-            transform: translateY(-3px); /* Slightly less lift on hover */
+            transform: translateY(-5px); /* Keep original transform */
             background: rgba(255, 255, 255, 0.25);
             box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
         }
@@ -88,7 +86,7 @@
             font-weight: 600;
             margin: 40px 0 20px 0;
             text-align: center;
-            border-bottom: 2px solid #FF7F00; /* Changed border color to orange accent */
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3); /* Keep original border color */
             padding-bottom: 10px;
         }
         
