@@ -63,6 +63,7 @@
         const ECPActivity = () => {
             const [currentStep, setCurrentStep] = useState(1);
             const [selectedScenarios, setSelectedScenarios] = useState([]);
+            const [wrongAnswers, setWrongAnswers] = useState([]);
             
             const scenarios = [
                 {
@@ -96,20 +97,55 @@
             ];
 
             const handleScenarioSelect = (scenarioId, isEarlyMarket) => {
-                setSelectedScenarios(prev => [
-                    ...prev,
-                    { id: scenarioId, selected: isEarlyMarket, correct: scenarios.find(s => s.id === scenarioId).isEarlyMarket }
-                ]);
+                const scenario = scenarios.find(s => s.id === scenarioId);
+                const isCorrect = isEarlyMarket === scenario.isEarlyMarket;
+                
+                // Update or add the selection
+                setSelectedScenarios(prev => {
+                    const existing = prev.filter(s => s.id !== scenarioId);
+                    return [...existing, { id: scenarioId, selected: isEarlyMarket, correct: isCorrect }];
+                });
+                
+                // If wrong, add to wrong answers and remove after 1.5 seconds
+                if (!isCorrect) {
+                    setWrongAnswers(prev => [...prev, scenarioId]);
+                    setTimeout(() => {
+                        setWrongAnswers(prev => prev.filter(id => id !== scenarioId));
+                    }, 1500);
+                }
+            };
+            
+            const resetActivity = () => {
+                setSelectedScenarios([]);
+                setWrongAnswers([]);
             };
 
             const getResultColor = (scenario) => {
                 const selection = selectedScenarios.find(s => s.id === scenario.id);
                 if (!selection) return 'border-gray-200';
-                return selection.selected === selection.correct ? 'border-green-500 bg-green-50' : 'border-red-500 bg-red-50';
+                
+                // Show red briefly for wrong answers
+                if (wrongAnswers.includes(scenario.id)) {
+                    return 'border-red-500 bg-red-50';
+                }
+                
+                // Show green for correct answers
+                if (selection.correct) {
+                    return 'border-green-500 bg-green-50';
+                }
+                
+                return 'border-gray-200';
             };
 
             const renderStep1 = () => (
-                <div className="space-y-4">
+                <div className="space-y-4 relative">
+                    <button
+                        onClick={resetActivity}
+                        className="absolute -top-2 -right-2 w-8 h-8 bg-gray-200 hover:bg-orange-500 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 text-gray-600"
+                        title="Reset Activity"
+                    >
+                        <span className="text-lg font-bold">↻</span>
+                    </button>
                     <div className="text-center mb-4">
                         <h3 className="text-xl font-bold text-gray-800 mb-2">
                             Identify Early Market Customers
@@ -140,36 +176,31 @@
                                     </ul>
                                 </div>
 
-                                {!selectedScenarios.find(s => s.id === scenario.id) ? (
-                                    <div className="flex gap-2">
-                                        <button
-                                            onClick={() => handleScenarioSelect(scenario.id, true)}
-                                            className="flex-1 bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition-colors text-sm"
-                                        >
-                                            Early Market
-                                        </button>
-                                        <button
-                                            onClick={() => handleScenarioSelect(scenario.id, false)}
-                                            className="flex-1 bg-gray-500 text-white px-3 py-1.5 rounded-lg hover:bg-gray-600 transition-colors text-sm"
-                                        >
-                                            Mainstream
-                                        </button>
-                                    </div>
-                                ) : (
-                                    <div className="text-center">
-                                        <CheckCircle className="mx-auto mb-2 text-green-500" size={24} />
-                                        <p className="text-sm font-semibold">
-                                            {selectedScenarios.find(s => s.id === scenario.id).selected === selectedScenarios.find(s => s.id === scenario.id).correct 
-                                                ? '✓ Correct!' 
-                                                : '✗ Try again next time'}
-                                        </p>
+                                <div className="flex gap-2">
+                                    <button
+                                        onClick={() => handleScenarioSelect(scenario.id, true)}
+                                        className="flex-1 bg-orange-500 text-white px-3 py-1.5 rounded-lg hover:bg-orange-600 transition-colors text-sm"
+                                    >
+                                        Early Market
+                                    </button>
+                                    <button
+                                        onClick={() => handleScenarioSelect(scenario.id, false)}
+                                        className="flex-1 bg-gray-500 text-white px-3 py-1.5 rounded-lg hover:bg-gray-600 transition-colors text-sm"
+                                    >
+                                        Mainstream
+                                    </button>
+                                </div>
+                                {selectedScenarios.find(s => s.id === scenario.id && s.correct) && (
+                                    <div className="text-center mt-2">
+                                        <CheckCircle className="mx-auto text-green-500" size={20} />
+                                        <p className="text-xs font-semibold text-green-700">✓ Correct!</p>
                                     </div>
                                 )}
                             </div>
                         ))}
                     </div>
 
-                    {selectedScenarios.length === scenarios.length && (
+                    {selectedScenarios.filter(s => s.correct).length === scenarios.length && (
                         <div className="text-center">
                             <button
                                 onClick={() => setCurrentStep(2)}
@@ -262,7 +293,7 @@
                         <button
                             onClick={() => {
                                 setCurrentStep(1);
-                                setSelectedScenarios([]);
+                                resetActivity();
                             }}
                             className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600 transition-colors mr-4"
                         >
