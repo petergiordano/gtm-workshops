@@ -95,12 +95,14 @@
                 const newResponses = { ...responses, [elementId]: value };
                 setResponses(newResponses);
                 
-                // Mark as completed if there's substantial content
-                if (value && value.length > 50) {
-                    setCompletedSteps(prev => [...prev.filter(id => id !== elementId), elementId]);
-                } else {
-                    setCompletedSteps(prev => prev.filter(id => id !== elementId));
-                }
+                // Update completed steps based on all responses
+                const updatedCompletedSteps = [];
+                Object.keys(newResponses).forEach(id => {
+                    if (newResponses[id] && newResponses[id].length > 50) {
+                        updatedCompletedSteps.push(id);
+                    }
+                });
+                setCompletedSteps(updatedCompletedSteps);
             };
 
             const resetActivity = () => {
