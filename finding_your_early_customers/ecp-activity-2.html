@@ -291,12 +291,20 @@
                 <div className="max-w-[1400px] mx-auto p-3 bg-gradient-to-br from-orange-100 to-orange-200 min-h-screen">
                     {/* Header */}
                     <div className="bg-white rounded-lg shadow-lg p-3 mb-3">
-                        <a 
-                            href="../" 
-                            className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors mb-3 text-sm font-medium"
-                        >
-                            <span className="mr-1">←</span> Back to Workshop
-                        </a>
+                        <div className="flex justify-between items-center w-full mb-3">
+                            <a 
+                                href="index.html" 
+                                className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium"
+                            >
+                                <span className="mr-1">←</span> Back to Workshop
+                            </a>
+                            <a 
+                                href="../" 
+                                className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium"
+                            >
+                                All GTM Workshops <span className="ml-1">↑</span>
+                            </a>
+                        </div>
                         <div className="flex items-center justify-between mb-3">
                             <h1 className="text-2xl font-bold text-gray-800">
                                 Activity 2: ECP Component Mapping

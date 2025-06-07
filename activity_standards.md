@@ -1,190 +1,241 @@
-# GTM Workshop Activity Standards & Guidelines
+# Interactive Workshop Activities Standards
 
+> **INSTRUCTIONS**: Replace this section with your specific project details before using this standards document.
+
+## Project Overview
+**Project**: [Project Name]  
+**Target Audience**: [Description of target audience]  
+**Duration**: [Time constraints, if applicable]  
+**Repository**: [`repository-name` (deployment platform)]  
+**Live Site**: [Production URL]
+
+## Example Project Information
+```
 ## Project Overview
 **Project**: GSAP 2025 GTM Curriculum Development  
 **Target Audience**: Early-stage deep tech startups entering US market (ESL participants)  
 **Duration**: Each workshop 60 minutes maximum  
 **Repository**: `gtm-workshops` (GitHub Pages deployment)  
 **Live Site**: https://petergiordano.github.io/gtm-workshops/
+```
+
+## Table of Contents
+1. [Design Standards](#design-standards)
+2. [Component Patterns](#component-patterns)
+3. [Technical Implementation](#technical-implementation)
+4. [Navigation Standards](#navigation-standards)
+5. [Accessibility Guidelines](#accessibility-guidelines)
+6. [Content Guidelines](#content-guidelines)
+7. [Development Workflow](#development-workflow)
+8. [Quality Assurance](#quality-assurance)
 
 ## Design Standards
 
-### Color Palette (Overdrive Brand)
-- **Primary Orange**: #FF9000 (main accent color)
-- **White Background**: #FFFFFF 
-- **Gray Variants**: #666666, #8A8A8A
-- **Supporting Colors**: #F1C232 (yellow), #FFE599 (light yellow), #55BFFA (blue)
+### Color Palette
+- **Primary Brand Color**: Orange (#FF9000)
+- **Secondary Colors**:
+  - White (Background): #FFFFFF
+  - Gray 1 (Background): #666666
+  - Gray 2 (Background): #8A8A8A
+  - Yellow (Accent): #F1C232
+  - Light Yellow (Accent): #FFE599
+  - Blue (Accent): #55BFFA
+  - Muted Blue (Accent): #6E9FBA
+  - Muted Brown (Accent): #A58E6F
 
-### Visual Design Principles
-- **Clean, modern interface** with orange accent on white/light backgrounds
-- **16:9 aspect ratio optimization** for Google Slides screenshot capture
-- **Mobile-responsive design** using Tailwind CSS
-- **Orange gradient cards** for navigation: `linear-gradient(135deg, #FF7F00 0%, #FF9500 100%)`
-- **Hover effects**: Darker orange `linear-gradient(135deg, #FF6F00 0%, #FF8500 100%)`
+### Typography
+- **Primary Font**: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+- **Header Sizes**:
+  - Main Title (h1): 2.2em, font-weight: 300
+  - Section Headers (h3): 1.8em, font-weight: 300
+  - Activity Titles (h4): 1.2em, font-weight: 600
+- **Body Text**: 0.95em, line-height: 1.4
+- **Readability**: Ensure text is legible when captured in landscape screenshots
 
-### Typography & Layout
-- **Font Stack**: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif`
-- **Container Max Width**: 1400px for landscape activities, 1200px for others
-- **Consistent spacing**: Tailwind utilities (p-4, mb-4, space-y-6, etc.)
-- **Card shadows**: `shadow-lg` with subtle borders
+### Layout
+- **Container Width**: max-width: 1200px (activities), max-width: 800px (landing pages)
+- **Aspect Ratio**: Optimize for 16:9 landscape orientation (1920×1080) to match Google Slides
+- **Screen Capture Optimization**: Design activities to work well when captured as screenshots for slides
+- **Viewport Consideration**: Ensure critical content is visible without scrolling in landscape mode
+- **Padding**: 40px (container), 20px (elements)
+- **Card Style**: 
+  - Background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%)
+  - Border-radius: 10px or 20px
+  - Hover: transform: translateY(-3px or -5px)
 
-## Technical Standards
+### Visual Feedback
+- **Progress Indicators**: Orange fill for current step, gray for incomplete
+- **Completion**: Green checkmark icons, border-green-500
+- **Error States**: Red border/background briefly, then revert
 
-### File Structure
-```
-finding_your_early_customers/
-├── index.html (workshop landing page)
-├── ecp-activity-1.html (Activity 1: Early Market vs Mainstream)
-├── ecp-activity-2.html (Activity 2: ECP Component Mapping)
-└── ecp-activity-3.html (Activity 3: ECP Hypothesis Builder)
-```
+## Component Patterns
 
-### Naming Conventions
-- **Activity files**: `ecp-activity-{number}.html`
-- **Activity titles**: "Activity {number}: {Name}"
-- **Progress indicators**: Numbered steps with clear labels
-- **CSS classes**: Tailwind utilities, consistent patterns
+### Header Structure
+- **Sticky Position**: top: 0, z-index: 50
+- **Background**: white with shadow
+- **Components**:
+  1. Navigation Links (see Navigation Standards)
+  2. Activity Title
+  3. Progress Indicator
+  4. Status Grid (optional)
 
-### Required Technologies
-- **React 18**: `https://unpkg.com/react@18/umd/react.development.js`
-- **Tailwind CSS**: `https://cdn.tailwindcss.com`
-- **Babel**: `https://unpkg.com/@babel/standalone/babel.min.js`
-- **No external storage**: Never use localStorage/sessionStorage (not supported)
+### Progress Indicator
+- **Style**: Horizontal bar with numbered circles
+- **States**: 
+  - Current: bg-orange-500 text-white
+  - Completed: bg-green-500 text-white
+  - Upcoming: bg-gray-200 text-gray-400
+- **Label**: Display step name below number
+- **Placement**: Position within the top portion of the screen to remain visible in landscape screenshots
 
-## Activity Structure Standards
+### Activity Cards
+- **Layout**: grid or flex based on content needs
+- **Border**: 2px solid (color varies by state)
+- **States**:
+  - Default: border-gray-200
+  - Selected/Active: border-orange-300
+  - Completed: border-green-500 bg-green-50
+  - Error: border-red-500 bg-red-50 (temporary)
+- **Hover Effect**: box-shadow and slight y-axis translation
+- **Size Consideration**: Design cards to fit within 16:9 landscape view without excessive scrolling
 
-### Header Component (Sticky)
-```jsx
-<div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-50">
-    {/* Back link */}
-    <a href="../" className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors mb-3 text-sm font-medium">
-        <span className="mr-1">←</span> Back to Workshop
-    </a>
-    
-    {/* Title */}
-    <h1 className="text-2xl font-bold text-gray-800">Activity {number}: {Name}</h1>
-    
-    {/* Progress breadcrumbs */}
-    <div className="flex items-center space-x-4">
-        {/* Step indicators with progress bars */}
-    </div>
-    
-    {/* CRITICAL: All progress indicators must be inside sticky header */}
-    {/* Activity-specific progress bars (4-box grids, completion indicators, etc.) */}
-    <div className="mt-4">
-        {/* Progress grids, completion boxes, status indicators */}
-    </div>
+### Input Elements
+- **Text Input/Textarea**: 
+  - Border: border-gray-300
+  - Focus: border-orange-500 ring-2 ring-orange-200
+  - Min Height (textarea): h-32
+- **Buttons**:
+  - Primary: bg-orange-500 hover:bg-orange-600
+  - Secondary: bg-gray-500 hover:bg-gray-600
+  - Font: font-semibold, text-white
+
+### Status Grid
+- **Layout**: grid grid-cols-[number of steps]
+- **Item Style**: p-2 rounded-lg text-center text-xs font-medium
+- **States**:
+  - Completed: bg-green-100 border-2 border-green-500 text-green-800
+  - In Progress: bg-orange-100 border-2 border-orange-300 text-orange-800
+  - Not Started: bg-gray-100 border-2 border-gray-200 text-gray-600
+
+## Technical Implementation
+
+## Technical Implementation
+
+### Technology Stack
+- **Framework**: React 18
+- **Styling**: Tailwind CSS
+- **Scripts**: Babel for JSX transpilation
+- **Icons**: Custom SVG components (Clock, Target, CheckCircle, etc.)
+
+### Data Management
+- **State Management**: React useState hooks
+- **No External Storage**: All data remains in-session
+- **Completion Threshold**: 20+ characters for text inputs
+
+### Responsive Design
+- **Landscape Priority**: Optimize for 16:9 landscape orientation first
+- **Mobile-responsive**: Secondary consideration - stack columns on small screens
+- **Minimum Target Size**: 44px for all clickable elements
+- **Overflow Handling**: Use overflow-auto with padding
+- **Breakpoints**: 
+  - Desktop (landscape): 1920×1080 (primary focus)
+  - Tablet (landscape): 1024×768
+  - Mobile: 375×667 (supported but not optimized)
+
+## Navigation Standards
+
+### Workshop Navigation
+- **Structure**: Each activity page must have TWO navigation links:
+  1. **Back to Workshop**: Links to the specific workshop page
+  2. **All GTM Workshops**: Links to the main GTM workshops landing page
+- **Placement**: Display in a flex container with space-between
+- **Implementation Example**:
+
+```html
+<div className="flex justify-between items-center w-full mb-3">
+  <a 
+    href="index.html" 
+    className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium"
+  >
+    <span className="mr-1">←</span> Back to Workshop
+  </a>
+  <a 
+    href="../" 
+    className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium"
+  >
+    All GTM Workshops <span className="ml-1">↑</span>
+  </a>
 </div>
 ```
 
-**IMPORTANT**: Always include ALL progress-related UI elements within the sticky header container. This includes:
-- Step breadcrumbs (1, 2, 3 navigation)
-- Progress completion boxes (4-box grids showing section completion)
-- Activity titles and subtitles that provide context
-- Any visual indicators that help users track their progress
+### Activity Steps Navigation
+- **Forward/Back Controls**: Only show when appropriate (no back on first step)
+- **Placement**: Centered at bottom of main content area
+- **Style**:
+  - Back: bg-gray-500 text-white px-6 py-2
+  - Forward: bg-orange-500 text-white px-8 py-3 font-semibold
 
-### Progress Indicators
-- **Multi-step activities**: Horizontal breadcrumb navigation
-- **Color coding**: Orange for active/completed, gray for inactive
-- **Visual feedback**: Checkmarks for completed sections
-- **Sticky positioning**: Always visible during scrolling
+## Accessibility Guidelines
 
-### Interactive Elements
-- **Completion detection**: Based on content length (20+ characters typical)
-- **Real-time feedback**: Green checkmarks, color changes
-- **Reset functionality**: Curved arrow button (↻) in top-right
-- **Consistent button styles**: Orange primary, gray secondary
+### Color Contrast
+- **Minimum Ratio**: 4.5:1 for normal text, 3:1 for large text
+- **Test Tool**: WebAIM Contrast Checker
 
-### Form Standards
-- **Input validation**: Character/word count requirements shown to users
-- **Placeholder text**: Helpful examples using "We believe..." format
-- **Hint sections**: Blue-bordered boxes with lightbulb icons
-- **Textarea styling**: Consistent sizing, focus states with orange borders
+### Keyboard Navigation
+- **Focus Indicators**: Visible orange outline on focus
+- **Tab Order**: Logical flow through the page
+
+### Text Readability
+- **Line Length**: Max 80 characters
+- **Font Size**: Minimum 14px (0.875rem)
+- **Language**: Simple, ESL-friendly terminology
 
 ## Content Guidelines
 
-### Language & Tone
-- **Simple, clear language** for ESL audience
-- **Hypothesis-driven approach**: "We believe..." rather than "We know..."
-- **Action-oriented prompts**: WHO, WHY NOW, WHAT SUCCESS
-- **Concrete examples**: Always include Posh AMP or similar examples
+### Content Guidelines
 
-### Activity Flow Patterns
-1. **Introduction/Context** (brief explanation)
-2. **Interactive Exercise** (hands-on activity)
-3. **Results/Discussion** (reflection and insights)
-4. **Next Steps** (bridge to following content)
+#### Language Adaptation
+- **Sentence Structure**: Simple, direct sentences
+- **Terminology**: Avoid idioms and complex technical jargon
+- **Definitions**: Provide explanations for specialized terms
 
-### User Experience Principles
-- **Progressive disclosure**: Show complexity gradually
-- **Visual progress tracking**: Always show where users are
-- **Error prevention**: Clear instructions and examples
-- **Immediate feedback**: Real-time validation and completion states
+#### Learning Approach
+- **Prompts**: Use hypothesis-driven format when appropriate (e.g., "We believe our customers are...")
+- **Examples**: Provide concrete examples for abstract concepts
+- **Input Requirements**: Specify minimum input length where relevant
 
-## Workshop Integration
+#### Visual Learning Focus
+- **Icons**: Use consistent icons to reinforce concepts
+- **Color Coding**: Use colors consistently for conceptual categories
+- **Whitespace**: Generous spacing between elements
 
-### Landing Pages
-- **Workshop overview**: Clean cards linking to activities
-- **Visual hierarchy**: Track 1 vs Track 2 distinction
-- **Status indicators**: Available vs Coming Soon states
-- **Consistent navigation**: Back links and breadcrumbs
+## Development Workflow
 
-### Cross-Activity Consistency
-- **Terminology alignment**: ECP, Early Market, Problem Urgency, etc.
-- **Example continuity**: Use same company examples across activities
-- **Progressive building**: Each activity builds on previous learning
-- **Reference materials**: QR codes handled in slides, not embedded
+### Implementation Process
+1. **Design Review**: Review designs against these standards before implementation
+2. **Code Implementation**: Implement using appropriate tools for your project
+3. **Testing**: Verify all standards compliance
+4. **Deployment**: Deploy using your project's deployment method
+
+### Commit Strategy
+- **Atomic Changes**: One feature/fix per commit
+- **Descriptive Messages**: Clear explanation of changes
+- **Reference Standards**: Link to specific standards in commit message
 
 ## Quality Assurance
 
 ### Testing Checklist
-- [ ] Sticky header functionality across all screen sizes
-- [ ] Progress indicators update correctly
-- [ ] Completion detection triggers at appropriate thresholds
-- [ ] Reset button clears all state
-- [ ] Navigation links work properly
-- [ ] Visual consistency with design standards
-- [ ] Mobile responsiveness
-- [ ] No console errors
+1. **Navigation**: Verify all links work correctly
+2. **Progress Tracking**: Confirm proper state updates
+3. **Completion Detection**: Test 20+ character threshold
+4. **Landscape Orientation Test**: Verify activity displays properly in 16:9 landscape mode (1920×1080)
+5. **Screenshot Compatibility**: Test how activity appears when captured as a screenshot
+6. **Visual Consistency**: Compare to existing activities
+7. **Google Slides Integration**: Test screenshot insertion into slides
 
-### Performance Standards
-- **Fast loading**: Minimal external dependencies
-- **Smooth interactions**: CSS transitions under 300ms
-- **No layout shifts**: Stable positioning during dynamic updates
-- **Accessible markup**: Proper semantic HTML structure
-
-## Development Workflow
-
-### Established Process
-1. **Design decisions**: Discussed in Claude interface (supports images)
-2. **Implementation**: Claude Code prompts for VS Code execution
-3. **Testing**: Local verification of functionality
-4. **Deployment**: GitHub Desktop → GitHub Pages automatic deployment
-
-### Code Formatting
-- **Consistent indentation**: 2 spaces
-- **Clear variable names**: Descriptive but concise
-- **Component organization**: Logical grouping of related functions
-- **Comment standards**: Explain complex logic, mark TODO items
-
----
-
-## Recommended Usage Instructions
-
-### For New Development Sessions:
-At the start of any new workshop development session, share this document and say:
-
-**"Please review these GTM Workshop Activity Standards before we begin. Follow all established patterns for consistency with existing activities. Pay special attention to sticky header requirements and progress indicator placement."**
-
-### For Modifications:
-When updating existing activities, reference the relevant sections:
-
-**"Please follow the established standards from our GTM Workshop guidelines, specifically [section name]. Ensure all changes maintain consistency with existing activities."**
-
-### For Quality Assurance:
-Use the testing checklist to verify new activities meet all standards before deployment.
-
----
-
-## Document Location & Maintenance
-This standards document should be stored as `ACTIVITY_STANDARDS.md` in the root of the VS Code project repository for easy access by developers and maintained as the single source of truth for all activity development standards.
+### Common Issues
+- **Sticky Headers**: Ensure they include ALL progress elements
+- **Completion Detection**: Verify 20-character threshold works
+- **Progress Indicators**: Check both header and individual sections
+- **Layout Optimization**: Confirm proper spacing in all sections
+- **Landscape Display**: Check that critical content is visible without scrolling in 16:9 orientation
