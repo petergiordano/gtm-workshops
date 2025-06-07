@@ -133,36 +133,6 @@
                         </p>
                     </div>
 
-                    {/* Progress indicators */}
-                    <div className="grid grid-cols-4 gap-2 mb-8">
-                        {ecpElements.map((element, index) => {
-                            const isCompleted = completedSteps.includes(element.id);
-                            const hasContent = responses[element.id] && responses[element.id].length > 0;
-                            
-                            return (
-                                <div
-                                    key={element.id}
-                                    className={`p-2 rounded-lg text-center text-xs font-medium transition-all duration-200 ${
-                                        isCompleted 
-                                            ? 'bg-green-100 border-2 border-green-500 text-green-800'
-                                            : hasContent 
-                                                ? 'bg-orange-100 border-2 border-orange-300 text-orange-800'
-                                                : 'bg-gray-100 border-2 border-gray-200 text-gray-600'
-                                    }`}
-                                >
-                                    <div className="flex items-center justify-center mb-1">
-                                        {isCompleted ? (
-                                            <CheckCircle size={16} className="text-green-600" />
-                                        ) : (
-                                            <span className="font-bold">{index + 1}</span>
-                                        )}
-                                    </div>
-                                    {element.title}
-                                </div>
-                            );
-                        })}
-                    </div>
-
                     {/* ECP Building Form */}
                     <div className="space-y-8">
                         {ecpElements.map((element, index) => (
@@ -417,6 +387,40 @@
                                 <span className="font-semibold">Present</span>
                             </div>
                         </div>
+                        
+                        {/* Progress indicators - only show on step 1 */}
+                        {currentStep === 1 && (
+                            <div className="mt-4">
+                                <div className="grid grid-cols-4 gap-2">
+                                    {ecpElements.map((element, index) => {
+                                        const isCompleted = completedSteps.includes(element.id);
+                                        const hasContent = responses[element.id] && responses[element.id].length > 0;
+                                        
+                                        return (
+                                            <div
+                                                key={element.id}
+                                                className={`p-2 rounded-lg text-center text-xs font-medium transition-all duration-200 ${
+                                                    isCompleted 
+                                                        ? 'bg-green-100 border-2 border-green-500 text-green-800'
+                                                        : hasContent 
+                                                            ? 'bg-orange-100 border-2 border-orange-300 text-orange-800'
+                                                            : 'bg-gray-100 border-2 border-gray-200 text-gray-600'
+                                                }`}
+                                            >
+                                                <div className="flex items-center justify-center mb-1">
+                                                    {isCompleted ? (
+                                                        <CheckCircle size={16} className="text-green-600" />
+                                                    ) : (
+                                                        <span className="font-bold">{index + 1}</span>
+                                                    )}
+                                                </div>
+                                                {element.title}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Main Content */}
