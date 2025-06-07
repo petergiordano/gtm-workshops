@@ -149,8 +149,11 @@
                                     }`}
                                 >
                                     <div className="flex items-center justify-center mb-1">
-                                        {isCompleted && <CheckCircle size={16} className="text-green-600" />}
-                                        {!isCompleted && <span className="font-bold">{index + 1}</span>}
+                                        {isCompleted ? (
+                                            <CheckCircle size={16} className="text-green-600" />
+                                        ) : (
+                                            <span className="font-bold">{index + 1}</span>
+                                        )}
                                     </div>
                                     {element.title}
                                 </div>
@@ -172,9 +175,9 @@
                                         </h4>
                                         <p className="text-orange-600 font-medium text-sm ml-11">{element.subtitle}</p>
                                     </div>
-                                    {completedSteps.includes(element.id) && (
+                                    {completedSteps.includes(element.id) ? (
                                         <CheckCircle className="text-green-500" size={24} />
-                                    )}
+                                    ) : null}
                                 </div>
                                 
                                 <p className="text-gray-700 font-medium mb-3 ml-11">{element.prompt}</p>
@@ -370,7 +373,7 @@
             return (
                 <div className="max-w-[1400px] mx-auto p-5 bg-gradient-to-br from-orange-100 to-orange-200 min-h-screen">
                     {/* Header */}
-                    <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
+                    <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-10">
                         <a 
                             href="../" 
                             className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors mb-3 text-sm font-medium"
