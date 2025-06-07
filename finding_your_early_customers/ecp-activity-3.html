@@ -124,15 +124,6 @@
                         <span className="text-lg font-bold">↻</span>
                     </button>
 
-                    <div className="text-center mb-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">
-                            Build Your Early Customer Profile
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                            Create hypotheses about your ideal early customers based on your validated problem
-                        </p>
-                    </div>
-
                     {/* ECP Building Form */}
                     <div className="space-y-8">
                         {ecpElements.map((element, index) => (
@@ -387,6 +378,18 @@
                                 <span className="font-semibold">Present</span>
                             </div>
                         </div>
+                        
+                        {/* Heading - only show on step 1 */}
+                        {currentStep === 1 && (
+                            <div className="text-center mt-4 mb-4">
+                                <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                    Build Your Early Customer Profile
+                                </h3>
+                                <p className="text-gray-600 text-sm">
+                                    Create hypotheses about your ideal early customers based on your validated problem
+                                </p>
+                            </div>
+                        )}
                         
                         {/* Progress indicators - show on all steps */}
                         <div className="mt-4">
