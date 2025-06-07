@@ -98,7 +98,7 @@
                 // Update completed steps based on all responses
                 const updatedCompletedSteps = [];
                 Object.keys(newResponses).forEach(id => {
-                    if (newResponses[id] && newResponses[id].length > 20) {
+                    if (newResponses[id] && newResponses[id].trim().split(/\s+/).length >= 25) {
                         updatedCompletedSteps.push(id);
                     }
                 });
@@ -144,6 +144,7 @@
                                 </div>
                                 
                                 <p className="text-gray-700 font-medium mb-3 ml-11">{element.prompt}</p>
+                                <p className="text-gray-500 text-sm mb-3 ml-11 italic">(You must enter at least 25 words)</p>
                                 
                                 <textarea
                                     value={responses[element.id] || ''}
