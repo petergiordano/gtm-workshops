@@ -128,7 +128,7 @@
             const allCorrect = completedMappings.length === poshAmpElements.length;
 
             const renderMappingStep = () => (
-                <div className="space-y-6">
+                <div className="space-y-4">
                     <button
                         onClick={resetActivity}
                         className="absolute -top-2 -right-2 w-8 h-8 bg-gray-200 hover:bg-orange-500 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 text-gray-600"
@@ -137,34 +137,36 @@
                         <span className="text-lg font-bold">↻</span>
                     </button>
 
-                    <div className="text-center mb-6">
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                    <div className="text-center mb-4">
+                        <h3 className="text-lg font-bold text-gray-800 mb-1">
                             Map Posh AMP Example to ECP Characteristics
                         </h3>
                         <p className="text-gray-600 text-sm">
-                            Drag and drop each element to match the correct ECP characteristic
+                            Select the matching ECP characteristic for each element
                         </p>
                     </div>
 
-                    {/* ECP Characteristics Row */}
-                    <div className="mb-8">
-                        <h4 className="font-semibold text-gray-800 mb-3">6 ECP Characteristics:</h4>
-                        <div className="grid grid-cols-2 gap-3">
-                            {ecpCharacteristics.map((char) => (
-                                <div
-                                    key={char.id}
-                                    className={`p-3 rounded-lg border-2 ${char.color} text-center font-medium text-sm min-h-[60px] flex items-center justify-center`}
-                                >
-                                    {char.label}
-                                </div>
-                            ))}
+                    {/* Two Column Layout */}
+                    <div className="flex gap-6">
+                        {/* Left Column - ECP Characteristics */}
+                        <div className="w-2/5">
+                            <h4 className="font-semibold text-gray-800 mb-3 text-sm">6 ECP Characteristics:</h4>
+                            <div className="grid grid-cols-2 gap-2">
+                                {ecpCharacteristics.map((char) => (
+                                    <div
+                                        key={char.id}
+                                        className={`p-2 rounded-lg border-2 ${char.color} text-center font-medium text-xs min-h-[50px] flex items-center justify-center`}
+                                    >
+                                        {char.label}
+                                    </div>
+                                ))}
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Posh AMP Elements */}
-                    <div>
-                        <h4 className="font-semibold text-gray-800 mb-3">Posh AMP Example Elements:</h4>
-                        <div className="space-y-3">
+                        {/* Right Column - Posh AMP Elements */}
+                        <div className="flex-1">
+                            <h4 className="font-semibold text-gray-800 mb-3 text-sm">Posh AMP Example Elements:</h4>
+                            <div className="space-y-2">
                             {poshAmpElements.map((element) => {
                                 const isCorrect = completedMappings.includes(element.id);
                                 const selectedChar = selections[element.id];
@@ -173,7 +175,7 @@
                                 return (
                                     <div
                                         key={element.id}
-                                        className={`p-4 border-2 rounded-lg transition-all duration-300 ${
+                                        className={`p-3 border-2 rounded-lg transition-all duration-300 ${
                                             isCorrect 
                                                 ? 'border-green-500 bg-green-50' 
                                                 : selectedChar 
@@ -182,7 +184,7 @@
                                         }`}
                                     >
                                         <div className="flex items-center justify-between">
-                                            <p className="text-gray-800 flex-1 pr-4">{element.text}</p>
+                                            <p className="text-gray-800 flex-1 pr-4 text-sm">{element.text}</p>
                                             <div className="flex items-center space-x-2">
                                                 {isCorrect && (
                                                     <CheckCircle className="text-green-500" size={20} />
@@ -190,7 +192,7 @@
                                                 <select
                                                     value={selectedChar || ''}
                                                     onChange={(e) => handleMapping(element.id, e.target.value)}
-                                                    className="border rounded px-2 py-1 text-sm"
+                                                    className="border rounded px-2 py-1 text-xs"
                                                     disabled={isCorrect}
                                                 >
                                                     <option value="">Select...</option>
@@ -210,6 +212,7 @@
                                     </div>
                                 );
                             })}
+                        </div>
                         </div>
                     </div>
 
@@ -285,9 +288,9 @@
             );
 
             return (
-                <div className="max-w-[1200px] mx-auto p-5 bg-gradient-to-br from-orange-100 to-orange-200 min-h-screen">
+                <div className="max-w-[1400px] mx-auto p-3 bg-gradient-to-br from-orange-100 to-orange-200 min-h-screen">
                     {/* Header */}
-                    <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
+                    <div className="bg-white rounded-lg shadow-lg p-3 mb-3">
                         <a 
                             href="../" 
                             className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors mb-3 text-sm font-medium"
@@ -325,7 +328,7 @@
                     </div>
 
                     {/* Main Content */}
-                    <div className="bg-white rounded-lg shadow-lg p-5 relative">
+                    <div className="bg-white rounded-lg shadow-lg p-4 relative">
                         {!showResults ? renderMappingStep() : renderResultsStep()}
                     </div>
 
