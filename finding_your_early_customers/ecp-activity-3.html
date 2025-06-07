@@ -98,7 +98,7 @@
                 // Update completed steps based on all responses
                 const updatedCompletedSteps = [];
                 Object.keys(newResponses).forEach(id => {
-                    if (newResponses[id] && newResponses[id].length > 50) {
+                    if (newResponses[id] && newResponses[id].length > 20) {
                         updatedCompletedSteps.push(id);
                     }
                 });
