@@ -1,4 +1,34 @@
-# Interactive Workshop Activities Standards
+### Workshop Content Organization
+
+#### Activities vs Resources
+- **Activities**: Interactive exercises that participants complete during workshops
+- **Resources**: Supporting materials like slides, worksheets, or reference documents
+
+#### Visual Hierarchy
+- **Activities**:
+  - Display as prominent orange cards
+  - Include sequential numbering (1, 2, 3)
+  - Show activity title and brief description
+- **Resources**:
+  - Display with simple document icons
+  - No background cards or numbering
+  - Visually distinct from activities
+  - Positioned after activities
+
+#### Example Structure
+```html
+<!-- Activities (numbered, card format) -->
+<div class="activity-card">
+  <div class="activity-title">1 Activity Name</div>
+  <div class="activity-description">Brief description</div>
+</div>
+
+<!-- Resources (icon format, no cards) -->
+<div class="resource-item">
+  <span class="document-icon">📄</span>
+  <span class="resource-title">Workshop Slides</span>
+</div>
+```# Interactive Workshop Activities Standards
 
 > **INSTRUCTIONS**: Replace this section with your specific project details before using this standards document.
 
@@ -98,6 +128,26 @@
   - Error: border-red-500 bg-red-50 (temporary)
 - **Hover Effect**: box-shadow and slight y-axis translation
 - **Size Consideration**: Design cards to fit within 16:9 landscape view without excessive scrolling
+- **Numbering**: Include clear numbering (e.g., "1", "2", "3") for sequential activities
+
+### Resource Icons
+- **Purpose**: Visual distinction between interactive activities and supplementary resources
+- **Implementation**:
+  - Use simple document/file icons rather than large branded icons
+  - Icon Size: 24px × 24px maximum (object-fit: contain)
+  - Text Alignment: vertically aligned with icon
+  - Text Style: Match the size and weight of activity titles without background cards
+  - Spacing: 8px margin between icon and text
+- **Example**:
+  ```html
+  <div class="flex items-center">
+    <span class="inline-block" style="width: 24px; height: 24px; margin-right: 8px;">
+      <!-- Document icon (e.g., Google Material icons, Font Awesome, or Unicode) -->
+      📄
+    </span>
+    <span style="font-size: 20px; font-weight: 600;">Resource Name</span>
+  </div>
+  ```
 
 ### Input Elements
 - **Text Input/Textarea**: 
@@ -221,6 +271,17 @@
 - **Atomic Changes**: One feature/fix per commit
 - **Descriptive Messages**: Clear explanation of changes
 - **Reference Standards**: Link to specific standards in commit message
+
+### Asset Management
+- **Icons**: 
+  - Store in dedicated `/icons` directory
+  - Use appropriate sizing (ideally 24px × 24px)
+  - Prefer SVG format when possible for best scaling
+  - When using PNG, include size in filename (e.g., `icon_name_24px.png`)
+- **Images**:
+  - Optimize all images for web delivery
+  - Include width/height attributes to prevent layout shifts
+  - Use responsive image techniques where appropriate
 
 ## Quality Assurance
 
