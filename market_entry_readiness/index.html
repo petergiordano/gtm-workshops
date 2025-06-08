@@ -90,6 +90,34 @@
             opacity: 0.5;
             pointer-events: none;
         }
+        
+        /* Activity Numbering Styles */
+        .activity-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .activity-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            color: #FF7F00;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        
+        .mt-8 { margin-top: 2rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-gray-800 { color: #1f2937; }
+        .font-semibold { font-weight: 600; }
     </style>
 </head>
 <body>
@@ -97,39 +125,46 @@
         <a href="../" class="back-link">← Back to All Workshops</a>
         
         <h1>Market Entry Readiness</h1>
-        <div class="workshop-info">
-            60 minutes • Track 1: GTM Introduction
-        </div>
         
         <ul class="activity-list">
             <li class="activity-item coming-soon">
-                <div class="activity-link">
-                    <div class="activity-title">Market Entry Readiness Assessment</div>
+                <a href="market-entry-activity-1.html" class="activity-link">
+                    <div class="activity-title">
+                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">1</span>
+                        Market Entry Readiness Assessment
+                    </div>
                     <div class="activity-description">Self-assessment checklist for US market entry preparation</div>
-                </div>
+                </a>
             </li>
             
             <li class="activity-item coming-soon">
-                <div class="activity-link">
-                    <div class="activity-title">Entry Strategy Selection</div>
+                <a href="market-entry-activity-2.html" class="activity-link">
+                    <div class="activity-title">
+                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">2</span>
+                        Entry Strategy Selection
+                    </div>
                     <div class="activity-description">Choose from four market entry strategies based on your startup profile</div>
-                </div>
+                </a>
             </li>
             
             <li class="activity-item coming-soon">
-                <div class="activity-link">
-                    <div class="activity-title">Local vs Global Gap Analysis</div>
+                <a href="market-entry-activity-3.html" class="activity-link">
+                    <div class="activity-title">
+                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">3</span>
+                        Local vs Global Gap Analysis
+                    </div>
                     <div class="activity-description">Identify key differences between home and target markets</div>
-                </div>
+                </a>
             </li>
             
-            <li class="activity-item coming-soon">
-                <div class="activity-link">
-                    <div class="activity-title">Workshop Slides</div>
-                    <div class="activity-description">Complete slide deck for Day 3 presentation</div>
-                </div>
-            </li>
         </ul>
+
+        <div class="mt-8 flex items-center justify-center">
+            <div class="flex items-center">
+                <img src="../icons/Google_Slides_Logo_512px.png" alt="Google Slides Logo" style="width: 24px; height: 24px; margin-right: 8px; object-fit: contain;">
+                <span class="text-gray-800 font-semibold" style="font-size: 20px;">Workshop Slides</span>
+            </div>
+        </div>
     </div>
 </body>
 </html>
