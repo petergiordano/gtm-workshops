@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Define Differentiators & Value - Day 2-2</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .lucide-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        // Icon components
+        const Settings = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        );
+
+        const Gem = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 3h12l4 6-10 13L2 9Z"/>
+                <path d="M11 3L8 9l4 13 4-13-3-6"/>
+                <path d="M2 9h20"/>
+            </svg>
+        );
+
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
+        const ArrowRight = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="5" y1="12" x2="19" y2="12"/>
+                <polyline points="12 5 19 12 12 19"/>
+            </svg>
+        );
+
+        const Lightbulb = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                <path d="M9 18h6"/>
+                <path d="M10 22h4"/>
+            </svg>
+        );
+
+        const DifferentiatorsValueActivity = () => {
+            const [currentStep, setCurrentStep] = useState(1);
+            const [differentiators, setDifferentiators] = useState(['', '', '']);
+            const [values, setValues] = useState(['', '', '']);
+
+            const resetActivity = () => {
+                setCurrentStep(1);
+                setDifferentiators(['', '', '']);
+                setValues(['', '', '']);
+            };
+
+            const updateDifferentiator = (index, value) => {
+                const newDifferentiators = [...differentiators];
+                newDifferentiators[index] = value;
+                setDifferentiators(newDifferentiators);
+            };
+
+            const updateValue = (index, value) => {
+                const newValues = [...values];
+                newValues[index] = value;
+                setValues(newValues);
+            };
+
+            const isStepComplete = () => {
+                if (currentStep === 1) {
+                    // Need at least 2 differentiators with minimum 15 characters each
+                    const validDifferentiators = differentiators.filter(d => d.length >= 15);
+                    return validDifferentiators.length >= 2;
+                } else if (currentStep === 2) {
+                    // Need corresponding values for the differentiators they filled out
+                    const validDifferentiators = differentiators.filter(d => d.length >= 15);
+                    const validValues = values.filter((v, index) => 
+                        differentiators[index].length >= 15 && v.length >= 20
+                    );
+                    return validValues.length >= validDifferentiators.length;
+                }
+                return false;
+            };
+
+            const nextStep = () => {
+                if (isStepComplete()) {
+                    setCurrentStep(prev => Math.min(prev + 1, 3));
+                }
+            };
+
+            const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+            const getCompletedCount = () => {
+                if (currentStep === 1) {
+                    return differentiators.filter(d => d.length >= 15).length;
+                } else {
+                    const validDifferentiators = differentiators.filter(d => d.length >= 15);
+                    const validValues = values.filter((v, index) => 
+                        differentiators[index].length >= 15 && v.length >= 20
+                    );
+                    return validValues.length;
+                }
+            };
+
+            const attributeCategories = [
+                { icon: <Settings className="text-orange-600" size={18} />, label: "Product", desc: "Core features and functionality" },
+                { icon: <Gem className="text-blue-600" size={18} />, label: "Customer centricity", desc: "How you serve customers differently" },
+                { icon: "💰", label: "Pricing & Value", desc: "Unique pricing models or value delivery" },
+                { icon: "🛠️", label: "Service", desc: "Support, implementation, or service approach" }
+            ];
+
+            const renderStep1 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            Identify Your Unique Differentiators
+                        </h3>
+                        <p className="text-gray-600">
+                            List 2-3 key features or capabilities that set you apart from alternatives
+                        </p>
+                    </div>
+
+                    <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-5 mb-6">
+                        <div className="flex items-center mb-3">
+                            <Lightbulb className="text-orange-600 mr-2" size={24} />
+                            <h4 className="text-lg font-semibold text-orange-800">Four Categories of Unique Attributes</h4>
+                        </div>
+                        <p className="text-orange-700 mb-4">
+                            Use these categories to brainstorm what makes you different:
+                        </p>
+                        <div className="grid grid-cols-2 gap-4">
+                            {attributeCategories.map((category, index) => (
+                                <div key={index} className="flex items-start space-x-3 bg-white p-3 rounded-lg border border-orange-200">
+                                    <div className="flex-shrink-0 mt-1">
+                                        {typeof category.icon === 'string' ? (
+                                            <span className="text-lg">{category.icon}</span>
+                                        ) : (
+                                            category.icon
+                                        )}
+                                    </div>
+                                    <div>
+                                        <h5 className="font-semibold text-orange-800 text-sm">{category.label}</h5>
+                                        <p className="text-orange-600 text-xs">{category.desc}</p>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        {differentiators.map((differentiator, index) => (
+                            <div key={index} className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                                <div className="flex justify-between items-center mb-3">
+                                    <label className="text-gray-700 font-medium">
+                                        Unique differentiator #{index + 1}: <span className="text-xs text-gray-500">(min. 15 characters)</span>
+                                        {index >= 2 && <span className="text-xs text-gray-400 ml-2">(optional)</span>}
+                                    </label>
+                                    {differentiator.length >= 15 && (
+                                        <CheckCircle className="text-green-500" size={20} />
+                                    )}
+                                </div>
+                                <p className="text-gray-500 text-sm mb-3">
+                                    {index === 0 && "What's your strongest unique capability that competitors don't have?"}
+                                    {index === 1 && "What's your second key differentiator?"}
+                                    {index === 2 && "Any additional unique capability?"}
+                                </p>
+                                <textarea
+                                    value={differentiator}
+                                    onChange={(e) => updateDifferentiator(index, e.target.value)}
+                                    placeholder={
+                                        index === 0 ? "Example: Real-time predictive API failure detection using machine learning" :
+                                        index === 1 ? "Example: Automated root cause analysis with suggested fixes" :
+                                        "Example: One-click integration with existing monitoring tools"
+                                    }
+                                    className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                />
+                                <div className="flex justify-between text-sm mt-2">
+                                    <span className="text-gray-500">
+                                        Focus on capabilities only you can deliver
+                                    </span>
+                                    <span className={`font-medium ${differentiator.length >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {differentiator.length}/15 characters
+                                    </span>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
+                        <h4 className="text-blue-800 font-semibold mb-2">💡 Differentiator Tips:</h4>
+                        <ul className="text-blue-700 text-sm space-y-1">
+                            <li>• Focus on the "Own this area!" space from the Venn diagram</li>
+                            <li>• Avoid table stakes features that everyone has</li>
+                            <li>• Think about what's hard for competitors to replicate</li>
+                            <li>• Consider your technology, approach, or business model advantages</li>
+                        </ul>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <div className="text-sm text-gray-600">
+                            Completed: {getCompletedCount()}/2 required (3 max)
+                        </div>
+                        <button
+                            onClick={nextStep}
+                            disabled={!isStepComplete()}
+                            className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+                                isStepComplete() 
+                                    ? 'bg-orange-500 hover:bg-orange-600' 
+                                    : 'bg-gray-300 cursor-not-allowed'
+                            }`}
+                        >
+                            Translate to Value →
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const renderStep2 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            Translate Features to Customer Value
+                        </h3>
+                        <p className="text-gray-600">
+                            For each differentiator, describe the tangible value it creates for customers
+                        </p>
+                    </div>
+
+                    <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5 mb-6">
+                        <div className="flex items-center mb-3">
+                            <ArrowRight className="text-blue-600 mr-2" size={24} />
+                            <h4 className="text-lg font-semibold text-blue-800">Features → Value Bridge</h4>
+                        </div>
+                        <div className="grid grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <h5 className="font-semibold text-blue-800 mb-2">Your Features Are:</h5>
+                                <ul className="text-blue-700 space-y-1">
+                                    <li>• Technical capabilities</li>
+                                    <li>• What your product does</li>
+                                    <li>• How it works</li>
+                                </ul>
+                            </div>
+                            <div>
+                                <h5 className="font-semibold text-blue-800 mb-2">Customer Value Is:</h5>
+                                <ul className="text-blue-700 space-y-1">
+                                    <li>• Business outcomes</li>
+                                    <li>• Why they care</li>
+                                    <li>• Measurable benefits</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        {differentiators.map((differentiator, index) => {
+                            if (differentiator.length < 15) return null;
+                            
+                            return (
+                                <div key={index} className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                                    <div className="mb-4">
+                                        <h4 className="font-semibold text-gray-800 mb-2 flex items-center">
+                                            <Settings className="text-orange-600 mr-2" size={18} />
+                                            Your Differentiator #{index + 1}:
+                                        </h4>
+                                        <div className="bg-gray-50 border border-gray-300 rounded-lg p-3">
+                                            <p className="text-sm text-gray-800">{differentiator}</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div>
+                                        <div className="flex justify-between items-center mb-3">
+                                            <label className="text-gray-700 font-medium flex items-center">
+                                                <Gem className="text-orange-600 mr-2" size={18} />
+                                                Customer value this creates: <span className="text-xs text-gray-500 ml-2">(min. 20 characters)</span>
+                                            </label>
+                                            {values[index] && values[index].length >= 20 && (
+                                                <CheckCircle className="text-green-500" size={20} />
+                                            )}
+                                        </div>
+                                        <p className="text-gray-500 text-sm mb-3">
+                                            What specific business outcomes does this capability deliver for customers?
+                                        </p>
+                                        <textarea
+                                            value={values[index] || ''}
+                                            onChange={(e) => updateValue(index, e.target.value)}
+                                            placeholder="Example: Prevents 80% of API failures before they impact customers, reducing revenue loss from outages by $500K annually and improving customer satisfaction scores"
+                                            className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                        />
+                                        <div className="flex justify-between text-sm mt-2">
+                                            <span className="text-gray-500">
+                                                Include metrics, cost savings, or measurable improvements
+                                            </span>
+                                            <span className={`font-medium ${values[index] && values[index].length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                {values[index] ? values[index].length : 0}/20 characters
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="bg-green-50 border-l-4 border-green-500 p-4 rounded-lg">
+                        <h4 className="text-green-800 font-semibold mb-2">💡 Value Translation Tips:</h4>
+                        <ul className="text-green-700 text-sm space-y-1">
+                            <li>• Use numbers and percentages when possible</li>
+                            <li>• Focus on business outcomes, not technical details</li>
+                            <li>• Think about time saved, costs reduced, revenue increased</li>
+                            <li>• Consider risk mitigation and competitive advantages</li>
+                        </ul>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Back
+                        </button>
+                        
+                        <div className="flex items-center space-x-4">
+                            <div className="text-sm text-gray-600">
+                                Completed: {getCompletedCount()}/{differentiators.filter(d => d.length >= 15).length} value translations
+                            </div>
+                            <button
+                                onClick={nextStep}
+                                disabled={!isStepComplete()}
+                                className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+                                    isStepComplete() 
+                                        ? 'bg-orange-500 hover:bg-orange-600' 
+                                        : 'bg-gray-300 cursor-not-allowed'
+                                }`}
+                            >
+                                Review & Complete →
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            );
+
+            const renderStep3 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            Your Differentiators & Value
+                        </h3>
+                        <p className="text-gray-600">
+                            Review your unique capabilities and the customer value they create
+                        </p>
+                    </div>
+
+                    <div className="bg-green-50 border-2 border-green-300 rounded-lg p-6 mb-6">
+                        <div className="flex items-center mb-4">
+                            <CheckCircle className="text-green-600 mr-2" size={24} />
+                            <h4 className="text-lg font-semibold text-green-800">Solution Positioning Complete!</h4>
+                        </div>
+                        
+                        <p className="text-green-700 mb-4">
+                            You've built the core elements for your positioning statement. You now have clear answers to:
+                        </p>
+                        
+                        <div className="grid grid-cols-2 gap-4 text-sm">
+                            <div className="bg-white border border-green-200 rounded-lg p-3">
+                                <h5 className="font-medium text-green-800 mb-1">✓ WE ARE BETTER BECAUSE:</h5>
+                                <p className="text-gray-600">Your unique differentiators</p>
+                            </div>
+                            <div className="bg-white border border-green-200 rounded-lg p-3">
+                                <h5 className="font-medium text-green-800 mb-1">✓ THAT PROVIDES:</h5>
+                                <p className="text-gray-600">Customer value you deliver</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        {differentiators.map((differentiator, index) => {
+                            if (differentiator.length < 15) return null;
+                            
+                            return (
+                                <div key={index} className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                                    <div className="grid grid-cols-2 gap-6">
+                                        <div>
+                                            <h5 className="font-medium text-gray-800 mb-2 flex items-center">
+                                                <Settings className="text-orange-600 mr-2" size={18} />
+                                                Unique Differentiator #{index + 1}
+                                            </h5>
+                                            <div className="bg-orange-50 border border-orange-200 rounded-lg p-3">
+                                                <p className="text-sm text-gray-800">{differentiator}</p>
+                                            </div>
+                                        </div>
+                                        
+                                        <div>
+                                            <h5 className="font-medium text-gray-800 mb-2 flex items-center">
+                                                <Gem className="text-orange-600 mr-2" size={18} />
+                                                Customer Value Created
+                                            </h5>
+                                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                                                <p className="text-sm text-gray-800">{values[index]}</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            );
+                        })}
+                    </div>
+
+                    <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-5">
+                        <h4 className="text-lg font-bold text-orange-800 mb-3">🎯 Next: Complete Your Positioning Statement</h4>
+                        <p className="text-orange-700 mb-3">
+                            In Activity 3, you'll combine today's work with yesterday's customer profile to create your complete positioning statement.
+                        </p>
+                        <div className="text-sm text-orange-700">
+                            <p className="mb-2"><strong>Your positioning statement will include:</strong></p>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <div>✓ FOR: Your target customer (Activity 1)</div>
+                                    <div>✓ UNLIKE: Their alternative (Activity 1)</div>
+                                    <div>✓ WE ARE BETTER BECAUSE: Your differentiators</div>
+                                </div>
+                                <div>
+                                    <div>• OUR PRODUCT IS A: Product category</div>
+                                    <div>• WHO STRUGGLES WITH: Core pain point</div>
+                                    <div>✓ THAT PROVIDES: Customer value</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="text-center space-x-4">
+                        <button
+                            onClick={prevStep}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Back to Edit
+                        </button>
+                        <button
+                            onClick={resetActivity}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                        >
+                            Start Over
+                        </button>
+                        <button
+                            onClick={() => window.location.href = 'index.html'}
+                            className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                        >
+                            Continue to Activity 3
+                        </button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-[1200px] mx-auto p-5 bg-gradient-to-br from-orange-100 to-orange-200 min-h-screen">
+                    {/* Header */}
+                    <div className="bg-white rounded-lg shadow-lg p-4 mb-4 sticky top-0 z-50">
+                        <div className="flex justify-between items-center w-full mb-3">
+                            <a 
+                                href="index.html" 
+                                className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium"
+                            >
+                                <span className="mr-1">←</span> Back to Workshop
+                            </a>
+                            <a 
+                                href="../" 
+                                className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium"
+                            >
+                                All GTM Workshops <span className="ml-1">↑</span>
+                            </a>
+                        </div>
+                        <div className="flex items-center justify-between mb-3">
+                            <h1 className="text-2xl font-bold text-gray-800">
+                                Activity 2: Define Differentiators & Value
+                            </h1>
+                        </div>
+                        
+                        {/* Progress indicator */}
+                        <div className="flex items-center space-x-4">
+                            <div className={`flex items-center space-x-2 ${currentStep >= 1 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
+                                    1
+                                </div>
+                                <span className="font-semibold">Differentiators</span>
+                            </div>
+                            <div className="flex-1 h-1 bg-gray-200 rounded">
+                                <div className={`h-full bg-orange-500 rounded transition-all duration-300 ${
+                                    currentStep === 1 ? 'w-0' : currentStep === 2 ? 'w-1/2' : 'w-full'
+                                }`}></div>
+                            </div>
+                            <div className={`flex items-center space-x-2 ${currentStep >= 2 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
+                                    2
+                                </div>
+                                <span className="font-semibold">Customer Value</span>
+                            </div>
+                            <div className="flex-1 h-1 bg-gray-200 rounded">
+                                <div className={`h-full bg-orange-500 rounded transition-all duration-300 ${currentStep >= 3 ? 'w-full' : 'w-0'}`}></div>
+                            </div>
+                            <div className={`flex items-center space-x-2 ${currentStep >= 3 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
+                                    3
+                                </div>
+                                <span className="font-semibold">Review</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="bg-white rounded-lg shadow-lg p-6 relative">
+                        <button
+                            onClick={resetActivity}
+                            className="absolute -top-2 -right-2 w-8 h-8 bg-gray-200 hover:bg-orange-500 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 text-gray-600"
+                            title="Reset Activity"
+                        >
+                            <span className="text-lg font-bold">↻</span>
+                        </button>
+
+                        {currentStep === 1 && renderStep1()}
+                        {currentStep === 2 && renderStep2()}
+                        {currentStep === 3 && renderStep3()}
+                    </div>
+
+                    {/* Footer decoration */}
+                    <div className="mt-4 text-center">
+                        <div className="w-12 h-12 mx-auto bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 border-4 border-white border-opacity-50 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<DifferentiatorsValueActivity />, document.getElementById('root'));
+    </script>
+</body>
+</html>
