@@ -232,6 +232,23 @@ Each workshop index page should include a consistent Workshop Slides section fol
   - Secondary: bg-gray-500 hover:bg-gray-600
   - Font: font-semibold, text-white
 
+### Input Validation Standards
+- **User Display**: Show word-based requirements (e.g., "Describe in 5+ words")
+- **Internal Logic**: Use character count for validation (easier programming)
+- **Conversion Guidelines**: 
+  - 3+ words = 15+ characters
+  - 5+ words = 25+ characters  
+  - 10+ words = 50+ characters
+- **UX Principle**: Hide technical character counts from users, show natural language requirements
+- **Implementation**: 
+  ```html
+  <!-- Good: User sees word requirement -->
+  <label>Problem description: <span>(describe in 5+ words)</span></label>
+  
+  <!-- Bad: User sees character count -->
+  <label>Problem description: <span>(min. 25 characters)</span></label>
+  ```
+
 ### Status Grid
 - **Layout**: grid grid-cols-[number of steps]
 - **Item Style**: p-2 rounded-lg text-center text-xs font-medium
@@ -253,7 +270,7 @@ Each workshop index page should include a consistent Workshop Slides section fol
 ### Data Management
 - **State Management**: React useState hooks
 - **No External Storage**: All data remains in-session
-- **Completion Threshold**: 20+ characters for text inputs
+- **Completion Threshold**: Word-based requirements (internally validated using character counts)
 
 ### Responsive Design
 - **Landscape Priority**: Optimize for 16:9 landscape orientation first
@@ -325,7 +342,7 @@ Each workshop index page should include a consistent Workshop Slides section fol
 #### Learning Approach
 - **Prompts**: Use hypothesis-driven format when appropriate (e.g., "We believe our customers are...")
 - **Examples**: Provide concrete examples for abstract concepts
-- **Input Requirements**: Specify minimum input length where relevant
+- **Input Requirements**: Use word-based requirements for user display, character-based validation internally
 
 #### Visual Learning Focus
 - **Icons**: Use consistent icons to reinforce concepts
@@ -361,7 +378,7 @@ Each workshop index page should include a consistent Workshop Slides section fol
 ### Testing Checklist
 1. **Navigation**: Verify all links work correctly
 2. **Progress Tracking**: Confirm proper state updates
-3. **Completion Detection**: Test 20+ character threshold
+3. **Completion Detection**: Test word-based validation displays with character-based internal logic
 4. **Landscape Orientation Test**: Verify activity displays properly in 16:9 landscape mode (1920×1080)
 5. **Screenshot Compatibility**: Test how activity appears when captured as a screenshot
 6. **Visual Consistency**: Compare to existing activities
