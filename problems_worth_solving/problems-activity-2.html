@@ -605,16 +605,15 @@
                                         <MapPin className="mr-2 text-orange-600 flex-shrink-0 mt-1" size={16} fill="#f97316" />
                                         <div>
                                             <p className="font-medium">Strategic Entry Point:</p>
-                                            {(() => {
-                                                const strategicMarker = markers.find(m => m.type === 'strategic');
-                                                if (strategicMarker && strategicMarker.notes && strategicMarker.notes.trim().length > 0) {
-                                                    return <p className="text-gray-600">{strategicMarker.notes}</p>;
-                                                } else if (strategicMarker) {
-                                                    return <p className="text-gray-500 italic">No notes added</p>;
-                                                } else {
-                                                    return <p className="text-gray-500 italic">No strategic entry point placed</p>;
-                                                }
-                                            })()}
+                                            {markers.find(m => m.type === 'strategic') ? (
+                                                markers.find(m => m.type === 'strategic').notes ? (
+                                                    <p className="text-gray-600">{markers.find(m => m.type === 'strategic').notes}</p>
+                                                ) : (
+                                                    <p className="text-gray-500 italic">No notes added</p>
+                                                )
+                                            ) : (
+                                                <p className="text-gray-500 italic">No strategic entry point placed</p>
+                                            )}
                                         </div>
                                     </div>
                                 </div>
