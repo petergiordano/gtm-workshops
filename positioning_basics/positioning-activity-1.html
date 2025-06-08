@@ -129,7 +129,7 @@
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            Your Early Customer Profile: <span className="text-xs text-gray-500">(min. 20 characters)</span>
+                            Your Early Customer Profile: <span className="text-xs text-gray-500">(min. 5 words)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
                             Be specific about WHO your target customer is. Use your ECP from yesterday and the 6 characteristics framework.
@@ -146,7 +146,7 @@
                                 Be specific about company type, role, and key characteristics
                             </span>
                             <span className={`font-medium ${customerProfile.length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {customerProfile.length}/20 characters
+                                {customerProfile.trim().split(/\s+/).filter(w => w.length > 0).length} words
                             </span>
                         </div>
                         
@@ -219,7 +219,7 @@
                     <div className="grid grid-cols-1 gap-6">
                         <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                             <label className="block text-gray-700 font-medium mb-2">
-                                Primary competitive alternative: <span className="text-xs text-gray-500">(min. 10 characters)</span>
+                                Primary competitive alternative: <span className="text-xs text-gray-500">(min. 2-3 words)</span>
                             </label>
                             <p className="text-gray-500 text-sm mb-3">
                                 What is the main thing your target customer uses today to address this problem?
@@ -233,14 +233,14 @@
                             />
                             <div className="flex justify-end text-sm mt-2">
                                 <span className={`font-medium ${competitiveAlternative.length >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
-                                    {competitiveAlternative.length}/10 characters
+                                    {competitiveAlternative.trim().split(/\s+/).filter(w => w.length > 0).length} words
                                 </span>
                             </div>
                         </div>
 
                         <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                             <label className="block text-gray-700 font-medium mb-2">
-                                How does this alternative work? <span className="text-xs text-gray-500">(min. 20 characters)</span>
+                                How does this alternative work? <span className="text-xs text-gray-500">(min. 5 words)</span>
                             </label>
                             <p className="text-gray-500 text-sm mb-3">
                                 Briefly describe how customers currently solve this problem and why it's inadequate.
@@ -256,7 +256,7 @@
                                     Focus on what they do and why it falls short
                                 </span>
                                 <span className={`font-medium ${alternativeDescription.length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                    {alternativeDescription.length}/20 characters
+                                    {alternativeDescription.trim().split(/\s+/).filter(w => w.length > 0).length} words
                                 </span>
                             </div>
                         </div>
