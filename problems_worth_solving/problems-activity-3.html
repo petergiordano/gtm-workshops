@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problem Scoring Worksheet - Day 1</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .lucide-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        // Icon components
+        const AlertTriangle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <path d="M12 9v4"/>
+                <path d="M12 17h.01"/>
+            </svg>
+        );
+
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
+        const Trophy = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/>
+                <path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/>
+                <path d="M4 22h16"/>
+                <path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"/>
+                <path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"/>
+                <path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/>
+            </svg>
+        );
+
+        const Activity = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 12h-4l-3 9L9 3l-3 9H2"/>
+            </svg>
+        );
+
+        const Timer = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <polyline points="12,6 12,12 16,14"/>
+            </svg>
+        );
+
+        const ProblemScoringWorksheet = () => {
+            const [currentStep, setCurrentStep] = useState(1);
+            const [problemStatement, setProblemStatement] = useState("");
+            const [scores, setScores] = useState({
+                urgency: 0,
+                importance: 0,
+                value: 0,
+                marketGap: 0,
+                accessibility: 0
+            });
+            const [evidence, setEvidence] = useState({
+                urgency: "",
+                importance: "",
+                value: "",
+                marketGap: "",
+                accessibility: ""
+            });
+            const [timeRemaining, setTimeRemaining] = useState(null);
+            const [timerActive, setTimerActive] = useState(false);
+
+            // Total score calculation
+            const totalScore = Object.values(scores).reduce((sum, score) => sum + score, 0);
+            
+            // Check if problem meets all thresholds
+            const meetsThreshold = () => {
+                // At least 4/5 on most criteria
+                const criteriaAbove4 = Object.values(scores).filter(score => score >= 4).length;
+                const highUrgencyAndValue = scores.urgency >= 4 && scores.value >= 4;
+                const totalAbove20 = totalScore >= 20;
+                
+                return criteriaAbove4 >= 3 && highUrgencyAndValue && totalAbove20;
+            };
+
+            useEffect(() => {
+                let interval;
+                if (timerActive && timeRemaining > 0) {
+                    interval = setInterval(() => {
+                        setTimeRemaining(prev => prev - 1);
+                    }, 1000);
+                } else if (timeRemaining === 0) {
+                    setTimerActive(false);
+                }
+                
+                return () => clearInterval(interval);
+            }, [timerActive, timeRemaining]);
+
+            const startTimer = (seconds) => {
+                setTimeRemaining(seconds);
+                setTimerActive(true);
+            };
+
+            const formatTime = (seconds) => {
+                const mins = Math.floor(seconds / 60);
+                const secs = seconds % 60;
+                return `${mins}:${secs < 10 ? '0' : ''}${secs}`;
+            };
+
+            const handleScoreChange = (criterion, score) => {
+                setScores(prev => ({
+                    ...prev,
+                    [criterion]: score
+                }));
+            };
+
+            const handleEvidenceChange = (criterion, value) => {
+                setEvidence(prev => ({
+                    ...prev,
+                    [criterion]: value
+                }));
+            };
+
+            const criteriaData = [
+                {
+                    id: "urgency",
+                    title: "Urgency",
+                    question: "How soon do they need this solved?",
+                    description: "Problem must be solved now or very soon",
+                    examples: [
+                        "Problem occurs frequently (daily/weekly)",
+                        "Significant cost or risk if unsolved",
+                        "Regulatory deadline approaching"
+                    ],
+                    scoreDescriptions: {
+                        1: "Can wait years to solve",
+                        2: "Should be solved within a year",
+                        3: "Needed in 3-6 months",
+                        4: "Needed within weeks",
+                        5: "Critical - needed immediately"
+                    },
+                    color: "bg-red-50 border-red-200 text-red-800"
+                },
+                {
+                    id: "importance",
+                    title: "Importance",
+                    question: "What's the business impact if unsolved?",
+                    description: "Problem significantly impacts business metrics",
+                    examples: [
+                        "Affects revenue or core operations",
+                        "Creates compliance or security risk",
+                        "Impacts customer experience measurably"
+                    ],
+                    scoreDescriptions: {
+                        1: "Nice to have, minimal impact",
+                        2: "Minor improvements to processes",
+                        3: "Moderate efficiency/quality gains",
+                        4: "Major operational improvement",
+                        5: "Mission-critical, existential issue"
+                    },
+                    color: "bg-blue-50 border-blue-200 text-blue-800"
+                },
+                {
+                    id: "value",
+                    title: "Value",
+                    question: "Will they pay? How much?",
+                    description: "Customers willing to allocate budget",
+                    examples: [
+                        "Quantifiable ROI or cost savings",
+                        "Budget exists or can be created",
+                        "Value > cost by significant multiple"
+                    ],
+                    scoreDescriptions: {
+                        1: "Unwilling to pay anything",
+                        2: "Minimal budget (<$1K)",
+                        3: "Moderate budget ($1K-$10K)",
+                        4: "Significant budget ($10K-$100K)",
+                        5: "Enterprise budget ($100K+)"
+                    },
+                    color: "bg-green-50 border-green-200 text-green-800"
+                },
+                {
+                    id: "marketGap",
+                    title: "Market Gap",
+                    question: "How well do current solutions work?",
+                    description: "Existing solutions are inadequate",
+                    examples: [
+                        "No solutions exist for this segment",
+                        "Current options missing key capabilities",
+                        "Alternatives too complex or expensive"
+                    ],
+                    scoreDescriptions: {
+                        1: "Perfect solutions already exist",
+                        2: "Good solutions with minor gaps",
+                        3: "Partial solutions with clear limitations",
+                        4: "Poor solutions with major drawbacks",
+                        5: "No viable solutions exist"
+                    },
+                    color: "bg-purple-50 border-purple-200 text-purple-800"
+                },
+                {
+                    id: "accessibility",
+                    title: "Accessibility",
+                    question: "Can you reach these customers?",
+                    description: "Target customers are identifiable and reachable",
+                    examples: [
+                        "Clear way to identify prospects",
+                        "Established marketing/sales channels",
+                        "Reasonable customer acquisition cost"
+                    ],
+                    scoreDescriptions: {
+                        1: "Cannot identify or reach customers",
+                        2: "Hard to identify, expensive to reach",
+                        3: "Can identify, but reach is challenging",
+                        4: "Identifiable with established channels",
+                        5: "Highly targetable with low CAC"
+                    },
+                    color: "bg-yellow-50 border-yellow-200 text-yellow-800"
+                }
+            ];
+
+            const nextStep = () => setCurrentStep(prev => Math.min(prev + 1, 3));
+            const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
+
+            const resetActivity = () => {
+                setProblemStatement("");
+                setScores({
+                    urgency: 0,
+                    importance: 0,
+                    value: 0,
+                    marketGap: 0,
+                    accessibility: 0
+                });
+                setEvidence({
+                    urgency: "",
+                    importance: "",
+                    value: "",
+                    marketGap: "",
+                    accessibility: ""
+                });
+                setCurrentStep(1);
+                setTimeRemaining(null);
+                setTimerActive(false);
+            };
+
+            const isStepComplete = () => {
+                if (currentStep === 1) {
+                    return problemStatement.length >= 20;
+                }
+                if (currentStep === 2) {
+                    // Check if all criteria have scores and evidence
+                    const allScored = Object.values(scores).every(score => score > 0);
+                    const allEvidence = Object.values(evidence).every(ev => ev.length >= 10);
+                    return allScored && allEvidence;
+                }
+                return true;
+            };
+
+            const renderStep1 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-4">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            Define Your Problem Statement
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                            Clearly articulate the problem you're solving before evaluating it
+                        </p>
+                    </div>
+
+                    <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
+                        <label className="block text-gray-700 font-medium mb-2">
+                            Problem Statement:
+                        </label>
+                        <p className="text-gray-500 text-sm mb-3">
+                            A good problem statement describes: WHO has the problem, WHAT the problem is, and WHY it matters.
+                        </p>
+                        <textarea
+                            value={problemStatement}
+                            onChange={(e) => setProblemStatement(e.target.value)}
+                            placeholder="Example: Development teams at fast-growing tech companies struggle to prevent API failures before they impact customers, leading to lost revenue and damaged reputation."
+                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                        />
+                        
+                        <div className="mt-4 flex items-start space-x-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
+                            <div className="text-blue-500 mt-1">
+                                <AlertTriangle size={20} />
+                            </div>
+                            <div>
+                                <p className="text-blue-700 text-sm font-medium">Problem Statement Tips:</p>
+                                <ul className="text-blue-600 text-sm mt-1 space-y-1">
+                                    <li>• Be specific about who experiences this problem</li>
+                                    <li>• Focus on the problem, not your solution</li>
+                                    <li>• Include why this problem matters (impact)</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center">
+                            <Timer size={24} className="text-gray-500 mr-2" />
+                            <div>
+                                <button
+                                    onClick={() => startTimer(180)} // 3 minutes
+                                    className="text-gray-600 bg-gray-100 hover:bg-gray-200 transition-colors px-3 py-1 rounded-lg text-sm"
+                                    disabled={timerActive}
+                                >
+                                    Start 3-Min Timer
+                                </button>
+                                {timerActive && (
+                                    <span className="ml-3 font-mono text-orange-600 font-bold">
+                                        {formatTime(timeRemaining)}
+                                    </span>
+                                )}
+                            </div>
+                        </div>
+                        
+                        <button
+                            onClick={nextStep}
+                            disabled={!isStepComplete()}
+                            className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+                                isStepComplete() 
+                                    ? 'bg-orange-500 hover:bg-orange-600' 
+                                    : 'bg-gray-300 cursor-not-allowed'
+                            }`}
+                        >
+                            Score Your Problem →
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const renderStep2 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-4">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            Score Your Problem on 5 Criteria
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                            Rate each criterion on a scale of 1-5 and provide evidence for your score
+                        </p>
+                    </div>
+
+                    <div className="grid grid-cols-1 gap-6">
+                        {criteriaData.map((criterion) => (
+                            <div 
+                                key={criterion.id} 
+                                className={`border-2 rounded-lg p-5 ${criterion.color}`}
+                            >
+                                <div className="flex justify-between items-start mb-4">
+                                    <div>
+                                        <h4 className="font-bold text-lg">{criterion.title}</h4>
+                                        <p className="text-sm font-medium mt-1">{criterion.question}</p>
+                                    </div>
+                                    <div className="flex space-x-1">
+                                        {[1, 2, 3, 4, 5].map((scoreValue) => (
+                                            <button
+                                                key={scoreValue}
+                                                onClick={() => handleScoreChange(criterion.id, scoreValue)}
+                                                className={`w-8 h-8 rounded-full flex items-center justify-center font-bold text-sm transition-all
+                                                ${scores[criterion.id] === scoreValue 
+                                                    ? 'bg-white text-orange-500 border-2 border-orange-500' 
+                                                    : 'bg-white bg-opacity-50 hover:bg-white'
+                                                }`}
+                                            >
+                                                {scoreValue}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </div>
+                                
+                                {scores[criterion.id] > 0 && (
+                                    <div className="mb-4 p-3 bg-white bg-opacity-80 rounded-lg">
+                                        <p className="font-medium text-sm">
+                                            Score {scores[criterion.id]}: {criterion.scoreDescriptions[scores[criterion.id]]}
+                                        </p>
+                                    </div>
+                                )}
+                                
+                                <div className="mb-4">
+                                    <label className="block text-sm font-medium mb-2">
+                                        Evidence for your score:
+                                    </label>
+                                    <textarea
+                                        value={evidence[criterion.id]}
+                                        onChange={(e) => handleEvidenceChange(criterion.id, e.target.value)}
+                                        placeholder={`What specific evidence supports your ${criterion.title} score?`}
+                                        className="w-full p-3 border border-gray-300 rounded-lg resize-none h-20 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 bg-white"
+                                    />
+                                </div>
+                                
+                                <div className="text-sm space-y-1">
+                                    <p className="font-medium">Key indicators of high {criterion.title}:</p>
+                                    <ul className="space-y-1 ml-1">
+                                        {criterion.examples.map((example, i) => (
+                                            <li key={i} className="flex items-start">
+                                                <span className="inline-block w-4 h-4 mt-0.5 mr-2 bg-white rounded-full flex items-center justify-center text-xs font-bold">•</span>
+                                                {example}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-5">
+                        <div className="flex justify-between items-center mb-4">
+                            <h4 className="font-bold text-lg text-gray-800">Problem Score Summary</h4>
+                            <div className="text-2xl font-bold text-orange-500">{totalScore}/25</div>
+                        </div>
+                        
+                        <div className="space-y-2 mb-4">
+                            {criteriaData.map(criterion => (
+                                <div key={criterion.id} className="flex justify-between items-center">
+                                    <span className="text-gray-700">{criterion.title}:</span>
+                                    <div className="flex items-center">
+                                        <span className={`font-bold ${scores[criterion.id] >= 4 ? 'text-green-600' : 'text-gray-600'}`}>
+                                            {scores[criterion.id] || '-'}/5
+                                        </span>
+                                        {scores[criterion.id] >= 4 && (
+                                            <CheckCircle size={16} className="text-green-500 ml-1" />
+                                        )}
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                        
+                        <div className="p-3 rounded-lg bg-blue-50 border border-blue-100">
+                            <p className="text-sm text-blue-800 font-medium">Threshold for a Problem Worth Solving:</p>
+                            <ul className="text-sm text-blue-700 mt-1 space-y-1">
+                                <li className="flex items-center">
+                                    <span className={`inline-block w-4 h-4 mr-2 rounded-full ${criteriaData.filter(c => scores[c.id] >= 4).length >= 3 ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                                    Score of 4+ on at least 3 criteria
+                                </li>
+                                <li className="flex items-center">
+                                    <span className={`inline-block w-4 h-4 mr-2 rounded-full ${scores.urgency >= 4 && scores.value >= 4 ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                                    High Urgency (4+) AND High Value (4+)
+                                </li>
+                                <li className="flex items-center">
+                                    <span className={`inline-block w-4 h-4 mr-2 rounded-full ${totalScore >= 20 ? 'bg-green-500' : 'bg-gray-300'}`}></span>
+                                    Total score of 20 or higher
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Back
+                        </button>
+                        
+                        <button
+                            onClick={nextStep}
+                            disabled={!isStepComplete()}
+                            className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+                                isStepComplete() 
+                                    ? 'bg-orange-500 hover:bg-orange-600' 
+                                    : 'bg-gray-300 cursor-not-allowed'
+                            }`}
+                        >
+                            See Results →
+                        </button>
+                    </div>
+                </div>
+            );
+
+            const renderStep3 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-4">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            Problem Validation Results
+                        </h3>
+                        <p className="text-gray-600 text-sm">
+                            Review your problem assessment and determine next steps
+                        </p>
+                    </div>
+
+                    <div className={`border-2 rounded-lg p-6 ${
+                        meetsThreshold() 
+                            ? 'bg-green-50 border-green-500' 
+                            : 'bg-yellow-50 border-yellow-500'
+                    }`}>
+                        <div className="flex justify-between items-start">
+                            <div>
+                                <h4 className={`text-xl font-bold mb-2 ${
+                                    meetsThreshold() ? 'text-green-700' : 'text-yellow-700'
+                                }`}>
+                                    {meetsThreshold() 
+                                        ? 'Validated: Problem Worth Solving!' 
+                                        : 'Not Yet Validated: Needs More Work'
+                                    }
+                                </h4>
+                                <p className={`text-sm ${
+                                    meetsThreshold() ? 'text-green-600' : 'text-yellow-600'
+                                }`}>
+                                    Total Score: {totalScore}/25
+                                </p>
+                            </div>
+                            <div className="text-4xl">
+                                {meetsThreshold() 
+                                    ? <Trophy size={40} className="text-green-500" /> 
+                                    : <AlertTriangle size={40} className="text-yellow-500" />
+                                }
+                            </div>
+                        </div>
+                        
+                        <div className="mt-6">
+                            <h5 className={`font-bold mb-2 ${
+                                meetsThreshold() ? 'text-green-700' : 'text-yellow-700'
+                            }`}>Your Problem Statement:</h5>
+                            <div className="p-4 bg-white rounded-lg border border-gray-200">
+                                <p className="text-gray-800">{problemStatement}</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="border-2 border-gray-200 rounded-lg p-4 bg-white">
+                            <h4 className="font-bold text-gray-800 mb-3 flex items-center">
+                                <Activity size={18} className="text-orange-500 mr-2" />
+                                Strengths
+                            </h4>
+                            <ul className="space-y-2">
+                                {criteriaData
+                                    .filter(c => scores[c.id] >= 4)
+                                    .map(criterion => (
+                                        <li key={criterion.id} className="flex items-start">
+                                            <CheckCircle size={16} className="text-green-500 mt-0.5 mr-2 flex-shrink-0" />
+                                            <div>
+                                                <span className="font-medium">{criterion.title} ({scores[criterion.id]}/5):</span>
+                                                <p className="text-sm text-gray-600">{evidence[criterion.id]}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                {criteriaData.filter(c => scores[c.id] >= 4).length === 0 && (
+                                    <li className="text-gray-500 italic text-sm">No criteria scored 4 or higher</li>
+                                )}
+                            </ul>
+                        </div>
+                        
+                        <div className="border-2 border-gray-200 rounded-lg p-4 bg-white">
+                            <h4 className="font-bold text-gray-800 mb-3 flex items-center">
+                                <Activity size={18} className="text-orange-500 mr-2" />
+                                Areas to Improve
+                            </h4>
+                            <ul className="space-y-2">
+                                {criteriaData
+                                    .filter(c => scores[c.id] < 4)
+                                    .map(criterion => (
+                                        <li key={criterion.id} className="flex items-start">
+                                            <AlertTriangle size={16} className="text-yellow-500 mt-0.5 mr-2 flex-shrink-0" />
+                                            <div>
+                                                <span className="font-medium">{criterion.title} ({scores[criterion.id]}/5):</span>
+                                                <p className="text-sm text-gray-600">{evidence[criterion.id] || "No evidence provided"}</p>
+                                            </div>
+                                        </li>
+                                    ))}
+                                {criteriaData.filter(c => scores[c.id] < 4).length === 0 && (
+                                    <li className="text-gray-500 italic text-sm">All criteria scored 4 or higher!</li>
+                                )}
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div className={`rounded-lg p-5 ${
+                        meetsThreshold() 
+                            ? 'bg-green-50 border-2 border-green-200' 
+                            : 'bg-yellow-50 border-2 border-yellow-200'
+                    }`}>
+                        <h4 className={`text-lg font-bold mb-3 ${
+                            meetsThreshold() ? 'text-green-800' : 'text-yellow-800'
+                        }`}>
+                            Recommended Next Steps:
+                        </h4>
+                        
+                        {meetsThreshold() ? (
+                            <ul className="space-y-2 text-green-700">
+                                <li className="flex items-start">
+                                    <span className="inline-block w-5 h-5 bg-green-500 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mr-2">1</span>
+                                    <span>Continue with customer discovery interviews to validate your problem assessment</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="inline-block w-5 h-5 bg-green-500 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                                    <span>Begin developing your Early Customer Profile based on this validated problem</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="inline-block w-5 h-5 bg-green-500 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                                    <span>Start exploring solution concepts that directly address your validated problem</span>
+                                </li>
+                            </ul>
+                        ) : (
+                            <ul className="space-y-2 text-yellow-700">
+                                <li className="flex items-start">
+                                    <span className="inline-block w-5 h-5 bg-yellow-500 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mr-2">1</span>
+                                    <span>Revisit your problem statement to focus on a more urgent customer need</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="inline-block w-5 h-5 bg-yellow-500 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mr-2">2</span>
+                                    <span>Conduct more customer interviews to find segments with higher urgency and value</span>
+                                </li>
+                                <li className="flex items-start">
+                                    <span className="inline-block w-5 h-5 bg-yellow-500 text-white rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mr-2">3</span>
+                                    <span>Consider pivoting to an adjacent problem that better meets the validation criteria</span>
+                                </li>
+                            </ul>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Back to Scoring
+                        </button>
+                        
+                        <button
+                            onClick={resetActivity}
+                            className="px-6 py-2 rounded-lg text-white font-medium bg-orange-500 hover:bg-orange-600 transition-colors"
+                        >
+                            Start Over
+                        </button>
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-[1200px] mx-auto p-5 bg-gradient-to-br from-orange-100 to-orange-200 min-h-screen">
+                    {/* Header */}
+                    <div className="bg-white rounded-lg shadow-lg p-4 mb-4">
+                        <div className="flex justify-between items-center w-full mb-3">
+                            <a 
+                                href="index.html" 
+                                className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium"
+                            >
+                                <span className="mr-1">←</span> Back to Workshop
+                            </a>
+                            <a 
+                                href="../" 
+                                className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium"
+                            >
+                                All GTM Workshops <span className="ml-1">↑</span>
+                            </a>
+                        </div>
+                        <div className="flex items-center justify-between mb-3">
+                            <h1 className="text-2xl font-bold text-gray-800">
+                                Activity 3: Problem Scoring Worksheet
+                            </h1>
+                            <button
+                                onClick={resetActivity}
+                                className="text-sm text-gray-500 hover:text-orange-500 transition-colors"
+                                title="Reset Activity"
+                            >
+                                Reset
+                            </button>
+                        </div>
+                        
+                        {/* Progress indicator */}
+                        <div className="flex items-center space-x-4">
+                            <div className={`flex items-center space-x-2 ${currentStep >= 1 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
+                                    1
+                                </div>
+                                <span className="font-semibold">Define Problem</span>
+                            </div>
+                            <div className="flex-1 h-1 bg-gray-200 rounded">
+                                <div className={`h-full bg-orange-500 rounded transition-all duration-300 ${
+                                    currentStep >= 3 ? 'w-full' : currentStep >= 2 ? 'w-1/2' : 'w-0'
+                                }`}></div>
+                            </div>
+                            <div className={`flex items-center space-x-2 ${currentStep >= 2 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 2 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
+                                    2
+                                </div>
+                                <span className="font-semibold">Score Criteria</span>
+                            </div>
+                            <div className="flex-1 h-1 bg-gray-200 rounded">
+                                <div className={`h-full bg-orange-500 rounded transition-all duration-300 ${currentStep >= 3 ? 'w-full' : 'w-0'}`}></div>
+                            </div>
+                            <div className={`flex items-center space-x-2 ${currentStep >= 3 ? 'text-orange-600' : 'text-gray-400'}`}>
+                                <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 3 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
+                                    3
+                                </div>
+                                <span className="font-semibold">Review Results</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="bg-white rounded-lg shadow-lg p-6 relative">
+                        {currentStep === 1 && renderStep1()}
+                        {currentStep === 2 && renderStep2()}
+                        {currentStep === 3 && renderStep3()}
+                    </div>
+
+                    {/* Footer decoration */}
+                    <div className="mt-4 text-center">
+                        <div className="w-12 h-12 mx-auto bg-white bg-opacity-30 rounded-full flex items-center justify-center">
+                            <div className="w-8 h-8 border-4 border-white border-opacity-50 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<ProblemScoringWorksheet />, document.getElementById('root'));
+    </script>
+</body>
+</html>
