@@ -29,11 +29,12 @@
         const { useState } = React;
 
         // Icon components
-        const Target = ({ size = 20, className = "" }) => (
+        const Users = ({ size = 20, className = "" }) => (
             <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <circle cx="12" cy="12" r="10"/>
-                <circle cx="12" cy="12" r="6"/>
-                <circle cx="12" cy="12" r="2"/>
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
             </svg>
         );
 
@@ -69,15 +70,22 @@
             </svg>
         );
 
+        const AlertTriangle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/>
+                <path d="M12 9v4"/>
+                <path d="M12 17h.01"/>
+            </svg>
+        );
+
         const PositioningStatementActivity = () => {
             const [currentStep, setCurrentStep] = useState(1);
-            const [productCategory, setProductCategory] = useState('');
+            const [targetCustomer, setTargetCustomer] = useState('Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure, use modern cloud tools, and value reliability over cost');
             const [corePain, setCorePain] = useState('');
             const [showCopyMessage, setShowCopyMessage] = useState(false);
 
-            // Sample data from previous activities (in real implementation, this would come from session storage or props)
+            // Sample data from previous activities (competitive alternative, unique differentiator, customer value)
             const [previousData] = useState({
-                targetCustomer: "Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure",
                 competitiveAlternative: "Manual API monitoring with basic alerting tools",
                 uniqueDifferentiator: "Real-time predictive API failure detection using machine learning",
                 customerValue: "Prevents 80% of API failures before they impact customers, reducing revenue loss by $500K annually"
@@ -85,14 +93,14 @@
 
             const resetActivity = () => {
                 setCurrentStep(1);
-                setProductCategory('');
+                setTargetCustomer('Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure, use modern cloud tools, and value reliability over cost');
                 setCorePain('');
                 setShowCopyMessage(false);
             };
 
             const isStepComplete = () => {
                 if (currentStep === 1) {
-                    return productCategory.length >= 10;
+                    return targetCustomer.length >= 20;
                 } else if (currentStep === 2) {
                     return corePain.length >= 15;
                 }
@@ -107,8 +115,27 @@
 
             const prevStep = () => setCurrentStep(prev => Math.max(prev - 1, 1));
 
+            const deriveProductCategory = () => {
+                // Simple logic to derive product category from customer and pain context
+                const customerLower = targetCustomer.toLowerCase();
+                const painLower = corePain.toLowerCase();
+                
+                if (customerLower.includes('api') || painLower.includes('api')) {
+                    return 'AI-powered API monitoring platform';
+                } else if (customerLower.includes('development') || customerLower.includes('developer')) {
+                    return 'Developer productivity platform';
+                } else if (customerLower.includes('data') || painLower.includes('data')) {
+                    return 'Data management platform';
+                } else if (customerLower.includes('security') || painLower.includes('security')) {
+                    return 'Security monitoring platform';
+                } else {
+                    return 'Software platform';
+                }
+            };
+
             const generatePositioningStatement = () => {
-                return `FOR: ${previousData.targetCustomer}
+                const productCategory = deriveProductCategory();
+                return `FOR: ${targetCustomer}
 WHO STRUGGLES WITH: ${corePain}
 OUR PRODUCT IS A: ${productCategory}
 THAT PROVIDES: ${previousData.customerValue}
@@ -128,83 +155,82 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                 <div className="space-y-6">
                     <div className="text-center mb-6">
                         <h3 className="text-xl font-bold text-gray-800 mb-2">
-                            Define Your Product Category
+                            Confirm Your Target Customer
                         </h3>
                         <p className="text-gray-600">
-                            How do you want customers to categorize your solution?
+                            Refine your Early Customer Profile from yesterday's work
                         </p>
                     </div>
 
                     <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-5 mb-6">
                         <div className="flex items-center mb-3">
-                            <Target className="text-blue-600 mr-2" size={24} />
-                            <h4 className="text-lg font-semibold text-blue-800">Product Category Strategy</h4>
+                            <Users className="text-blue-600 mr-2" size={24} />
+                            <h4 className="text-lg font-semibold text-blue-800">Customer-First Positioning</h4>
                         </div>
                         <p className="text-blue-700 mb-3">
-                            Your product category sets customer expectations. Choose carefully:
+                            Great positioning starts with a precise understanding of WHO you serve. Use your ECP work from yesterday as the foundation.
                         </p>
                         <div className="grid grid-cols-2 gap-4 text-sm text-blue-700">
                             <div>
-                                <h5 className="font-semibold mb-1">Option 1: Existing Category</h5>
-                                <p>Easier for customers to understand, but faces direct comparison</p>
+                                <h5 className="font-semibold mb-1">Be Specific</h5>
+                                <p>Include role, company type, and key characteristics that matter</p>
                             </div>
                             <div>
-                                <h5 className="font-semibold mb-1">Option 2: New Category</h5>
-                                <p>Less competition, but requires customer education</p>
+                                <h5 className="font-semibold mb-1">Focus on Value Drivers</h5>
+                                <p>Highlight what makes them care about your unique benefits</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 mb-6">
-                        <h4 className="font-medium text-gray-700 mb-3">Your Market Context (from Activities 1 & 2):</h4>
+                        <h4 className="font-medium text-gray-700 mb-3">From Previous Activities:</h4>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div className="bg-white border border-gray-300 rounded-lg p-3">
-                                <h5 className="font-semibold text-gray-800 mb-1">Target Customer:</h5>
-                                <p className="text-gray-700">{previousData.targetCustomer}</p>
+                                <h5 className="font-semibold text-gray-800 mb-1">Competitive Alternative:</h5>
+                                <p className="text-gray-700">{previousData.competitiveAlternative}</p>
                             </div>
                             <div className="bg-white border border-gray-300 rounded-lg p-3">
-                                <h5 className="font-semibold text-gray-800 mb-1">Main Alternative:</h5>
-                                <p className="text-gray-700">{previousData.competitiveAlternative}</p>
+                                <h5 className="font-semibold text-gray-800 mb-1">Unique Differentiator:</h5>
+                                <p className="text-gray-700">{previousData.uniqueDifferentiator}</p>
                             </div>
                         </div>
                     </div>
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            Our product is a: <span className="text-xs text-gray-500">(describe in 3+ words)</span>
+                            FOR: <span className="text-xs text-gray-500">(describe your target customer precisely)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
-                            Complete this phrase: "Our product is a _____ that helps customers _____"
+                            Refine this description based on your ECP work. Be specific about who values your unique benefits most.
                         </p>
-                        <input
-                            type="text"
-                            value={productCategory}
-                            onChange={(e) => setProductCategory(e.target.value)}
-                            placeholder="Example: AI-powered API monitoring platform"
-                            className="w-full p-4 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-lg"
+                        <textarea
+                            value={targetCustomer}
+                            onChange={(e) => setTargetCustomer(e.target.value)}
+                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm"
+                            placeholder="Example: Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure, use modern cloud tools, and value reliability over cost"
                         />
                         
                         <div className="flex justify-between text-sm mt-2">
                             <span className="text-gray-500">
-                                Think about how customers would search for or describe your solution
+                                Include role, company characteristics, and what makes them value your solution
                             </span>
-                            <span className={`font-medium ${productCategory.length >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {productCategory.length >= 10 ? '✓ Complete' : 'Needs more detail'}
+                            <span className={`font-medium ${targetCustomer.length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
+                                {targetCustomer.length >= 20 ? '✓ Complete' : 'Needs more detail'}
                             </span>
                         </div>
                         
                         <div className="mt-4 grid grid-cols-3 gap-4">
                             <div className="text-center p-3 bg-gray-50 rounded-lg">
-                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Platform</h5>
-                                <p className="text-xs text-gray-600">Comprehensive solution</p>
+                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Role/Function</h5>
+                                <p className="text-xs text-gray-600">Who specifically?</p>
                             </div>
                             <div className="text-center p-3 bg-gray-50 rounded-lg">
-                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Tool</h5>
-                                <p className="text-xs text-gray-600">Specific functionality</p>
+                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Company Context</h5>
+                                <p className="text-xs text-gray-600">What type of organization?</p>
                             </div>
                             <div className="text-center p-3 bg-gray-50 rounded-lg">
-                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Service</h5>
-                                <p className="text-xs text-gray-600">Human-delivered solution</p>
+                                <h5 className="font-semibold text-gray-800 text-sm mb-1">Key Characteristics</h5>
+                                <p className="text-xs text-gray-600">What makes them care?</p>
                             </div>
                         </div>
                     </div>
@@ -232,21 +258,21 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                             State the Core Pain Your Value Solves
                         </h3>
                         <p className="text-gray-600">
-                            What specific struggle does your customer value address?
+                            What specific struggle does your target customer face?
                         </p>
                     </div>
 
                     <div className="bg-orange-50 border-2 border-orange-200 rounded-lg p-5 mb-6">
                         <div className="flex items-center mb-3">
                             <Lightbulb className="text-orange-600 mr-2" size={24} />
-                            <h4 className="text-lg font-semibold text-orange-800">Connect Pain to Value</h4>
+                            <h4 className="text-lg font-semibold text-orange-800">Connect Customer to Pain</h4>
                         </div>
                         <p className="text-orange-700 mb-3">
-                            Your positioning statement connects a specific customer pain to the value you deliver. This creates a clear cause-and-effect story.
+                            Your positioning statement connects your specific target customer to the exact pain your value addresses. This creates a clear, compelling narrative.
                         </p>
                         <div className="bg-white border border-orange-200 rounded-lg p-3">
                             <p className="text-sm text-orange-800">
-                                <strong>Your Customer Value:</strong> {previousData.customerValue}
+                                <strong>Your Target Customer:</strong> {targetCustomer}
                             </p>
                         </div>
                     </div>
@@ -256,12 +282,12 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                             WHO STRUGGLES WITH: <span className="text-xs text-gray-500">(describe in 5+ words)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
-                            What specific pain point does your customer value directly address?
+                            What specific pain point does your customer value directly address? Think about the struggle that drives them to seek a solution.
                         </p>
                         <textarea
                             value={corePain}
                             onChange={(e) => setCorePain(e.target.value)}
-                            placeholder="Example: API failures that impact customers and cause revenue loss"
+                            placeholder="Example: API failures that impact customers and cause revenue loss before teams can respond"
                             className="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
                         />
                         
@@ -276,7 +302,7 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                         
                         <div className="mt-4 flex items-start space-x-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
                             <div className="text-blue-500 mt-1">
-                                <Target size={20} />
+                                <AlertTriangle size={20} />
                             </div>
                             <div>
                                 <p className="text-blue-700 text-sm font-medium">Pain Point Tips:</p>
@@ -284,10 +310,15 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                                     <li>• Be specific about the struggle, not just general dissatisfaction</li>
                                     <li>• Connect directly to the value you deliver</li>
                                     <li>• Focus on business impact, not technical symptoms</li>
-                                    <li>• Make it something your target customer would recognize</li>
+                                    <li>• Make it something your target customer would recognize immediately</li>
                                 </ul>
                             </div>
                         </div>
+                    </div>
+
+                    <div className="bg-gray-50 border border-gray-200 rounded-lg p-4">
+                        <h4 className="font-medium text-gray-700 mb-2">Your Customer Value (from previous activities):</h4>
+                        <p className="text-gray-700 text-sm">{previousData.customerValue}</p>
                     </div>
 
                     <div className="flex justify-between">
@@ -331,7 +362,7 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                         </div>
                         
                         <p className="text-green-700 mb-4">
-                            You've successfully created a complete positioning statement that answers all four key questions. This is your core messaging foundation.
+                            You've successfully created a complete positioning statement that connects your target customer to your unique value. This is your core messaging foundation.
                         </p>
                     </div>
 
@@ -359,9 +390,9 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                         
                         <div className="bg-gray-50 border border-gray-200 rounded-lg p-4 font-mono text-sm leading-relaxed">
                             <div className="space-y-2">
-                                <div><strong className="text-orange-600">FOR:</strong> {previousData.targetCustomer}</div>
+                                <div><strong className="text-orange-600">FOR:</strong> {targetCustomer}</div>
                                 <div><strong className="text-blue-600">WHO STRUGGLES WITH:</strong> {corePain}</div>
-                                <div><strong className="text-purple-600">OUR PRODUCT IS A:</strong> {productCategory}</div>
+                                <div><strong className="text-purple-600">OUR PRODUCT IS A:</strong> {deriveProductCategory()}</div>
                                 <div><strong className="text-green-600">THAT PROVIDES:</strong> {previousData.customerValue}</div>
                                 <div><strong className="text-red-600">UNLIKE:</strong> {previousData.competitiveAlternative}</div>
                                 <div><strong className="text-gray-600">WE ARE BETTER BECAUSE:</strong> {previousData.uniqueDifferentiator}</div>
@@ -373,11 +404,11 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                         <div className="bg-blue-50 border-l-4 border-blue-500 p-4 rounded-lg">
                             <h4 className="text-blue-800 font-semibold mb-2">✅ What You've Accomplished</h4>
                             <ul className="text-blue-700 text-sm space-y-1">
-                                <li>• Defined your target customer precisely</li>
-                                <li>• Identified competitive alternatives</li>
-                                <li>• Articulated unique differentiators</li>
-                                <li>• Connected features to customer value</li>
+                                <li>• Refined your target customer definition</li>
+                                <li>• Connected customer to specific pain points</li>
+                                <li>• Positioned your unique value clearly</li>
                                 <li>• Created a complete positioning foundation</li>
+                                <li>• Built on your ECP work from yesterday</li>
                             </ul>
                         </div>
                         
@@ -467,7 +498,7 @@ WE ARE BETTER BECAUSE: ${previousData.uniqueDifferentiator}`;
                                 <div className={`w-8 h-8 rounded-full flex items-center justify-center ${currentStep >= 1 ? 'bg-orange-500 text-white' : 'bg-gray-200'}`}>
                                     1
                                 </div>
-                                <span className="font-semibold">Product Category</span>
+                                <span className="font-semibold">Target Customer</span>
                             </div>
                             <div className="flex-1 h-1 bg-gray-200 rounded">
                                 <div className={`h-full bg-orange-500 rounded transition-all duration-300 ${
