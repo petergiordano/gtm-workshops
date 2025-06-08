@@ -28,7 +28,47 @@
   <span class="document-icon">📄</span>
   <span class="resource-title">Workshop Slides</span>
 </div>
-```# Interactive Workshop Activities Standards
+```
+
+### Workshop Slides Section
+
+Each workshop index page should include a consistent Workshop Slides section following these standards:
+
+#### Design Specifications
+- **Position**: Centered below activity cards with appropriate spacing (mt-8)
+- **Icon**: Google Slides logo (24px × 24px)
+- **Text**: "Workshop Slides" in semi-bold weight, dark gray (#1f2937)
+- **Font Size**: 20px for text
+- **Layout**: Icon and text centered horizontally with 8px spacing
+- **Visual distinction**: Should be visually distinct from activity cards (no orange background)
+
+#### HTML Structure
+```html
+<div class="mt-8 flex items-center justify-center">
+    <div class="flex items-center">
+        <img src="../icons/Google_Slides_Logo_512px.png" alt="Google Slides Logo" 
+             style="width: 24px; height: 24px; margin-right: 8px; object-fit: contain;">
+        <span class="text-gray-800 font-semibold" style="font-size: 20px;">Workshop Slides</span>
+    </div>
+</div>
+```
+
+#### CSS Requirements
+```css
+.mt-8 { margin-top: 2rem; }
+.flex { display: flex; }
+.items-center { align-items: center; }
+.justify-center { justify-content: center; }
+.text-gray-800 { color: #1f2937; }
+.font-semibold { font-weight: 600; }
+```
+
+#### Implementation Notes
+- Use the official Google Slides logo stored at `../icons/Google_Slides_Logo_512px.png`
+- Ensure `object-fit: contain` is applied to maintain aspect ratio
+- The section should appear after all activity cards but before the closing container
+- No hyperlink wrapping unless slides are actually available
+- Maintain consistent spacing and styling across all workshop index pages# Interactive Workshop Activities Standards
 
 > **INSTRUCTIONS**: Replace this section with your specific project details before using this standards document.
 
