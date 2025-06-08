@@ -71,6 +71,7 @@
         const ProblemScoringWorksheet = () => {
             const [currentStep, setCurrentStep] = useState(1);
             const [problemStatement, setProblemStatement] = useState("");
+            const [wordCount, setWordCount] = useState(0);
             const [scores, setScores] = useState({
                 urgency: 0,
                 importance: 0,
@@ -137,6 +138,15 @@
                     ...prev,
                     [criterion]: value
                 }));
+            };
+
+            const handleProblemStatementChange = (e) => {
+                const newStatement = e.target.value;
+                setProblemStatement(newStatement);
+                
+                // Count words (splitting by whitespace and filtering empty strings)
+                const words = newStatement.trim().split(/\s+/).filter(w => w.length > 0);
+                setWordCount(words.length);
             };
 
             const criteriaData = [
@@ -242,6 +252,7 @@
 
             const resetActivity = () => {
                 setProblemStatement("");
+                setWordCount(0);
                 setScores({
                     urgency: 0,
                     importance: 0,
@@ -266,11 +277,14 @@
                     return problemStatement.length >= 20;
                 }
                 if (currentStep === 2) {
-                    // Check if all criteria have been scored (any value) and have evidence
-                    const allScored = Object.keys(scores).length === 5 && 
-                                      Object.values(scores).every(score => score >= 1);
-                    const allEvidence = Object.keys(evidence).length === 5 && 
-                                        Object.values(evidence).every(ev => ev.length >= 10);
+                    // Check if the user has assigned any score (1-5) to all criteria
+                    const allScored = Object.keys(criteriaData).length === 
+                                      Object.keys(scores).filter(key => scores[key] >= 1).length;
+                    
+                    // Check if all criteria have minimum evidence (still 10 chars internally)
+                    const allEvidence = Object.keys(criteriaData).length === 
+                                        Object.keys(evidence).filter(key => evidence[key].length >= 10).length;
+                                        
                     return allScored && allEvidence;
                 }
                 return true;
@@ -289,17 +303,26 @@
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            Problem Statement:
+                            Problem Statement: <span className="text-xs text-gray-500">(min. 5 words)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
                             A good problem statement describes: WHO has the problem, WHAT the problem is, and WHY it matters.
                         </p>
                         <textarea
                             value={problemStatement}
-                            onChange={(e) => setProblemStatement(e.target.value)}
+                            onChange={handleProblemStatementChange}
                             placeholder="Example: Development teams at fast-growing tech companies struggle to prevent API failures before they impact customers, leading to lost revenue and damaged reputation."
                             className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
                         />
+                        
+                        <div className="flex justify-between text-sm mt-2">
+                            <span className="text-gray-500">
+                                Min. 5 words required
+                            </span>
+                            <span className={`font-medium ${wordCount >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                {wordCount} word{wordCount !== 1 ? 's' : ''}
+                            </span>
+                        </div>
                         
                         <div className="mt-4 flex items-start space-x-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
                             <div className="text-blue-500 mt-1">
@@ -401,7 +424,7 @@
                                 
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium mb-2">
-                                        Evidence for your score: <span className="text-xs text-gray-500">(min. 10 characters)</span>
+                                        Evidence for your score: <span className="text-xs text-gray-500">(min. 2-3 words)</span>
                                     </label>
                                     <textarea
                                         value={evidence[criterion.id]}
