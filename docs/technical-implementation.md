@@ -1,7 +1,5 @@
 # Technical Implementation Guide
 
-# Technical Implementation Guide
-
 ## Code Architecture
 
 ### Encoding/Decoding Functions
@@ -182,11 +180,12 @@ const ExportSection = ({ workshopData }) => {
 // Add to main activity component
 const [workshopData, setWorkshopData] = useState(() => {
   // Initialize with empty structure
+  // Note: day3 refers to Market Entry Readiness (chronologically the 4th workshop)
   return {
-    day1: {},
-    day2_1: {},
-    day2_2: {},
-    day3: {}
+    day1: {},        // Problems Worth Solving
+    day2_1: {},      // Finding Your Early Customers (AM)
+    day2_2: {},      // Positioning Basics (PM)
+    day3: {}         // Market Entry Readiness
   };
 });
 
@@ -288,6 +287,7 @@ const CustomerAlternativeActivity = () => {
   const [competitiveAlternative, setCompetitiveAlternative] = useState('');
   
   // Progress code state
+  // Note: day3 refers to Market Entry Readiness (chronologically the 4th workshop)
   const [workshopData, setWorkshopData] = useState({
     day1: {}, day2_1: {}, day2_2: {}, day3: {}
   });
@@ -384,14 +384,14 @@ console.assert(decodeProgressCode(null) === null, 'Should handle null');
 
 ```javascript
 // Ensure codes stay under 2000 characters
+// Note: day3 refers to Market Entry Readiness (chronologically the 4th workshop)
 const maxData = {
   day1: { /* max realistic data */ },
   day2_1: { /* max realistic data */ },
   day2_2: { /* max realistic data */ },
-  day3: { /* max realistic data */ }
+  day3: { /* max realistic data - Market Entry Readiness */ }
 };
 
 const code = encodeProgressCode(maxData);
 console.assert(code.length < 2000, `Code too long: ${code.length} chars`);
-```
 ```
