@@ -390,3 +390,227 @@ Each workshop index page should include a consistent Workshop Slides section fol
 - **Progress Indicators**: Check both header and individual sections
 - **Layout Optimization**: Confirm proper spacing in all sections
 - **Landscape Display**: Check that critical content is visible without scrolling in 16:9 orientation
+
+## Progress Code UI Standards
+
+### Overview
+All activities include Progress Code functionality to enable data persistence across workshops. This section defines the visual and interaction standards for import/export components.
+
+### Import Section Design
+
+#### Placement & Structure
+- **Location**: Immediately after the main header, before activity content
+- **Default State**: Expanded on page load
+- **Container**: White background with subtle border
+
+#### Visual Implementation
+```html
+<!-- Import Section Container -->
+<div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
+  <div className="flex items-start space-x-4">
+    <div className="flex-shrink-0">
+      <!-- Icon -->
+      <div className="w-10 h-10 bg-orange-100 rounded-full flex items-center justify-center">
+        <FileText className="text-orange-600" size={20} />
+      </div>
+    </div>
+    
+    <div className="flex-1">
+      <h3 className="text-lg font-semibold text-gray-800 mb-2">
+        Continue Your Progress
+      </h3>
+      <p className="text-gray-600 text-sm mb-4">
+        Have a Workshop Progress Code from previous activities? Paste it below to continue where you left off.
+      </p>
+      
+      <!-- Input Area -->
+      <div className="space-y-3">
+        <textarea
+          placeholder="Paste your progress code here..."
+          className="w-full p-3 border border-gray-300 rounded-lg font-mono text-sm h-20 focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+        />
+        
+        <!-- Buttons -->
+        <div className="flex items-center space-x-3">
+          <button className="bg-orange-500 text-white px-6 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium">
+            Load Progress
+          </button>
+          <button className="text-gray-600 hover:text-gray-800 transition-colors">
+            Start Fresh Instead
+          </button>
+        </div>
+      </div>
+      
+      <!-- Success State -->
+      <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg hidden">
+        <p className="text-green-700 text-sm flex items-center">
+          <CheckCircle className="mr-2" size={16} />
+          Progress loaded successfully! Your previous responses have been filled in below.
+        </p>
+      </div>
+      
+      <!-- Error State -->
+      <div className="mt-3 p-3 bg-red-50 border border-red-200 rounded-lg hidden">
+        <p className="text-red-700 text-sm">
+          Invalid progress code. Please check that you copied the entire code and try again.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+#### Interaction States
+1. **Default**: Empty textarea, both buttons visible
+2. **Loading**: Disable buttons, show spinner
+3. **Success**: Show green success message, hide import section after 3 seconds
+4. **Error**: Show red error message, keep textarea editable
+
+### Export Section Design
+
+#### Placement & Structure
+- **Location**: Replaces or appears after final "Complete" button
+- **Trigger**: Only shows after activity completion
+- **Container**: Green success styling with emphasis
+
+#### Visual Implementation
+```html
+<!-- Export Section Container -->
+<div className="bg-green-50 border-2 border-green-300 rounded-lg p-6 mt-6">
+  <div className="flex items-start space-x-4">
+    <div className="flex-shrink-0">
+      <!-- Success Icon -->
+      <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center">
+        <CheckCircle className="text-white" size={24} />
+      </div>
+    </div>
+    
+    <div className="flex-1">
+      <h3 className="text-xl font-bold text-green-800 mb-2">
+        Activity Complete! Save Your Progress
+      </h3>
+      <p className="text-green-700 mb-4">
+        Copy your Workshop Progress Code below. This code contains all your workshop progress and can be used to continue in future activities.
+      </p>
+      
+      <!-- Code Display -->
+      <div className="bg-white border-2 border-green-400 rounded-lg p-4 mb-4">
+        <div className="flex items-start space-x-3">
+          <textarea
+            readOnly
+            value="GSAP2025-eyJ3b3Jrc2hvcER..."
+            className="flex-1 font-mono text-sm bg-transparent border-none resize-none h-20 focus:outline-none"
+          />
+          <button className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center whitespace-nowrap">
+            <Copy className="mr-2" size={16} />
+            Copy Code
+          </button>
+        </div>
+      </div>
+      
+      <!-- Copy Success Feedback -->
+      <div className="h-6">
+        <p className="text-green-600 text-sm font-medium opacity-0 transition-opacity">
+          ✓ Copied to clipboard!
+        </p>
+      </div>
+      
+      <!-- Save Instructions -->
+      <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+        <h4 className="text-yellow-800 font-semibold mb-2 text-sm">
+          ⚠️ Important: Save Your Code!
+        </h4>
+        <p className="text-yellow-700 text-sm mb-2">
+          This code is not saved automatically. Please save it by:
+        </p>
+        <ul className="text-yellow-700 text-sm space-y-1 ml-4">
+          <li>• Emailing it to yourself</li>
+          <li>• Saving in a notes app</li>
+          <li>• Taking a screenshot</li>
+          <li>• Writing it down</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</div>
+```
+
+#### Copy Button Behavior
+```javascript
+// Copy button interaction
+const handleCopy = () => {
+  navigator.clipboard.writeText(progressCode);
+  
+  // Show success feedback
+  setShowCopySuccess(true);
+  
+  // Hide after 2 seconds
+  setTimeout(() => setShowCopySuccess(false), 2000);
+};
+```
+
+### Progress Indicators
+
+#### Imported Data Indicator
+When data is imported, show subtle indicators on pre-filled fields:
+
+```html
+<!-- Pre-filled field with import indicator -->
+<div className="relative">
+  <textarea
+    value={importedValue}
+    className="w-full p-3 border border-gray-300 rounded-lg pr-10"
+  />
+  <div className="absolute top-3 right-3" title="Imported from previous activity">
+    <div className="w-5 h-5 bg-blue-100 rounded-full flex items-center justify-center">
+      <span className="text-blue-600 text-xs">↓</span>
+    </div>
+  </div>
+</div>
+```
+
+#### Progress Summary (Optional)
+For activities that import from multiple days:
+
+```html
+<div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+  <h4 className="font-semibold text-blue-800 mb-2">Your Workshop Progress</h4>
+  <div className="space-y-1 text-sm">
+    <div className="flex items-center text-blue-700">
+      <CheckCircle className="mr-2 text-green-600" size={16} />
+      Day 1: Problem validated
+    </div>
+    <div className="flex items-center text-blue-700">
+      <CheckCircle className="mr-2 text-green-600" size={16} />
+      Day 2-1: Early Customer Profile defined
+    </div>
+    <div className="flex items-center text-blue-700">
+      <Clock className="mr-2 text-orange-600" size={16} />
+      Day 2-2: Currently on Activity 2 of 3
+    </div>
+  </div>
+</div>
+```
+
+### Mobile Considerations
+
+1. **Code Display**: Use smaller font size on mobile
+2. **Copy Button**: Full width on mobile devices
+3. **Textarea Height**: Reduce to 60px on mobile
+4. **Instructions**: Collapsible on mobile to save space
+
+### Accessibility
+
+1. **ARIA Labels**: All buttons and interactive elements
+2. **Focus States**: Clear focus indicators on all inputs
+3. **Success/Error**: Both visual and screen reader announcements
+4. **Keyboard Navigation**: Full keyboard support for all interactions
+
+### Color Palette for Progress Code UI
+
+- **Primary (Orange)**: `#FF9000` - Buttons, active states
+- **Success (Green)**: `#10B981` - Completion, valid codes
+- **Error (Red)**: `#EF4444` - Invalid codes, errors
+- **Warning (Yellow)**: `#F59E0B` - Important notices
+- **Info (Blue)**: `#3B82F6` - Imported data indicators
+```

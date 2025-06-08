@@ -1,16 +1,18 @@
-## Hi there 👋
+# GTM Workshop Series
 
-<!--
-**petergiordano/petergiordano** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+## Overview
+Brief description of the workshop series
 
-Here are some ideas to get you started:
+## Workshop Structure
+- Day 1: Problems Worth Solving
+- Day 2-1: Finding Your Early Customers
+- Day 2-2: Positioning Basics
+- Day 3: Market Entry Readiness
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+## For Participants
+- How to access workshops
+- How to use Progress Codes (brief)
+
+## For Developers
+- Link to technical documentation
+- Link to implementation guide
