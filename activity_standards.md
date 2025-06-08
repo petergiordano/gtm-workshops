@@ -130,6 +130,39 @@
 - **Size Consideration**: Design cards to fit within 16:9 landscape view without excessive scrolling
 - **Numbering**: Include clear numbering (e.g., "1", "2", "3") for sequential activities
 
+### Activity Numbering Standards
+- **Purpose**: Provide clear visual hierarchy and sequence for workshop activities
+- **Visual Design**:
+  - **Background**: White circle (#FFFFFF)
+  - **Text Color**: Orange (#FF7F00 or #FF9000)
+  - **Shape**: Perfect circle with centered number
+  - **Size**: 24px width and height (1.5rem)
+  - **Font**: Bold weight, small size (0.875rem)
+  - **Position**: Left of activity title with 8px margin
+- **Implementation Example**:
+  ```html
+  <div class="activity-title">
+    <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">1</span>
+    Activity Name Here
+  </div>
+  ```
+- **CSS Classes (Tailwind)**:
+  - `inline-flex`: Display inline with flexbox
+  - `items-center justify-center`: Center the number
+  - `w-6 h-6`: 24px × 24px dimensions
+  - `bg-white`: White background
+  - `text-orange-600`: Orange text color
+  - `rounded-full`: Perfect circle shape
+  - `font-bold`: Bold number
+  - `mr-2`: 8px right margin
+  - `text-sm`: Small font size
+- **Usage Guidelines**:
+  - Apply to all numbered activities (1, 2, 3, etc.)
+  - Do NOT apply to resource items (Workshop Slides, etc.)
+  - Maintain consistent styling across all workshop pages
+  - Numbers should be sequential within each workshop
+- **Visual Example**: White circle with orange number "1", "2", or "3" positioned to the left of the activity title, creating a clear visual hierarchy that distinguishes activities from resources
+
 ### Resource Icons
 - **Purpose**: Visual distinction between interactive activities and supplementary resources
 - **Implementation**:
