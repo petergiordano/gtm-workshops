@@ -355,7 +355,7 @@
                             Score Your Problem on 5 Criteria
                         </h3>
                         <p className="text-gray-600 text-sm">
-                            Rate each criterion on a scale of 1-5 and provide evidence for your score
+                            Rate each criterion on a scale of 1-5 (where 5 is highest) and provide evidence for your score
                         </p>
                     </div>
 
@@ -380,10 +380,12 @@
                                                     ? 'bg-white text-orange-500 border-2 border-orange-500' 
                                                     : 'bg-white bg-opacity-50 hover:bg-white'
                                                 }`}
+                                                title={`Score ${scoreValue}: ${criterion.scoreDescriptions[scoreValue]}`}
                                             >
                                                 {scoreValue}
                                             </button>
                                         ))}
+                                        <span className="text-xs text-gray-500 self-center ml-1">(5 = highest)</span>
                                     </div>
                                 </div>
                                 
@@ -397,7 +399,7 @@
                                 
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium mb-2">
-                                        Evidence for your score:
+                                        Evidence for your score: <span className="text-xs text-gray-500">(min. 10 characters)</span>
                                     </label>
                                     <textarea
                                         value={evidence[criterion.id]}
@@ -460,6 +462,10 @@
                                     Total score of 20 or higher
                                 </li>
                             </ul>
+                        </div>
+                        
+                        <div className="mt-3 text-center p-2 bg-gray-100 rounded-lg">
+                            <p className="text-sm text-gray-600">All criteria scored on a scale of 1-5, where <span className="font-bold">5 is highest</span></p>
                         </div>
                     </div>
 
