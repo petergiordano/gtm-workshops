@@ -342,7 +342,7 @@
                             }`}
                             onClick={() => setSelectedMarkerType('competitor')}
                         >
-                            <Building className="mr-2" size={16} />
+                            <Flag className="mr-2" size={16} />
                             <span>Competitor Focus</span>
                         </button>
                         
@@ -586,7 +586,7 @@
                                 <h4 className="font-medium text-gray-800 mb-2">Marker Summary</h4>
                                 <div className="space-y-2 text-sm">
                                     <div className="flex items-start">
-                                        <Building className="mr-2 text-gray-700 flex-shrink-0 mt-1" size={16} />
+                                        <Flag className="mr-2 text-gray-700 flex-shrink-0 mt-1" size={16} />
                                         <div>
                                             <p className="font-medium">Competitor Focus Areas:</p>
                                             <p className="text-gray-600">{markers.filter(m => m.type === 'competitor').length} markers placed</p>
