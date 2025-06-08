@@ -304,12 +304,7 @@
                         ) : (
                             <button
                                 onClick={() => setCurrentStep(3)}
-                                disabled={!isStepComplete(2) && timeLeft > 0}
-                                className={`px-4 py-2 rounded-lg transition-colors ${
-                                    isStepComplete(2) || timeLeft === 0
-                                        ? 'bg-orange-500 text-white hover:bg-orange-600'
-                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                }`}
+                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
                             >
                                 Continue to Summary
                             </button>
@@ -410,10 +405,6 @@
                             <h1 className="text-2xl font-bold text-gray-800">
                                 Activity 1: Problem Origin Story
                             </h1>
-                            <div className="text-sm text-gray-500 flex items-center">
-                                <Clock className="mr-1" size={16} />
-                                <span>~5 minutes</span>
-                            </div>
                         </div>
                         
                         {/* Progress indicator */}
