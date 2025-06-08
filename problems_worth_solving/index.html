@@ -90,6 +90,70 @@
             opacity: 0.5;
             pointer-events: none;
         }
+        
+        .available {
+            border-left: 4px solid #F1C232;
+        }
+        
+        .mt-8 {
+            margin-top: 2rem;
+        }
+        
+        .flex {
+            display: flex;
+        }
+        
+        .items-center {
+            align-items: center;
+        }
+        
+        .justify-center {
+            justify-content: center;
+        }
+        
+        .inline-flex {
+            display: inline-flex;
+        }
+        
+        .w-6 {
+            width: 1.5rem;
+        }
+        
+        .h-6 {
+            height: 1.5rem;
+        }
+        
+        .bg-white {
+            background-color: white;
+        }
+        
+        .text-orange-600 {
+            color: #FF7F00;
+        }
+        
+        .rounded-full {
+            border-radius: 9999px;
+        }
+        
+        .font-bold {
+            font-weight: bold;
+        }
+        
+        .mr-2 {
+            margin-right: 0.5rem;
+        }
+        
+        .text-sm {
+            font-size: 0.875rem;
+        }
+        
+        .text-gray-800 {
+            color: #1f2937;
+        }
+        
+        .font-semibold {
+            font-weight: 600;
+        }
     </style>
 </head>
 <body>
@@ -102,27 +166,43 @@
         </div>
         
         <ul class="activity-list">
+            <li class="activity-item">
+                <a href="problems-activity-1.html" class="activity-link">
+                    <div class="activity-title">
+                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">1</span>
+                        Problem Origin Story
+                    </div>
+                    <div class="activity-description">Interactive reflection and sharing activity to identify when you discovered the problem</div>
+                </a>
+            </li>
+            
             <li class="activity-item coming-soon">
                 <div class="activity-link">
-                    <div class="activity-title">Early Market vs Mainstream Activity</div>
-                    <div class="activity-description">Interactive exercise to identify market landing zones and segment characteristics</div>
+                    <div class="activity-title">
+                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">2</span>
+                        Market Landing Zone Analysis
+                    </div>
+                    <div class="activity-description">Map your market entry point and identify strategic landing zones</div>
                 </div>
             </li>
             
             <li class="activity-item coming-soon">
                 <div class="activity-link">
-                    <div class="activity-title">Problem Scoring Worksheet</div>
+                    <div class="activity-title">
+                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">3</span>
+                        Problem Scoring Worksheet
+                    </div>
                     <div class="activity-description">Apply the 5-criteria framework to validate problem urgency and value</div>
                 </div>
             </li>
-            
-            <li class="activity-item coming-soon">
-                <div class="activity-link">
-                    <div class="activity-title">Workshop Slides</div>
-                    <div class="activity-description">Complete slide deck for Day 1 presentation</div>
-                </div>
-            </li>
         </ul>
+
+        <div class="mt-8 flex items-center justify-center">
+            <div class="flex items-center">
+                <img src="../icons/Google_Slides_Logo_512px.png" alt="Google Slides Logo" style="width: 24px; height: 24px; margin-right: 8px; object-fit: contain;">
+                <span class="text-gray-800 font-semibold" style="font-size: 20px;">Workshop Slides</span>
+            </div>
+        </div>
     </div>
 </body>
 </html>
