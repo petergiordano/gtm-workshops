@@ -175,7 +175,7 @@
                             <div key={index} className="bg-white border-2 border-gray-200 rounded-lg p-6">
                                 <div className="flex justify-between items-center mb-3">
                                     <label className="text-gray-700 font-medium">
-                                        Unique differentiator #{index + 1}: <span className="text-xs text-gray-500">(min. 15 characters)</span>
+                                        Unique differentiator #{index + 1}: <span className="text-xs text-gray-500">(describe in 3+ words)</span>
                                         {index >= 2 && <span className="text-xs text-gray-400 ml-2">(optional)</span>}
                                     </label>
                                     {differentiator.length >= 15 && (
@@ -202,7 +202,7 @@
                                         Focus on capabilities only you can deliver
                                     </span>
                                     <span className={`font-medium ${differentiator.length >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
-                                        {differentiator.length}/15 characters
+                                        {differentiator.trim().split(/\s+/).filter(w => w.length > 0).length} words
                                     </span>
                                 </div>
                             </div>
@@ -294,7 +294,7 @@
                                         <div className="flex justify-between items-center mb-3">
                                             <label className="text-gray-700 font-medium flex items-center">
                                                 <Gem className="text-orange-600 mr-2" size={18} />
-                                                Customer value this creates: <span className="text-xs text-gray-500 ml-2">(min. 20 characters)</span>
+                                                Customer value this creates: <span className="text-xs text-gray-500 ml-2">(describe in 5+ words)</span>
                                             </label>
                                             {values[index] && values[index].length >= 20 && (
                                                 <CheckCircle className="text-green-500" size={20} />
@@ -314,7 +314,7 @@
                                                 Include metrics, cost savings, or measurable improvements
                                             </span>
                                             <span className={`font-medium ${values[index] && values[index].length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                {values[index] ? values[index].length : 0}/20 characters
+                                                {values[index] ? values[index].trim().split(/\s+/).filter(w => w.length > 0).length : 0} words
                                             </span>
                                         </div>
                                     </div>
