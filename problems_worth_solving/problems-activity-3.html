@@ -266,9 +266,11 @@
                     return problemStatement.length >= 20;
                 }
                 if (currentStep === 2) {
-                    // Check if all criteria have scores and evidence
-                    const allScored = Object.values(scores).every(score => score > 0);
-                    const allEvidence = Object.values(evidence).every(ev => ev.length >= 10);
+                    // Check if all criteria have been scored (any value) and have evidence
+                    const allScored = Object.keys(scores).length === 5 && 
+                                      Object.values(scores).every(score => score >= 1);
+                    const allEvidence = Object.keys(evidence).length === 5 && 
+                                        Object.values(evidence).every(ev => ev.length >= 10);
                     return allScored && allEvidence;
                 }
                 return true;
