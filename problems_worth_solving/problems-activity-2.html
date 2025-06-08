@@ -168,9 +168,14 @@
             const handleMarkerNotesChange = (notes) => {
                 if (activeMarkerIndex === null) return;
                 
-                setMarkers(prev => prev.map((marker, i) => 
-                    i === activeMarkerIndex ? { ...marker, notes } : marker
-                ));
+                console.log('Updating marker notes:', notes, 'for index:', activeMarkerIndex);
+                setMarkers(prev => {
+                    const updated = prev.map((marker, i) => 
+                        i === activeMarkerIndex ? { ...marker, notes } : marker
+                    );
+                    console.log('Updated markers:', updated);
+                    return updated;
+                });
             };
             
             const resetActivity = () => {
@@ -605,15 +610,16 @@
                                         <MapPin className="mr-2 text-orange-600 flex-shrink-0 mt-1" size={16} fill="#f97316" />
                                         <div>
                                             <p className="font-medium">Strategic Entry Point:</p>
-                                            {markers.find(m => m.type === 'strategic') ? (
-                                                markers.find(m => m.type === 'strategic').notes ? (
-                                                    <p className="text-gray-600">{markers.find(m => m.type === 'strategic').notes}</p>
-                                                ) : (
-                                                    <p className="text-gray-500 italic">No notes added</p>
-                                                )
-                                            ) : (
-                                                <p className="text-gray-500 italic">No strategic entry point placed</p>
-                                            )}
+                                            {(() => {
+                                                const strategicMarker = markers.find(m => m.type === 'strategic');
+                                                if (!strategicMarker) {
+                                                    return <p className="text-gray-500 italic">No strategic entry point placed</p>;
+                                                }
+                                                if (strategicMarker.notes && strategicMarker.notes.length > 0) {
+                                                    return <p className="text-gray-600">{strategicMarker.notes}</p>;
+                                                }
+                                                return <p className="text-gray-500 italic">No notes added</p>;
+                                            })()}
                                         </div>
                                     </div>
                                 </div>
