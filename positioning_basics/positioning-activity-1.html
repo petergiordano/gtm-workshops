@@ -724,6 +724,11 @@
                             isVisible={showImportSection}
                         />
                     )}
+                    
+                    {/* Debug info - remove after testing */}
+                    <div style={{padding: '10px', backgroundColor: '#f0f0f0', margin: '10px 0', fontSize: '12px'}}>
+                        Debug: currentStep={currentStep}, showImportSection={showImportSection.toString()}, shouldShow={(currentStep < 3).toString()}
+                    </div>
 
                     {/* Main Content */}
                     <div className="bg-white rounded-lg shadow-lg p-6 relative">
