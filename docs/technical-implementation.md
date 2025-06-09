@@ -89,7 +89,7 @@ const handleImportData = (progressCode) => {
   // Auto-populate fields based on workshop/activity
   autoPopulateFields(decoded);
   
-  // Hide import section after short delay
+  // Hide import section 3 seconds after successful import, giving users time to see the success message
   setTimeout(() => {
     setShowImportSection(false);
   }, 3000);
@@ -143,11 +143,54 @@ const ImportSection = ({ onImport, isVisible }) => {
     }
   };
   
+  const handleStartFresh = () => {
+    setProgressCode('');
+    setError('');
+    setSuccess(false);
+    // Hide import section when starting fresh
+    onImport({ startFresh: true });
+  };
+  
   if (!isVisible) return null;
   
   return (
     <div className="bg-white border-2 border-gray-200 rounded-lg p-6 mb-6">
-      {/* Implementation from activity_standards.md */}
+      <div className="flex items-center mb-4">
+        <FileText className="text-blue-600 mr-2" size={24} />
+        <h3 className="text-lg font-semibold text-gray-800">Continue Your Progress</h3>
+      </div>
+      
+      <textarea
+        value={progressCode}
+        onChange={(e) => setProgressCode(e.target.value)}
+        placeholder="Paste your progress code here..."
+        className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none"
+      />
+      
+      {error && (
+        <div className="mt-2 text-red-600 text-sm">{error}</div>
+      )}
+      
+      {success && (
+        <div className="mt-2 text-green-600 text-sm">
+          ✓ Progress loaded successfully! Your previous responses have been filled in below.
+        </div>
+      )}
+      
+      <div className="flex space-x-3 mt-4">
+        <button
+          onClick={handleImport}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"
+        >
+          Load Progress
+        </button>
+        <button
+          onClick={handleStartFresh}
+          className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600"
+        >
+          Start Fresh Instead
+        </button>
+      </div>
     </div>
   );
 };
@@ -160,15 +203,42 @@ const ExportSection = ({ workshopData }) => {
   const [showCopySuccess, setShowCopySuccess] = useState(false);
   const progressCode = encodeProgressCode(workshopData);
   
-  const handleCopy = () => {
-    navigator.clipboard.writeText(progressCode);
-    setShowCopySuccess(true);
-    setTimeout(() => setShowCopySuccess(false), 2000);
+  const handleCopy = async () => {
+    const success = await copyToClipboard(progressCode);
+    if (success) {
+      setShowCopySuccess(true);
+      setTimeout(() => setShowCopySuccess(false), 2000);
+    }
   };
   
   return (
     <div className="bg-green-50 border-2 border-green-300 rounded-lg p-6 mt-6">
-      {/* Implementation from activity_standards.md */}
+      <div className="flex items-center mb-4">
+        <CheckCircle className="text-green-600 mr-2" size={24} />
+        <h3 className="text-lg font-semibold text-green-800">Activity Complete! Save Your Progress</h3>
+      </div>
+      
+      <p className="text-green-700 mb-4">
+        Copy this code to continue your progress in the next workshop session:
+      </p>
+      
+      <div className="bg-white border border-green-200 rounded-lg p-3 mb-4">
+        <code className="text-sm font-mono break-all">{progressCode}</code>
+      </div>
+      
+      <div className="flex items-center space-x-4">
+        <button
+          onClick={handleCopy}
+          className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+        >
+          <Copy className="mr-2" size={16} />
+          Copy Code
+        </button>
+        
+        {showCopySuccess && (
+          <span className="text-green-600 text-sm">✓ Copied to clipboard!</span>
+        )}
+      </div>
     </div>
   );
 };
@@ -254,6 +324,81 @@ return (
     )}
   </div>
 );
+```
+
+### Safari Clipboard API Fallback
+
+```javascript
+// Cross-browser clipboard copy with Safari fallback
+const copyToClipboard = async (text) => {
+  try {
+    await navigator.clipboard.writeText(text);
+    return true;
+  } catch (err) {
+    // Fallback for Safari or older browsers
+    const textArea = document.createElement('textarea');
+    textArea.value = text;
+    textArea.style.position = 'fixed';
+    textArea.style.left = '-999999px';
+    document.body.appendChild(textArea);
+    textArea.select();
+    try {
+      document.execCommand('copy');
+      return true;
+    } catch (err) {
+      console.error('Fallback copy failed:', err);
+      return false;
+    } finally {
+      document.body.removeChild(textArea);
+    }
+  }
+};
+```
+
+### Version Mismatch Handling
+
+```javascript
+// Handle version mismatches between progress codes
+const handleVersionMismatch = (importedVersion, currentVersion) => {
+  if (importedVersion !== currentVersion) {
+    console.warn(`Version mismatch: imported ${importedVersion}, current ${currentVersion}`);
+    // For now, attempt to import anyway
+    // Future: implement migration strategies
+    return { 
+      proceed: true, 
+      warning: 'This progress code was created with a different version. Some data may not import correctly.' 
+    };
+  }
+  return { proceed: true };
+};
+```
+
+### Partial Data Import Pattern
+
+```javascript
+// Import data with validation and partial recovery
+const importWithValidation = (decodedData) => {
+  const warnings = [];
+  const imported = {};
+  
+  // Check each workshop's data
+  ['day1', 'day2_1', 'day2_2', 'day3'].forEach(day => {
+    if (decodedData[day]) {
+      try {
+        // Validate structure exists
+        imported[day] = decodedData[day];
+      } catch (e) {
+        warnings.push(`Could not import ${day} data`);
+      }
+    }
+  });
+  
+  return {
+    data: imported,
+    warnings: warnings.length > 0 ? warnings : null,
+    success: Object.keys(imported).length > 0
+  };
+};
 ```
 
 ## Code Examples

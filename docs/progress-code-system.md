@@ -52,16 +52,18 @@ The Workshop Progress Code system enables participants to save and transfer thei
 ### Import Section
 **Location**: Top of activity page  
 **Visibility**: Collapsible, visible by default initially  
-**Behavior**: Auto-hide after successful import
+**Behavior**: Auto-hide 3 seconds after successful import, giving users time to see the success message
 
 ```
 ┌─────────────────────────────────────────┐
-│ 📥 Import Previous Progress             │
+│ 📄 Continue Your Progress               │
 │                                         │
 │ [Paste progress code here...]           │
-│ [Import Data] [Clear]                   │
+│ [Load Progress] [Start Fresh Instead]   │
 │                                         │
-│ ✓ Success: Data imported and applied    │
+│ ✓ Progress loaded successfully! Your    │
+│   previous responses have been filled   │
+│   in below.                             │
 └─────────────────────────────────────────┘
 ```
 
@@ -72,15 +74,14 @@ The Workshop Progress Code system enables participants to save and transfer thei
 
 ```
 ┌─────────────────────────────────────────┐
-│ 💾 Save Your Progress                   │
+│ ✓ Activity Complete! Save Your Progress │
 │                                         │
 │ Your progress code:                     │
 │ GSAP2025-eyJ2ZXJzaW9uIjoiMS4wIi...     │
 │                                         │
-│ [Copy Code] [What's this?]              │
+│ [📋 Copy Code] [What's this?]           │
 │                                         │
-│ ✓ Copied! Save this code for next      │
-│   workshop session.                     │
+│ ✓ Copied to clipboard!                  │
 └─────────────────────────────────────────┘
 ```
 
