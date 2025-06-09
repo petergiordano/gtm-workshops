@@ -201,6 +201,7 @@ const ImportSection = ({ onImport, isVisible }) => {
 ```javascript
 const ExportSection = ({ workshopData }) => {
   const [showCopySuccess, setShowCopySuccess] = useState(false);
+  const [showHelpModal, setShowHelpModal] = useState(false);
   const progressCode = encodeProgressCode(workshopData);
   
   const handleCopy = async () => {
@@ -212,34 +213,45 @@ const ExportSection = ({ workshopData }) => {
   };
   
   return (
-    <div className="bg-green-50 border-2 border-green-300 rounded-lg p-6 mt-6">
-      <div className="flex items-center mb-4">
-        <CheckCircle className="text-green-600 mr-2" size={24} />
-        <h3 className="text-lg font-semibold text-green-800">Activity Complete! Save Your Progress</h3>
-      </div>
-      
-      <p className="text-green-700 mb-4">
-        Copy this code to continue your progress in the next workshop session:
-      </p>
-      
-      <div className="bg-white border border-green-200 rounded-lg p-3 mb-4">
-        <code className="text-sm font-mono break-all">{progressCode}</code>
-      </div>
-      
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={handleCopy}
-          className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
-        >
-          <Copy className="mr-2" size={16} />
-          Copy Code
-        </button>
+    <>
+      <div className="bg-green-50 border-2 border-green-300 rounded-lg p-6 mt-6">
+        <div className="flex items-center mb-4">
+          <CheckCircle className="text-green-600 mr-2" size={24} />
+          <h3 className="text-lg font-semibold text-green-800">Activity Complete! Save Your Progress</h3>
+        </div>
         
-        {showCopySuccess && (
-          <span className="text-green-600 text-sm">✓ Copied to clipboard!</span>
-        )}
+        <p className="text-green-700 mb-4">
+          Copy this code to continue your progress in the next workshop session:
+        </p>
+        
+        <div className="bg-white border border-green-200 rounded-lg p-3 mb-4">
+          <code className="text-sm font-mono break-all">{progressCode}</code>
+        </div>
+        
+        <div className="flex items-center space-x-4">
+          <button
+            onClick={handleCopy}
+            className="flex items-center bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700"
+          >
+            <Copy className="mr-2" size={16} />
+            Copy Code
+          </button>
+          
+          <button
+            onClick={() => setShowHelpModal(true)}
+            className="text-green-700 hover:text-green-800 text-sm underline"
+          >
+            What's this?
+          </button>
+          
+          {showCopySuccess && (
+            <span className="text-green-600 text-sm">✓ Copied to clipboard!</span>
+          )}
+        </div>
       </div>
-    </div>
+      
+      <HelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
+    </>
   );
 };
 ```
@@ -262,9 +274,16 @@ const [workshopData, setWorkshopData] = useState(() => {
 const [showImportSection, setShowImportSection] = useState(true);
 const [activityComplete, setActivityComplete] = useState(false);
 
-// Handle import
-const handleImport = (code) => {
-  const decoded = decodeProgressCode(code);
+// Handle import - updated to handle both progress codes and "start fresh" action
+const handleImport = (input) => {
+  // Handle "Start Fresh" button click
+  if (input && input.startFresh) {
+    setShowImportSection(false);
+    return { success: true };
+  }
+  
+  // Handle progress code import
+  const decoded = decodeProgressCode(input);
   if (!decoded) {
     return { success: false, error: 'Invalid progress code' };
   }
@@ -401,6 +420,39 @@ const importWithValidation = (decodedData) => {
 };
 ```
 
+### Help Modal Pattern
+
+```javascript
+// Help Modal Pattern for "What's this?" button
+const HelpModal = ({ isOpen, onClose }) => {
+  if (!isOpen) return null;
+  
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+      <div className="bg-white rounded-lg p-6 max-w-md mx-4">
+        <h3 className="text-lg font-semibold mb-4">About Progress Codes</h3>
+        <p className="text-gray-600 mb-4">
+          Progress codes save your workshop responses so you can continue later. 
+          They contain only your workshop data - no personal information.
+        </p>
+        <ul className="text-sm text-gray-600 space-y-2 mb-4">
+          <li>• Codes expire after 30 days</li>
+          <li>• Save codes externally (email, notes)</li>
+          <li>• One code works across all workshops</li>
+          <li>• Data stays on your device</li>
+        </ul>
+        <button 
+          onClick={onClose}
+          className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600"
+        >
+          Got it
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
 ## Code Examples
 
 ### Complete Example: Day 2-2 Activity 1 Integration
@@ -438,9 +490,16 @@ const CustomerAlternativeActivity = () => {
   });
   const [showImportSection, setShowImportSection] = useState(true);
   
-  // Import handler
-  const handleImport = (code) => {
-    const data = decodeProgressCode(code);
+  // Import handler - updated to handle both progress codes and "start fresh" action
+  const handleImport = (input) => {
+    // Handle "Start Fresh" button click
+    if (input && input.startFresh) {
+      setShowImportSection(false);
+      return { success: true };
+    }
+    
+    // Handle progress code import
+    const data = decodeProgressCode(input);
     if (!data) return { success: false, error: 'Invalid code' };
     
     // Auto-populate from Day 2-1 data
@@ -539,4 +598,36 @@ const maxData = {
 
 const code = encodeProgressCode(maxData);
 console.assert(code.length < 2000, `Code too long: ${code.length} chars`);
+```
+
+## Sample Progress Code for Testing
+
+Here's a sample progress code with data from Day 1 and Day 2-1 that can be used to test import functionality:
+
+```
+GSAP2025-eyJ2ZXJzaW9uIjoiMS4wIiwiY3JlYXRlZEF0IjoiMjAyNS0wNi0yM1QxMDowMDowMFoiLCJsYXN0VXBkYXRlZCI6IjIwMjUtMDYtMjRUMTE6MDA6MDBaIiwiZGF5MSI6eyJhY3Rpdml0eTMiOnsicHJvYmxlbVN0YXRlbWVudCI6IkRldmVsb3BtZW50IHRlYW1zIGF0IGZhc3QtZ3Jvd2luZyB0ZWNoIGNvbXBhbmllcyBzdHJ1Z2dsZSB0byBwcmV2ZW50IEFQSSBmYWlsdXJlcyBiZWZvcmUgdGhleSBpbXBhY3QgY3VzdG9tZXJzIiwiY29tcGxldGVkQXQiOiIyMDI1LTA2LTIzVDExOjAwOjAwWiJ9fSwiZGF5Ml8xIjp7ImFjdGl2aXR5MyI6eyJjb21tb25fbmVlZHMiOiJEZXZlbG9wbWVudCB0ZWFtcyBuZWVkIHRvIHByZXZlbnQgQVBJIGZhaWx1cmVzIGJlZm9yZSBjdXN0b21lcnMgYXJlIGltcGFjdGVkIiwicHJvYmxlbV91cmdlbmN5IjoiVGhleSBleHBlcmllbmNlIEFQSSBpc3N1ZXMgd2Vla2x5IHRoYXQgY29zdCAkNTBLKyBpbiBsb3N0IHJldmVudWUiLCJidXNpbmVzc192YWx1ZSI6IlJlZHVjZSBBUEkgZG93bnRpbWUgYnkgODAlLCBpbXByb3ZlIE1UVFIgZnJvbSAyIGhvdXJzIHRvIDE1IG1pbnV0ZXMiLCJiYXNpY19wcm9maWxlIjoiQjJCIFNhYVMgY29tcGFuaWVzIHdpdGggMTAwLTEwMDAgZW1wbG95ZWVzLCAkMTBNLSQxMDBNIHJldmVudWUsIG1vZGVybiBjbG91ZCBpbmZyYXN0cnVjdHVyZSIsImNvbXBsZXRlZEF0IjoiMjAyNS0wNi0yNFQxMTowMDowMFoifX19
+```
+
+This decodes to:
+```json
+{
+  "version": "1.0",
+  "createdAt": "2025-06-23T10:00:00Z",
+  "lastUpdated": "2025-06-24T11:00:00Z",
+  "day1": {
+    "activity3": {
+      "problemStatement": "Development teams at fast-growing tech companies struggle to prevent API failures before they impact customers",
+      "completedAt": "2025-06-23T11:00:00Z"
+    }
+  },
+  "day2_1": {
+    "activity3": {
+      "common_needs": "Development teams need to prevent API failures before customers are impacted",
+      "problem_urgency": "They experience API issues weekly that cost $50K+ in lost revenue",
+      "business_value": "Reduce API downtime by 80%, improve MTTR from 2 hours to 15 minutes",
+      "basic_profile": "B2B SaaS companies with 100-1000 employees, $10M-$100M revenue, modern cloud infrastructure",
+      "completedAt": "2025-06-24T11:00:00Z"
+    }
+  }
+}
 ```
