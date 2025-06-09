@@ -42,14 +42,26 @@
 
         const decodeProgressCode = (code) => {
             try {
+                console.log('🔧 decodeProgressCode called with:', code?.substring(0, 50) + '...');
+                
                 if (!code || !code.startsWith('GSAP2025-')) {
+                    console.error('❌ Invalid progress code format - missing GSAP2025- prefix');
                     throw new Error('Invalid progress code format');
                 }
+                
                 const base64 = code.substring(9);
+                console.log('🔧 Extracted base64 part, length:', base64.length);
+                
                 const jsonString = atob(base64);
-                return JSON.parse(jsonString);
+                console.log('🔧 Decoded base64 to JSON string, length:', jsonString.length);
+                console.log('🔧 JSON string preview:', jsonString.substring(0, 100) + '...');
+                
+                const parsed = JSON.parse(jsonString);
+                console.log('✅ Successfully parsed JSON');
+                return parsed;
             } catch (error) {
-                console.error('Error decoding progress code:', error);
+                console.error('❌ Error decoding progress code:', error.message);
+                console.error('❌ Full error:', error);
                 return null;
             }
         };
@@ -153,6 +165,11 @@
                 day3: {}
             });
             const [showImportSection, setShowImportSection] = useState(true);
+            
+            // Debug logging for showImportSection changes
+            useEffect(() => {
+                console.log('showImportSection changed to:', showImportSection);
+            }, [showImportSection]);
 
             const resetActivity = () => {
                 setCurrentStep(1);
@@ -180,26 +197,53 @@
 
             // Handle import - updated to handle both progress codes and "start fresh" action
             const handleImport = (input) => {
+                console.log('🔄 handleImport called with input:', input);
+                
                 // Handle "Start Fresh" button click
                 if (input && input.startFresh) {
+                    console.log('✅ User clicked Start Fresh - hiding import section');
+                    setShowImportSection(false);
+                    return { success: true };
+                }
+                
+                // Handle auto-hide callback from ImportSection
+                if (input && input.hideImportSection) {
+                    console.log('⏰ Auto-hiding import section after successful import');
                     setShowImportSection(false);
                     return { success: true };
                 }
                 
                 // Handle progress code import
+                console.log('🔍 Attempting to decode progress code...');
+                console.log('📝 Progress code length:', input?.length || 'undefined');
+                console.log('📝 Progress code preview:', input?.substring(0, 50) + '...');
+                
                 const decoded = decodeProgressCode(input);
                 if (!decoded) {
+                    console.error('❌ Failed to decode progress code');
                     return { success: false, error: 'Invalid progress code. Please check and try again.' };
                 }
                 
+                console.log('✅ Progress code decoded successfully!');
+                console.log('📊 Decoded data structure:', JSON.stringify(decoded, null, 2));
+                
                 setWorkshopData(decoded);
+                console.log('💾 Workshop data updated in state');
                 
                 // Auto-populate from Day 2-1 data
+                console.log('🔍 Checking for Day 2-1 auto-population data...');
                 if (decoded.day2_1?.activity3?.basic_profile) {
-                    setCustomerProfile(decoded.day2_1.activity3.basic_profile);
+                    const profileData = decoded.day2_1.activity3.basic_profile;
+                    console.log('✅ Found basic_profile data:', profileData);
+                    setCustomerProfile(profileData);
+                    console.log('📝 Customer profile field populated with:', profileData);
+                } else {
+                    console.log('⚠️ No Day 2-1 basic_profile data found for auto-population');
+                    console.log('📊 Available Day 2-1 data:', decoded.day2_1);
                 }
                 
-                setShowImportSection(false);
+                // Don't hide immediately - let ImportSection handle the auto-hide after showing success message
+                console.log('✅ Progress code imported successfully - ImportSection will auto-hide after 3 seconds');
                 return { success: true };
             };
 
@@ -230,19 +274,32 @@
                 const [success, setSuccess] = useState(false);
                 
                 const handleImportClick = () => {
+                    console.log('🎯 ImportSection: Load Progress button clicked');
+                    console.log('📝 ImportSection: Progress code length:', progressCode.trim().length);
+                    
                     if (!progressCode.trim()) {
+                        console.log('❌ ImportSection: Empty progress code');
                         setError('Please enter a progress code');
                         return;
                     }
                     
+                    console.log('🚀 ImportSection: Calling parent onImport handler...');
                     const result = onImport(progressCode);
+                    console.log('📥 ImportSection: Import result:', result);
+                    
                     if (result.success) {
+                        console.log('✅ ImportSection: Import successful - showing success message');
                         setSuccess(true);
                         setError('');
+                        // Auto-hide after 3 seconds to let user see success message
+                        console.log('⏰ ImportSection: Setting 3 second auto-hide timer');
                         setTimeout(() => {
-                            setShowImportSection(false);
+                            console.log('⏰ ImportSection: 3 seconds elapsed - triggering auto-hide');
+                            // Call parent's setShowImportSection through a callback
+                            onImport({ hideImportSection: true });
                         }, 3000);
                     } else {
+                        console.log('❌ ImportSection: Import failed:', result.error);
                         setError(result.error);
                         setSuccess(false);
                     }
