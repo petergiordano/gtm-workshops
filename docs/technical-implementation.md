@@ -643,8 +643,166 @@ The `/testing/` folder contains a complete set of Progress Codes for testing the
 
 ### Sample Data Structure
 
-The test codes contain realistic workshop data:
-- **Customer Profile**: Mid to large-sized enterprises with modern API infrastructure
-- **Competitive Alternative**: Traditional API monitoring tools (New Relic, Datadog)
-- **Unique Differentiators**: Predictive analytics, automated resolution, cross-platform integration
-- **Customer Value**: 50% reduction in failures, 40% cost reduction, 90% efficiency improvement
+The test codes contain realistic workshop data for **Posh AMP** (Predictive Optimization for System Health):
+- **Product**: B2B SaaS predictive API monitoring solution
+- **Target Customer**: Directors of Engineering at Series A-B SaaS companies ($10M-$50M ARR)
+- **Problem**: $100K/hour API downtime costs and constant firefighting
+- **Competitive Alternative**: Traditional reactive monitoring (Datadog, New Relic, Dynatrace)
+- **Unique Differentiators**: ML-driven 48-hour predictive analytics, automated resolution, API-first architecture
+- **Customer Value**: 50%+ failure reduction, 70% firefighting reduction, 30-50% cost savings
+
+## Day 1 Implementation (Problems Worth Solving)
+
+### Overview
+
+The Day 1 workshop consists of 3 activities that guide users through problem validation:
+1. **Activity 1**: Problem Origin Story - capturing the moment of realization and problem definition
+2. **Activity 2**: Market Landing Zone - mapping competitors and underserved segments
+3. **Activity 3**: Problem Scoring - quantitative validation using 5 criteria
+
+### Data Schema for Day 1
+
+```javascript
+const day1Schema = {
+  problemStatement: "Core problem statement (shared across all activities)",
+  activity1: {
+    momentOfRealization: "The story of when/how the problem was discovered",
+    whoExperienced: "Who experiences this problem",
+    whyMatters: "Why this problem is significant",
+    whatSurprised: "What was surprising about discovering this problem",
+    howRealProblem: "Evidence that this is a real, widespread problem",
+    completedAt: "ISO timestamp"
+  },
+  activity2: {
+    markers: [
+      {
+        id: "unique_id",
+        type: "competitor|underserved|strategic",
+        x: 140,  // position on canvas
+        y: 100,  // position on canvas
+        notes: "Description of this market segment/competitor"
+      }
+    ],
+    landingZoneChoice: "existing|new",
+    evidence: "Justification for market entry strategy",
+    completedAt: "ISO timestamp"
+  },
+  activity3: {
+    problemStatement: "Refined problem statement",
+    scores: {
+      urgency: 1-5,
+      value: 1-5,
+      importance: 1-5,
+      marketGap: 1-5,
+      accessibility: 1-5
+    },
+    evidence: {
+      urgency: "Evidence for urgency score",
+      value: "Evidence for value score", 
+      importance: "Evidence for importance score",
+      marketGap: "Evidence for market gap score",
+      accessibility: "Evidence for accessibility score"
+    },
+    totalScore: 5-25,
+    meetsThreshold: boolean,
+    completedAt: "ISO timestamp"
+  }
+}
+```
+
+### Auto-population Patterns for Day 1
+
+#### Activity 1 → Activity 2
+```javascript
+// Problem statement flows forward automatically
+if (data.day1?.problemStatement) {
+  setProblemStatement(data.day1.problemStatement);
+}
+```
+
+#### Activity 2 → Activity 3
+```javascript
+// Problem statement and market context flows forward
+if (data.day1?.problemStatement) {
+  setProblemStatement(data.day1.problemStatement);
+}
+// Market analysis informs problem validation
+if (data.day1?.activity2?.evidence) {
+  // Use market evidence to inform scoring decisions
+  setMarketContext(data.day1.activity2.evidence);
+}
+```
+
+### Day 1 Implementation Checklist
+
+#### Activity 1 (Problem Origin Story)
+- [x] Import section with problem statement auto-population
+- [x] 5-field form: moment of realization, who experienced, why matters, what surprised, how real
+- [x] Export section with complete Day 1 Activity 1 data
+- [x] Next/Previous navigation between sections
+- [x] Progress indicators
+
+#### Activity 2 (Market Landing Zone)
+- [x] Import section with Day 1 Activity 1 data
+- [x] Interactive canvas for placing market markers
+- [x] Marker types: competitor, underserved, strategic
+- [x] Landing zone choice: existing vs new markets
+- [x] Evidence text area for strategy justification
+- [x] Export section with complete Day 1 Activities 1-2 data
+
+#### Activity 3 (Problem Scoring)
+- [x] Import section with Day 1 Activities 1-2 data  
+- [x] 5-criteria scoring system (1-5 scale each)
+- [x] Evidence text areas for each score
+- [x] Automatic total calculation (out of 25)
+- [x] Threshold validation (must score 20+ to pass)
+- [x] Export section with complete Day 1 data
+
+### Day 1 Test Data
+
+#### Test Files Available:
+- **`test-code-problems-act-1-input.txt`** - Empty structure for starting Activity 1
+- **`test-code-problems-act-1-output.txt`** - Complete Activity 1 with problem origin story
+- **`test-code-problems-act-2-input.txt`** - Activity 1 output for starting Activity 2
+- **`test-code-problems-act-2-output.txt`** - Complete Activities 1-2 with market analysis
+- **`test-code-problems-act-3-input.txt`** - Activities 1-2 output for starting Activity 3
+- **`test-code-problems-act-3-output.txt`** - Complete Day 1 with validated problem (score 23/25)
+
+#### Sample Problem Statement:
+"Development teams at high-growth B2B SaaS companies struggle to prevent API failures before they impact customers, leading to $100k/hour downtime costs, customer churn, and engineering resource drain"
+
+### Day 1 → Day 2-1 Data Flow
+
+The Day 1 validated problem statement automatically populates the Day 2-1 (Early Customer Profile) workshop:
+
+```javascript
+// In Day 2-1 Activity 1, auto-populate from Day 1
+if (importedData.day1?.problemStatement) {
+  setProblemContext(importedData.day1.problemStatement);
+}
+
+// Problem validation scores inform ECP component mapping
+if (importedData.day1?.activity3?.scores) {
+  const scores = importedData.day1.activity3.scores;
+  // Use scores to suggest ECP components (urgency → urgent need, etc.)
+}
+```
+
+### Technical Notes
+
+#### Canvas Implementation (Activity 2)
+- Uses React state to track marker positions
+- Click handlers for adding/removing markers
+- Drag functionality for repositioning markers
+- Different marker styles by type (competitor=red, underserved=blue, strategic=green)
+
+#### Scoring Logic (Activity 3)  
+- Real-time total calculation as user enters scores
+- Validation prevents submission if total < 20
+- Evidence fields required for scores of 4 or 5
+- Color-coded feedback: red (<20), yellow (20-22), green (23+)
+
+#### Data Persistence
+- Each activity saves incrementally to workshopData state
+- Export codes contain cumulative data from all completed activities
+- Import codes validate and auto-populate all available fields
