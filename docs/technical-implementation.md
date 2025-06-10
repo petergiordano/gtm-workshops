@@ -600,34 +600,51 @@ const code = encodeProgressCode(maxData);
 console.assert(code.length < 2000, `Code too long: ${code.length} chars`);
 ```
 
-## Sample Progress Code for Testing
+## Testing with Sample Progress Codes
 
-Here's a sample progress code with data from Day 1 and Day 2-1 that can be used to test import functionality:
+### Complete Test Code Set
 
-```
-GSAP2025-eyJ2ZXJzaW9uIjoiMS4wIiwiY3JlYXRlZEF0IjoiMjAyNS0wNi0yM1QxMDowMDowMFoiLCJsYXN0VXBkYXRlZCI6IjIwMjUtMDYtMjRUMTE6MDA6MDBaIiwiZGF5MSI6eyJhY3Rpdml0eTMiOnsicHJvYmxlbVN0YXRlbWVudCI6IkRldmVsb3BtZW50IHRlYW1zIGF0IGZhc3QtZ3Jvd2luZyB0ZWNoIGNvbXBhbmllcyBzdHJ1Z2dsZSB0byBwcmV2ZW50IEFQSSBmYWlsdXJlcyBiZWZvcmUgdGhleSBpbXBhY3QgY3VzdG9tZXJzIiwiY29tcGxldGVkQXQiOiIyMDI1LTA2LTIzVDExOjAwOjAwWiJ9fSwiZGF5Ml8xIjp7ImFjdGl2aXR5MyI6eyJjb21tb25fbmVlZHMiOiJEZXZlbG9wbWVudCB0ZWFtcyBuZWVkIHRvIHByZXZlbnQgQVBJIGZhaWx1cmVzIGJlZm9yZSBjdXN0b21lcnMgYXJlIGltcGFjdGVkIiwicHJvYmxlbV91cmdlbmN5IjoiVGhleSBleHBlcmllbmNlIEFQSSBpc3N1ZXMgd2Vla2x5IHRoYXQgY29zdCAkNTBLKyBpbiBsb3N0IHJldmVudWUiLCJidXNpbmVzc192YWx1ZSI6IlJlZHVjZSBBUEkgZG93bnRpbWUgYnkgODAlLCBpbXByb3ZlIE1UVFIgZnJvbSAyIGhvdXJzIHRvIDE1IG1pbnV0ZXMiLCJiYXNpY19wcm9maWxlIjoiQjJCIFNhYVMgY29tcGFuaWVzIHdpdGggMTAwLTEwMDAgZW1wbG95ZWVzLCAkMTBNLSQxMDBNIHJldmVudWUsIG1vZGVybiBjbG91ZCBpbmZyYXN0cnVjdHVyZSIsImNvbXBsZXRlZEF0IjoiMjAyNS0wNi0yNFQxMTowMDowMFoifX19
+The `/testing/` folder contains a complete set of Progress Codes for testing the entire positioning workshop flow:
+
+#### Activity 1 Test Codes:
+- **`test-code-positioning-act-1-input.txt`** - Contains Day 1 + Day 2-1 data for starting Activity 1
+  - Auto-populates customer profile from Day 2-1 ECP data
+  - Use this to test Activity 1 import functionality
+
+- **`test-code-positioning-act-1-output.txt`** - Expected output after completing Activity 1
+  - Contains customer profile and competitive alternative
+  - Use this to test Activity 1 → Activity 2 data flow
+
+#### Activity 2 Test Codes:
+- **`test-code-positioning-act-2-input.txt`** - Input for Activity 2 (same as Activity 1 output)
+  - Shows customer and alternative data in reference box
+  - Use this to test Activity 2 import functionality
+
+- **`test-code-positioning-act-2-output.txt`** - Expected output after completing Activity 2
+  - Contains all Activity 1 data plus differentiators and customer value
+  - Use this to test Activity 2 → Activity 3 data flow
+
+#### Activity 3 Test Codes:
+- **`test-code-positioning-act-3-input.txt`** - Input for Activity 3 (same as Activity 2 output)
+  - Auto-populates ALL fields from Activities 1 & 2
+  - Use this to test Activity 3 import functionality
+
+### Test Flow Example:
+
+```bash
+# Test complete workshop flow
+1. Activity 1: Import test-code-positioning-act-1-input.txt
+2. Complete Activity 1 → Export matches test-code-positioning-act-1-output.txt
+3. Activity 2: Import test-code-positioning-act-2-input.txt  
+4. Complete Activity 2 → Export matches test-code-positioning-act-2-output.txt
+5. Activity 3: Import test-code-positioning-act-3-input.txt
+6. Complete Activity 3 → Generate final positioning statement
 ```
 
-This decodes to:
-```json
-{
-  "version": "1.0",
-  "createdAt": "2025-06-23T10:00:00Z",
-  "lastUpdated": "2025-06-24T11:00:00Z",
-  "day1": {
-    "activity3": {
-      "problemStatement": "Development teams at fast-growing tech companies struggle to prevent API failures before they impact customers",
-      "completedAt": "2025-06-23T11:00:00Z"
-    }
-  },
-  "day2_1": {
-    "activity3": {
-      "common_needs": "Development teams need to prevent API failures before customers are impacted",
-      "problem_urgency": "They experience API issues weekly that cost $50K+ in lost revenue",
-      "business_value": "Reduce API downtime by 80%, improve MTTR from 2 hours to 15 minutes",
-      "basic_profile": "B2B SaaS companies with 100-1000 employees, $10M-$100M revenue, modern cloud infrastructure",
-      "completedAt": "2025-06-24T11:00:00Z"
-    }
-  }
-}
-```
+### Sample Data Structure
+
+The test codes contain realistic workshop data:
+- **Customer Profile**: Mid to large-sized enterprises with modern API infrastructure
+- **Competitive Alternative**: Traditional API monitoring tools (New Relic, Datadog)
+- **Unique Differentiators**: Predictive analytics, automated resolution, cross-platform integration
+- **Customer Value**: 50% reduction in failures, 40% cost reduction, 90% efficiency improvement
