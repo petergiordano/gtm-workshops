@@ -18,5 +18,8 @@
 ├── problems_worth_solving
 │   ├── index.html
 │   ├── problems-activity-1.html
+        - right now user must start timer in order for "continue to partner sharing" to be revealed. Change UX so user can continue without having to start the time. .
+        - Need a button on last "page" of the activity to continue to next activity (check the other activity files to follow same ux and text display to the user)
+        - 
 │   ├── problems-activity-2.html
 │   └── problems-activity-3.html
