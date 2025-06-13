@@ -809,6 +809,46 @@
                     {/* Marker details section */}
                     {renderMarkerDetails()}
                     
+                    {/* Strategic Entry Point Notes - Always Visible */}
+                    <div className="mt-6 p-4 rounded-lg border bg-orange-50 border-orange-300 text-orange-800">
+                        <h4 className="font-semibold mb-3">Strategy Entry Point - Notes about this strategic choice:</h4>
+                        <textarea
+                            value={(() => {
+                                const strategicMarker = markers.find(m => m.type === 'strategic');
+                                return strategicMarker ? strategicMarker.notes : '';
+                            })()}
+                            onChange={(e) => {
+                                const strategicMarkerIndex = markers.findIndex(m => m.type === 'strategic');
+                                if (strategicMarkerIndex !== -1) {
+                                    // Update existing strategic marker
+                                    setMarkers(prev => prev.map((marker, i) => 
+                                        i === strategicMarkerIndex ? { ...marker, notes: e.target.value } : marker
+                                    ));
+                                } else {
+                                    // Create a new strategic marker at center of diagram if none exists
+                                    setMarkers(prev => [
+                                        ...prev,
+                                        { 
+                                            id: Date.now(), 
+                                            type: 'strategic', 
+                                            x: 200, 
+                                            y: 187, 
+                                            notes: e.target.value 
+                                        }
+                                    ]);
+                                    setHasPlacedStrategic(true);
+                                }
+                            }}
+                            className="w-full h-24 p-3 border border-orange-300 rounded-lg text-sm placeholder-gray-400 focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                            placeholder="Why is this a strategic entry point for your product? Explain your reasoning..."
+                        />
+                        {(() => {
+                            const strategicMarker = markers.find(m => m.type === 'strategic');
+                            const notes = strategicMarker ? strategicMarker.notes : '';
+                            return renderWordCountFeedback(notes, 5, 'strategic-notes');
+                        })()}
+                    </div>
+                    
                     {/* Navigation */}
                     <div className="flex justify-between mt-6">
                         <button
@@ -1110,43 +1150,51 @@
                         </div>
                     </div>
                     
-                    <div className="text-center">
+                    <div className="text-center space-x-4">
                         <button
                             onClick={resetActivity}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors mr-4"
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
                         >
                             Reset Activity
                         </button>
+                        
                         <button
                             onClick={() => {
-                                // Generate export data when completing the activity
-                                const newExportData = {
-                                    version: 1,
-                                    workshops: {
-                                        ...(importedData?.workshops || {}),
-                                        day1: {
-                                            ...(importedData?.workshops?.day1 || {}),
-                                            activity2: {
-                                                markers: markers,
-                                                landingZoneChoice: landingZoneChoice,
-                                                evidence: evidence,
-                                                completedAt: new Date().toISOString()
+                                if (!activityComplete) {
+                                    // Generate export data when completing the activity
+                                    const newExportData = {
+                                        version: 1,
+                                        workshops: {
+                                            ...(importedData?.workshops || {}),
+                                            day1: {
+                                                ...(importedData?.workshops?.day1 || {}),
+                                                activity2: {
+                                                    markers: markers,
+                                                    landingZoneChoice: landingZoneChoice,
+                                                    evidence: evidence,
+                                                    completedAt: new Date().toISOString()
+                                                }
                                             }
                                         }
-                                    }
-                                };
-                                setExportData(newExportData);
-                                setActivityComplete(true);
-                                console.log('[Problems-2] Export data generated:', newExportData);
-                                
-                                // Small delay to show export section, then navigate
-                                setTimeout(() => {
+                                    };
+                                    setExportData(newExportData);
+                                    setActivityComplete(true);
+                                    console.log('[Problems-2] Export data generated:', newExportData);
+                                } else {
+                                    // If export data already generated, navigate to workshop
                                     window.location.href = 'index.html';
-                                }, 100);
+                                }
                             }}
-                            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
                         >
-                            Return to Workshop
+                            {activityComplete ? 'Return to Workshop' : 'Generate Progress Code'}
+                        </button>
+                        
+                        <button
+                            onClick={() => window.location.href = 'problems-activity-3.html'}
+                            className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                        >
+                            Continue to Problem Scoring Worksheet
                         </button>
                     </div>
                 </div>
