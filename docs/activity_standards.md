@@ -786,4 +786,74 @@ For activities that import from multiple days:
 - **Error (Red)**: `#EF4444` - Invalid codes, errors
 - **Warning (Yellow)**: `#F59E0B` - Important notices
 - **Info (Blue)**: `#3B82F6` - Imported data indicators
+
+## Button Standards and Navigation
+
+### Final Step Button Standards
+- **Standard Order (left to right):** "Reset Activity" | "Generate Code" | "Continue to Next Activity"
+- **Button Styling:** 
+  - Reset Activity: `bg-gray-500 text-white`
+  - Generate Code: `bg-green-500 text-white`
+  - Continue: `bg-orange-500 text-white`
+- **Text Consistency:** Use exact same text across all activities
+
+### Generate Code Button Behavior
+- After clicking "Generate Code", it should transform to "Return to Workshop"
+- "Return to Workshop" links back to the specific workshop's index page
+- Success message appears but import section remains visible
+
+### Final Activity in Workshop Standards
+- Applies to the following "last" activity files:
+  - `problems_worth_solving/problems-activity-3.html`
+  - `finding_your_early_customers/ecp-activity-3.html`
+  - `positioning_basics/positioning-activity-3.html`
+  - `market_entry_readiness/market-entry-activity-3.html`
+- Right-most button text should be "Back to All Workshops" (not "Continue to Next Activity")
+- Links to main workshop landing page (`../index.html`)
+- Maintains orange styling (`bg-orange-500 text-white`)
+
+### Import Section Behavior
+- Import section should remain visible after successful code import
+- Show success message but don't hide the entire section
+- Clear visual indication of successful import (`text-green-600`)
+
+### Button Placement and Styling
+- All buttons: `px-4 py-2 rounded-lg font-medium transition-colors`
+- Proper spacing between buttons (`space-x-4`)
+- Consistent hover effects (`hover:bg-[color]-600`)
+
+### Navigation Consistency
+- "Back to Workshop" in header is sufficient (no need for duplicate buttons in page body)
+- Step navigation (back/next) should be clearly distinct from workshop navigation
+- Use "← Back" for previous step, not "Back to Step X"
+
+### Final Step Navigation for Different Scenarios
+- **Regular activity final step:** Reset | Generate Code | Continue to Next Activity
+- **Final activity in workshop final step:** Reset | Generate Code | Back to All Workshops
+- **Previous/next buttons within steps:** Only show if relevant (no "previous" on first step)
+
+### Button Implementation Example
+```html
+<div className="flex justify-between items-center mt-6 gap-4">
+  <button
+    onClick={resetActivity}
+    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex-shrink-0"
+  >
+    Reset Activity
+  </button>
+  
+  <button
+    onClick={handleGenerateCode}
+    className="bg-green-500 text-white px-4 py-2 rounded-lg hover:bg-green-600 transition-colors font-semibold flex-shrink-0"
+  >
+    {activityComplete ? 'Return to Workshop' : 'Generate Code'}
+  </button>
+  
+  <button
+    onClick={handleContinue}
+    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold flex-shrink-0"
+  >
+    {isLastActivity ? 'Back to All Workshops' : 'Continue to Next Activity'}
+  </button>
+</div>
 ```
