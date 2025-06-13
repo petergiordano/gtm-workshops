@@ -51,13 +51,12 @@
     <script type="text/babel">
         const { useState, useRef, useEffect } = React;
 
-        // Progress Code encode/decode functions
-        const encodeProgressCode = (data) => {
+        // Progress Code System - Encoding/Decoding Functions
+        const encodeProgressCode = (workshopData) => {
             try {
-                const jsonString = JSON.stringify(data);
+                const jsonString = JSON.stringify(workshopData);
                 const base64 = btoa(jsonString);
-                // Replace characters that might cause issues in URLs
-                return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+                return `GSAP2025-${base64}`;
             } catch (error) {
                 console.error('Error encoding progress code:', error);
                 return null;
@@ -66,15 +65,49 @@
 
         const decodeProgressCode = (code) => {
             try {
-                // Restore base64 characters
-                const base64 = code.replace(/-/g, '+').replace(/_/g, '/');
-                // Add padding if needed
-                const padding = (4 - (base64.length % 4)) % 4;
-                const paddedBase64 = base64 + '='.repeat(padding);
-                const jsonString = atob(paddedBase64);
-                return JSON.parse(jsonString);
+                console.log('🔧 decodeProgressCode called with:', code?.substring(0, 50) + '...');
+                
+                // Handle both old and new formats
+                let jsonString;
+                
+                if (code.startsWith('GSAP2025-')) {
+                    // New format with prefix
+                    const base64 = code.substring(9);
+                    console.log('🔧 New format - extracted base64 part, length:', base64.length);
+                    jsonString = atob(base64);
+                } else {
+                    // Old format without prefix - handle legacy codes
+                    console.log('🔧 Legacy format detected - migrating...');
+                    const base64 = code.replace(/-/g, '+').replace(/_/g, '/');
+                    const padding = (4 - (base64.length % 4)) % 4;
+                    const paddedBase64 = base64 + '='.repeat(padding);
+                    jsonString = atob(paddedBase64);
+                }
+                
+                console.log('🔧 Decoded to JSON string, length:', jsonString.length);
+                const parsed = JSON.parse(jsonString);
+                
+                // Migrate old nested format to new flat format
+                if (parsed.workshops) {
+                    console.log('🔧 Migrating old nested format to new flat format');
+                    const migrated = {
+                        version: "1.0",
+                        createdAt: new Date().toISOString(),
+                        lastUpdated: new Date().toISOString(),
+                        day1: parsed.workshops.day1 || {},
+                        day2_1: parsed.workshops.day2_1 || {},
+                        day2_2: parsed.workshops.day2_2 || {},
+                        day3: parsed.workshops.day3 || {}
+                    };
+                    console.log('✅ Migration complete');
+                    return migrated;
+                }
+                
+                console.log('✅ Successfully parsed JSON');
+                return parsed;
             } catch (error) {
-                console.error('Error decoding progress code:', error);
+                console.error('❌ Error decoding progress code:', error.message);
+                console.error('❌ Full error:', error);
                 return null;
             }
         };
@@ -178,8 +211,8 @@
                     return;
                 }
 
-                // Check version compatibility
-                if (data.version !== 1) {
+                // Check version compatibility - handle both old and new formats
+                if (data.version && data.version !== "1.0" && data.version !== 1) {
                     setImportStatus({ type: 'error', message: 'Incompatible progress code version' });
                     return;
                 }
@@ -394,9 +427,9 @@
                     setImportedData(data);
                     console.log('[Problems-2] Imported data:', data);
                     
-                    // Restore Activity 2 data if it exists
-                    if (data.workshops?.day1?.activity2) {
-                        const activity2Data = data.workshops.day1.activity2;
+                    // Restore Activity 2 data if it exists (handle both old and new formats)
+                    const activity2Data = data.day1?.activity2 || data.workshops?.day1?.activity2;
+                    if (activity2Data) {
                         setMarkers(activity2Data.markers || []);
                         setLandingZoneChoice(activity2Data.landingZoneChoice || '');
                         setEvidence(activity2Data.evidence || '');
@@ -1163,19 +1196,21 @@
                                 if (!activityComplete) {
                                     // Generate export data when completing the activity
                                     const newExportData = {
-                                        version: 1,
-                                        workshops: {
-                                            ...(importedData?.workshops || {}),
-                                            day1: {
-                                                ...(importedData?.workshops?.day1 || {}),
-                                                activity2: {
-                                                    markers: markers,
-                                                    landingZoneChoice: landingZoneChoice,
-                                                    evidence: evidence,
-                                                    completedAt: new Date().toISOString()
-                                                }
+                                        version: "1.0",
+                                        createdAt: importedData?.createdAt || new Date().toISOString(),
+                                        lastUpdated: new Date().toISOString(),
+                                        day1: {
+                                            ...(importedData?.day1 || {}),
+                                            activity2: {
+                                                markers: markers,
+                                                landingZoneChoice: landingZoneChoice,
+                                                evidence: evidence,
+                                                completedAt: new Date().toISOString()
                                             }
-                                        }
+                                        },
+                                        day2_1: importedData?.day2_1 || {},
+                                        day2_2: importedData?.day2_2 || {},
+                                        day3: importedData?.day3 || {}
                                     };
                                     setExportData(newExportData);
                                     setActivityComplete(true);
