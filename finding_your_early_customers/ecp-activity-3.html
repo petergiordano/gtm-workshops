@@ -323,7 +323,7 @@
                     id: 'common_needs',
                     title: 'Common Needs',
                     subtitle: 'Jobs to be Done',
-                    prompt: 'Based on the problem you validated yesterday, WHO has this problem most urgently?',
+                    prompt: 'Based on the problem you validated yesterday, WHO has this problem most urgently? (describe in 10+ words)',
                     placeholder: 'We believe our early customers are...\n\nExample: "Development teams at fast-growing tech companies who need to prevent API failures because they directly impact customer experience and revenue"',
                     hint: 'Think about the TYPE of organization and ROLE of people who feel this problem most acutely'
                 },
@@ -331,7 +331,7 @@
                     id: 'problem_urgency', 
                     title: 'Problem Urgency',
                     subtitle: 'Why Now?',
-                    prompt: 'What makes this problem URGENT for your target customers right now?',
+                    prompt: 'What makes this problem URGENT for your target customers right now? (describe in 10+ words)',
                     placeholder: 'Our customers need to solve this NOW because...\n\nExample: "They are experiencing API issues weekly, each outage costs $50k+ in lost revenue, and their current monitoring tools only detect problems after customer impact"',
                     hint: 'Focus on pain points that drive immediate action - financial impact, competitive pressure, compliance needs'
                 },
@@ -339,7 +339,7 @@
                     id: 'business_value',
                     title: 'Desired Business Value', 
                     subtitle: 'Success Metrics',
-                    prompt: 'What specific business outcomes do your customers want to achieve?',
+                    prompt: 'What specific business outcomes do your customers want to achieve? (describe in 10+ words)',
                     placeholder: 'Success for our customers looks like...\n\nExample: "Reduce API downtime by 80%, improve incident response time from 2 hours to 15 minutes, prevent $500k annual revenue loss from outages"',
                     hint: 'Be specific with numbers, percentages, time savings, or cost reductions'
                 },
@@ -347,7 +347,7 @@
                     id: 'basic_profile',
                     title: 'Basic Customer Profile',
                     subtitle: 'Company Characteristics', 
-                    prompt: 'What type of companies are most likely to have this urgent problem?',
+                    prompt: 'What type of companies are most likely to have this urgent problem? (describe in 10+ words)',
                     placeholder: 'Our ideal early customers are...\n\nExample: "B2B SaaS companies with 100-1000 employees, $10M-100M revenue, heavy API usage, modern cloud infrastructure, located in North America"',
                     hint: 'Think industry, company size, technology adoption, geography, growth stage'
                 }
@@ -360,7 +360,8 @@
                 // Update completed steps based on all responses
                 const updatedCompletedSteps = [];
                 Object.keys(newResponses).forEach(id => {
-                    if (newResponses[id] && newResponses[id].length > 20) {
+                    const wordCount = newResponses[id] ? newResponses[id].trim().split(/\s+/).filter(w => w.length > 0).length : 0;
+                    if (wordCount >= 10) {
                         updatedCompletedSteps.push(id);
                     }
                 });
@@ -420,14 +421,28 @@
                                 </div>
                                 
                                 <p className="text-gray-700 font-medium mb-3 ml-11">{element.prompt}</p>
-                                <p className="text-gray-500 text-sm mb-3 ml-11 italic">(You must enter at least 10-15 words)</p>
                                 
                                 <textarea
                                     value={responses[element.id] || ''}
                                     onChange={(e) => handleResponseChange(element.id, e.target.value)}
                                     placeholder={element.placeholder}
-                                    className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm"
+                                    className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm placeholder-gray-400"
                                 />
+                                
+                                <div className="flex justify-end items-center text-sm mt-2">
+                                    <div className={`flex items-center space-x-1 ${(() => {
+                                        const wordCount = (responses[element.id] || '').trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        return wordCount >= 10 ? 'text-green-600' : 'text-gray-500';
+                                    })()`}>
+                                        {(() => {
+                                            const wordCount = (responses[element.id] || '').trim().split(/\s+/).filter(w => w.length > 0).length;
+                                            return wordCount >= 10 && <CheckCircle size={16} />;
+                                        })()}
+                                        <span className="font-medium">
+                                            {(responses[element.id] || '').trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                        </span>
+                                    </div>
+                                </div>
                                 
                                 <div className="bg-blue-50 border-l-4 border-blue-400 p-3 mt-3">
                                     <div className="flex items-center">

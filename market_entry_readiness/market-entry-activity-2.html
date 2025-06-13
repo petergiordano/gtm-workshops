@@ -679,34 +679,44 @@
                                         {/* Japan */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                🇯🇵 {factor.japanPrompt}
+                                                🇯🇵 {factor.japanPrompt} <span className="text-xs text-gray-500">(describe in 5+ words)</span>
                                             </label>
                                             <textarea
                                                 value={data.japan}
                                                 onChange={(e) => updateFactorData(factor.id, 'japan', e.target.value)}
                                                 placeholder={factor.japanPlaceholder}
-                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm"
+                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm placeholder-gray-400"
                                             />
-                                            <div className="text-xs text-gray-500 mt-1">
-                                                {data.japan.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                                {data.japan.trim().length >= 25 && " ✓"}
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-gray-500"></span>
+                                                <span className={`text-sm flex items-center gap-1 ${
+                                                    data.japan.trim().length >= 25 ? 'text-green-600' : 'text-gray-500'
+                                                }`}>
+                                                    {data.japan.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                                    {data.japan.trim().length >= 25 && <CheckCircle size={16} />}
+                                                </span>
                                             </div>
                                         </div>
                                         
                                         {/* US */}
                                         <div>
                                             <label className="block text-sm font-medium text-gray-700 mb-2">
-                                                🇺🇸 {factor.usPrompt}
+                                                🇺🇸 {factor.usPrompt} <span className="text-xs text-gray-500">(describe in 5+ words)</span>
                                             </label>
                                             <textarea
                                                 value={data.us}
                                                 onChange={(e) => updateFactorData(factor.id, 'us', e.target.value)}
                                                 placeholder={factor.usPlaceholder}
-                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm"
+                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm placeholder-gray-400"
                                             />
-                                            <div className="text-xs text-gray-500 mt-1">
-                                                {data.us.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                                {data.us.trim().length >= 25 && " ✓"}
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-gray-500"></span>
+                                                <span className={`text-sm flex items-center gap-1 ${
+                                                    data.us.trim().length >= 25 ? 'text-green-600' : 'text-gray-500'
+                                                }`}>
+                                                    {data.us.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                                    {data.us.trim().length >= 25 && <CheckCircle size={16} />}
+                                                </span>
                                             </div>
                                         </div>
                                     </div>
@@ -793,19 +803,24 @@
                             Adaptation Strategy
                         </h4>
                         <p className="text-purple-700 text-sm mb-3">
-                            How will you address these priority gaps? What specific adaptations will you make?
+                            How will you address these priority gaps? What specific adaptations will you make? <span className="text-xs text-gray-500">(describe in 10+ words)</span>
                         </p>
                         
                         <textarea
                             value={adaptationNotes}
                             onChange={(e) => setAdaptationNotes(e.target.value)}
                             placeholder="e.g., For customer behavior gaps: Implement longer evaluation processes, build consensus-building tools, establish partner network for warm introductions..."
-                            className="w-full laptop-textarea p-3 border border-purple-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 text-sm"
+                            className="w-full laptop-textarea p-3 border border-purple-300 rounded-lg focus:border-purple-500 focus:ring-2 focus:ring-purple-200 text-sm placeholder-gray-400"
                             style={{ minHeight: '120px' }}
                         />
-                        <div className="text-xs text-purple-600 mt-1">
-                            {adaptationNotes.trim().split(/\s+/).filter(w => w.length > 0).length} words (need 10+ to complete)
-                            {adaptationNotes.trim().length >= 50 && " ✓"}
+                        <div className="flex justify-between items-center mt-1">
+                            <span className="text-xs text-gray-500"></span>
+                            <span className={`text-sm flex items-center gap-1 ${
+                                adaptationNotes.trim().length >= 50 ? 'text-green-600' : 'text-gray-500'
+                            }`}>
+                                {adaptationNotes.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                {adaptationNotes.trim().length >= 50 && <CheckCircle size={16} />}
+                            </span>
                         </div>
                     </div>
 

@@ -180,9 +180,9 @@
 
             const isStepComplete = () => {
                 if (currentStep === 1) {
-                    return customerProfile.length >= 20;
+                    return customerProfile.length >= 25;
                 } else if (currentStep === 2) {
-                    return competitiveAlternative.length >= 10 && alternativeDescription.length >= 20;
+                    return competitiveAlternative.length >= 15 && alternativeDescription.length >= 25;
                 }
                 return false;
             };
@@ -476,7 +476,7 @@
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            Your Early Customer Profile: <span className="text-xs text-gray-500">(min. 5 words)</span>
+                            Your Early Customer Profile: <span className="text-xs text-gray-400">(describe in 5+ words)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
                             Be specific about WHO your target customer is. Use your ECP from yesterday and the 6 characteristics framework.
@@ -485,16 +485,19 @@
                             value={customerProfile}
                             onChange={(e) => setCustomerProfile(e.target.value)}
                             placeholder="Example: Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure, use modern cloud tools, value reliability over cost, and make technology decisions quickly when preventing customer impact."
-                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                         />
                         
-                        <div className="flex justify-between text-sm mt-2">
+                        <div className="flex justify-between items-center text-sm mt-2">
                             <span className="text-gray-500">
                                 Be specific about company type, role, and key characteristics
                             </span>
-                            <span className={`font-medium ${customerProfile.length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {customerProfile.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                            </span>
+                            <div className={`flex items-center space-x-1 ${customerProfile.length >= 25 ? 'text-green-600' : 'text-gray-500'}`}>
+                                {customerProfile.length >= 25 && <CheckCircle size={16} />}
+                                <span className="font-medium">
+                                    {customerProfile.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                </span>
+                            </div>
                         </div>
                         
                         <div className="mt-4 flex items-start space-x-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
@@ -566,7 +569,7 @@
                     <div className="grid grid-cols-1 gap-6">
                         <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                             <label className="block text-gray-700 font-medium mb-2">
-                                Primary competitive alternative: <span className="text-xs text-gray-500">(min. 2-3 words)</span>
+                                Primary competitive alternative: <span className="text-xs text-gray-400">(describe in 3+ words)</span>
                             </label>
                             <p className="text-gray-500 text-sm mb-3">
                                 What is the main thing your target customer uses today to address this problem?
@@ -576,18 +579,21 @@
                                 value={competitiveAlternative}
                                 onChange={(e) => setCompetitiveAlternative(e.target.value)}
                                 placeholder="Example: Manual API monitoring with basic alerting tools"
-                                className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                             />
                             <div className="flex justify-end text-sm mt-2">
-                                <span className={`font-medium ${competitiveAlternative.length >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
-                                    {competitiveAlternative.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                </span>
+                                <div className={`flex items-center space-x-1 ${competitiveAlternative.length >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {competitiveAlternative.length >= 15 && <CheckCircle size={16} />}
+                                    <span className="font-medium">
+                                        {competitiveAlternative.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                    </span>
+                                </div>
                             </div>
                         </div>
 
                         <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                             <label className="block text-gray-700 font-medium mb-2">
-                                How does this alternative work? <span className="text-xs text-gray-500">(min. 5 words)</span>
+                                How does this alternative work? <span className="text-xs text-gray-400">(describe in 5+ words)</span>
                             </label>
                             <p className="text-gray-500 text-sm mb-3">
                                 Briefly describe how customers currently solve this problem and why it's inadequate.
@@ -596,15 +602,18 @@
                                 value={alternativeDescription}
                                 onChange={(e) => setAlternativeDescription(e.target.value)}
                                 placeholder="Example: Teams use basic monitoring tools that only alert after problems occur, requiring manual investigation. This leads to longer downtime and more customer impact because issues aren't caught proactively."
-                                className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                             />
-                            <div className="flex justify-between text-sm mt-2">
+                            <div className="flex justify-between items-center text-sm mt-2">
                                 <span className="text-gray-500">
                                     Focus on what they do and why it falls short
                                 </span>
-                                <span className={`font-medium ${alternativeDescription.length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                    {alternativeDescription.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                </span>
+                                <div className={`flex items-center space-x-1 ${alternativeDescription.length >= 25 ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {alternativeDescription.length >= 25 && <CheckCircle size={16} />}
+                                    <span className="font-medium">
+                                        {alternativeDescription.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

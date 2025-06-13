@@ -339,6 +339,39 @@
             );
         };
 
+        // Word count and validation utility
+        const getWordCount = (text) => {
+            return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        };
+
+        const renderWordCountFeedback = (text, minWords, fieldId) => {
+            const wordCount = getWordCount(text);
+            const isValid = wordCount >= minWords;
+            
+            return (
+                <div className="flex justify-between items-center mt-2 text-sm">
+                    <span className="text-gray-500">
+                        (describe in {minWords}+ words)
+                    </span>
+                    {isValid ? (
+                        <div className="flex items-center text-green-600">
+                            <div className="w-4 h-4 mr-1 flex items-center justify-center">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="w-full h-full">
+                                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                                    <polyline points="22,4 12,14.01 9,11.01"/>
+                                </svg>
+                            </div>
+                            <span>{wordCount} words</span>
+                        </div>
+                    ) : (
+                        <span className="text-gray-400">
+                            {wordCount} words
+                        </span>
+                    )}
+                </div>
+            );
+        };
+
         const MarketLandingZoneAnalysis = () => {
             const [currentStep, setCurrentStep] = useState(1);
             const [showInstructions, setShowInstructions] = useState(true);
@@ -463,7 +496,7 @@
                 } else if (currentStep === 2) {
                     return hasPlacedStrategic;
                 } else if (currentStep === 3) {
-                    return landingZoneChoice && evidence.length > 20;
+                    return landingZoneChoice && getWordCount(evidence) >= 10;
                 }
                 return false;
             };
@@ -561,7 +594,7 @@
                         <textarea
                             value={marker.notes}
                             onChange={(e) => handleMarkerNotesChange(e.target.value)}
-                            className="w-full h-20 p-2 border border-gray-300 rounded text-sm"
+                            className="w-full h-20 p-2 border border-gray-300 rounded text-sm placeholder-gray-400"
                             placeholder={marker.type === 'competitor' 
                                 ? "Who is this competitor and what segment are they targeting?"
                                 : marker.type === 'underserved'
@@ -569,6 +602,7 @@
                                 : "Why is this a strategic entry point for your product?"
                             }
                         />
+                        {renderWordCountFeedback(marker.notes, 5, `marker-${activeMarkerIndex}`)}
                     </div>
                 );
             };
@@ -917,13 +951,13 @@
                                 <textarea
                                     value={evidence}
                                     onChange={(e) => setEvidence(e.target.value)}
-                                    className="w-full h-40 p-3 border border-gray-300 rounded-lg"
+                                    className="w-full h-40 p-3 border border-gray-300 rounded-lg placeholder-gray-400"
                                     placeholder="Explain why this landing zone matches your strengths and market opportunity. Consider:
 - What specific advantage do you have in this segment?
 - Why are customers underserved here?
 - How does your technology or approach fit this segment?"
                                 />
-                                <p className="text-xs text-gray-500 mt-1">Minimum 20 characters. {evidence.length}/20</p>
+                                {renderWordCountFeedback(evidence, 10, 'evidence')}
                             </div>
                             
                             <div className="bg-orange-50 border-l-4 border-orange-500 p-4 mt-4">

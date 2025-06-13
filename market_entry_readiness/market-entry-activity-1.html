@@ -748,35 +748,55 @@
                             <h4 className="text-md font-semibold text-blue-800 mb-3">6-Month Targets</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 laptop-grid">
                                 <div>
-                                    <label className="block text-blue-700 text-sm font-medium mb-2">Key Metrics</label>
+                                    <label className="block text-blue-700 text-sm font-medium mb-2">Key Metrics <span className="text-xs text-gray-500">(describe in 2+ words)</span></label>
                                     {sixMonthMetrics.map((metric, index) => (
-                                        <textarea
-                                            key={index}
-                                            value={metric}
-                                            onChange={(e) => updateArrayItem(sixMonthMetrics, setSixMonthMetrics, index, e.target.value)}
-                                            placeholder={
-                                                index === 0 ? "e.g., Pilot customers secured" :
-                                                index === 1 ? "e.g., Market validation completed" :
-                                                "e.g., Partnership agreements signed"
-                                            }
-                                            className="w-full laptop-textarea p-2 mb-2 border border-blue-300 rounded focus:border-blue-500 text-sm"
-                                        />
+                                        <div key={index} className="mb-3">
+                                            <textarea
+                                                value={metric}
+                                                onChange={(e) => updateArrayItem(sixMonthMetrics, setSixMonthMetrics, index, e.target.value)}
+                                                placeholder={
+                                                    index === 0 ? "e.g., Pilot customers secured" :
+                                                    index === 1 ? "e.g., Market validation completed" :
+                                                    "e.g., Partnership agreements signed"
+                                                }
+                                                className="w-full laptop-textarea p-2 border border-blue-300 rounded focus:border-blue-500 text-sm placeholder-gray-400"
+                                            />
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-gray-500">
+                                                    {/* Hint text or empty */}
+                                                </span>
+                                                <span className={`text-sm flex items-center gap-1 ${metric.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {metric.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                                    {metric.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 && <CheckCircle size={16} />}
+                                                </span>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                                 <div>
-                                    <label className="block text-blue-700 text-sm font-medium mb-2">Target Goals</label>
+                                    <label className="block text-blue-700 text-sm font-medium mb-2">Target Goals <span className="text-xs text-gray-500">(describe in 2+ words)</span></label>
                                     {sixMonthTargets.map((target, index) => (
-                                        <textarea
-                                            key={index}
-                                            value={target}
-                                            onChange={(e) => updateArrayItem(sixMonthTargets, setSixMonthTargets, index, e.target.value)}
-                                            placeholder={
-                                                index === 0 ? "e.g., 3-5 paying pilot customers" :
-                                                index === 1 ? "e.g., Complete market research in 2 target regions" :
-                                                "e.g., 2-3 strategic partnership MOUs"
-                                            }
-                                            className="w-full laptop-textarea p-2 mb-2 border border-blue-300 rounded focus:border-blue-500 text-sm"
-                                        />
+                                        <div key={index} className="mb-3">
+                                            <textarea
+                                                value={target}
+                                                onChange={(e) => updateArrayItem(sixMonthTargets, setSixMonthTargets, index, e.target.value)}
+                                                placeholder={
+                                                    index === 0 ? "e.g., 3-5 paying pilot customers" :
+                                                    index === 1 ? "e.g., Complete market research in 2 target regions" :
+                                                    "e.g., 2-3 strategic partnership MOUs"
+                                                }
+                                                className="w-full laptop-textarea p-2 border border-blue-300 rounded focus:border-blue-500 text-sm placeholder-gray-400"
+                                            />
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-gray-500">
+                                                    {/* Hint text or empty */}
+                                                </span>
+                                                <span className={`text-sm flex items-center gap-1 ${target.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {target.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                                    {target.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 && <CheckCircle size={16} />}
+                                                </span>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>
@@ -788,35 +808,55 @@
                             <h4 className="text-md font-semibold text-purple-800 mb-3">12-Month Targets</h4>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 laptop-grid">
                                 <div>
-                                    <label className="block text-purple-700 text-sm font-medium mb-2">Key Metrics</label>
+                                    <label className="block text-purple-700 text-sm font-medium mb-2">Key Metrics <span className="text-xs text-gray-500">(describe in 2+ words)</span></label>
                                     {twelveMonthMetrics.map((metric, index) => (
-                                        <textarea
-                                            key={index}
-                                            value={metric}
-                                            onChange={(e) => updateArrayItem(twelveMonthMetrics, setTwelveMonthMetrics, index, e.target.value)}
-                                            placeholder={
-                                                index === 0 ? "e.g., Monthly Recurring Revenue (MRR)" :
-                                                index === 1 ? "e.g., Customer acquisition rate" :
-                                                "e.g., Market penetration percentage"
-                                            }
-                                            className="w-full laptop-textarea p-2 mb-2 border border-purple-300 rounded focus:border-purple-500 text-sm"
-                                        />
+                                        <div key={index} className="mb-3">
+                                            <textarea
+                                                value={metric}
+                                                onChange={(e) => updateArrayItem(twelveMonthMetrics, setTwelveMonthMetrics, index, e.target.value)}
+                                                placeholder={
+                                                    index === 0 ? "e.g., Monthly Recurring Revenue (MRR)" :
+                                                    index === 1 ? "e.g., Customer acquisition rate" :
+                                                    "e.g., Market penetration percentage"
+                                                }
+                                                className="w-full laptop-textarea p-2 border border-purple-300 rounded focus:border-purple-500 text-sm placeholder-gray-400"
+                                            />
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-gray-500">
+                                                    {/* Hint text or empty */}
+                                                </span>
+                                                <span className={`text-sm flex items-center gap-1 ${metric.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {metric.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                                    {metric.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 && <CheckCircle size={16} />}
+                                                </span>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                                 <div>
-                                    <label className="block text-purple-700 text-sm font-medium mb-2">Target Goals</label>
+                                    <label className="block text-purple-700 text-sm font-medium mb-2">Target Goals <span className="text-xs text-gray-500">(describe in 2+ words)</span></label>
                                     {twelveMonthTargets.map((target, index) => (
-                                        <textarea
-                                            key={index}
-                                            value={target}
-                                            onChange={(e) => updateArrayItem(twelveMonthTargets, setTwelveMonthTargets, index, e.target.value)}
-                                            placeholder={
-                                                index === 0 ? "e.g., $50K+ MRR from international markets" :
-                                                index === 1 ? "e.g., 10+ new customers per month" :
-                                                "e.g., 2-3% market share in target region"
-                                            }
-                                            className="w-full laptop-textarea p-2 mb-2 border border-purple-300 rounded focus:border-purple-500 text-sm"
-                                        />
+                                        <div key={index} className="mb-3">
+                                            <textarea
+                                                value={target}
+                                                onChange={(e) => updateArrayItem(twelveMonthTargets, setTwelveMonthTargets, index, e.target.value)}
+                                                placeholder={
+                                                    index === 0 ? "e.g., $50K+ MRR from international markets" :
+                                                    index === 1 ? "e.g., 10+ new customers per month" :
+                                                    "e.g., 2-3% market share in target region"
+                                                }
+                                                className="w-full laptop-textarea p-2 border border-purple-300 rounded focus:border-purple-500 text-sm placeholder-gray-400"
+                                            />
+                                            <div className="flex justify-between items-center mt-1">
+                                                <span className="text-xs text-gray-500">
+                                                    {/* Hint text or empty */}
+                                                </span>
+                                                <span className={`text-sm flex items-center gap-1 ${target.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {target.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                                    {target.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 && <CheckCircle size={16} />}
+                                                </span>
+                                            </div>
+                                        </div>
                                     ))}
                                 </div>
                             </div>

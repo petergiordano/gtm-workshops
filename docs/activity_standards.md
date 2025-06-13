@@ -232,22 +232,87 @@ Each workshop index page should include a consistent Workshop Slides section fol
   - Secondary: bg-gray-500 hover:bg-gray-600
   - Font: font-semibold, text-white
 
-### Input Validation Standards
-- **User Display**: Show word-based requirements (e.g., "Describe in 5+ words")
+### Unified Text Input Standards
+
+#### Field Labels
+- **Format**: "Question text (describe in X+ words)"
+- **Style**: 
+  - Main text: `text-gray-700 font-medium`
+  - Requirement: `text-xs text-gray-500` in parentheses
+- **Example**: "What is the market size? (describe in 5+ words)"
+
+#### Placeholder Text
+- **Format**: Keep existing pattern with "e.g., " prefix
+- **Style**: `placeholder-gray-400` (light gray #9CA3AF)
+
+#### Real-Time Feedback Component
+```javascript
+const WordCountFeedback = ({ text, minWords = 5 }) => {
+  const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+  const isValid = wordCount >= minWords;
+  
+  return (
+    <div className="flex justify-between items-center mt-1">
+      <span className="text-xs text-gray-500">
+        {/* Hint text or empty */}
+      </span>
+      <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+        {wordCount} words
+        {isValid && <CheckCircle size={16} />}
+      </span>
+    </div>
+  );
+};
+```
+
+#### Field Validation
 - **Internal Logic**: Use character count for validation (easier programming)
+- **Display Logic**: Always show word count to user
 - **Conversion Guidelines**: 
   - 3+ words = 15+ characters
   - 5+ words = 25+ characters  
   - 10+ words = 50+ characters
-- **UX Principle**: Hide technical character counts from users, show natural language requirements
-- **Implementation**: 
-  ```html
-  <!-- Good: User sees word requirement -->
-  <label>Problem description: <span>(describe in 5+ words)</span></label>
-  
-  <!-- Bad: User sees character count -->
-  <label>Problem description: <span>(min. 25 characters)</span></label>
+- **Visual States**:
+  - Invalid: Gray text (#6B7280)
+  - Valid: Green text (#10B981) + checkmark icon
+
+#### Progress Tracking
+- **Format**: "Progress: X/Y completed. Need at least Z to proceed."
+- **Style**: Blue background bar (`bg-blue-50 border-blue-200`)
+- **Update**: Dynamically as fields are completed
+
+#### Textarea Behavior
+- **Default height**: 80px (3-4 lines) - `laptop-textarea` class
+- **Focus height**: 120px (5-6 lines)
+- **Max height**: 200px with scroll
+- **CSS Implementation**:
+  ```css
+  .laptop-textarea {
+      min-height: 80px;
+      max-height: 120px;
+      transition: max-height 0.3s ease;
+      resize: none;
+  }
+  .laptop-textarea:focus {
+      max-height: 200px;
+  }
   ```
+
+#### Implementation Pattern
+```html
+<div className="mb-4">
+  <label className="block text-gray-700 font-medium mb-2">
+    What is your target market? <span className="text-xs text-gray-500">(describe in 5+ words)</span>
+  </label>
+  <textarea
+    value={fieldValue}
+    onChange={(e) => setFieldValue(e.target.value)}
+    placeholder="e.g., B2B SaaS companies with 100-500 employees using cloud infrastructure"
+    className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+  />
+  <WordCountFeedback text={fieldValue} minWords={5} />
+</div>
+```
 
 ### Status Grid
 - **Layout**: grid grid-cols-[number of steps]

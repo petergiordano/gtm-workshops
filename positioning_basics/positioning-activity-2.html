@@ -249,7 +249,7 @@
                     // Need corresponding values for the differentiators they filled out
                     const validDifferentiators = differentiators.filter(d => d.length >= 15);
                     const validValues = values.filter((v, index) => 
-                        differentiators[index].length >= 15 && v.length >= 20
+                        differentiators[index].length >= 15 && v.length >= 25
                     );
                     return validValues.length >= validDifferentiators.length;
                 }
@@ -270,7 +270,7 @@
                     // Filter out empty differentiators and values
                     const validDifferentiators = differentiators.filter(d => d.length >= 15);
                     const validValues = values.filter((v, index) => 
-                        differentiators[index].length >= 15 && v.length >= 20
+                        differentiators[index].length >= 15 && v.length >= 25
                     );
                     
                     const updatedData = {
@@ -296,7 +296,7 @@
                 } else {
                     const validDifferentiators = differentiators.filter(d => d.length >= 15);
                     const validValues = values.filter((v, index) => 
-                        differentiators[index].length >= 15 && v.length >= 20
+                        differentiators[index].length >= 15 && v.length >= 25
                     );
                     return validValues.length;
                 }
@@ -559,7 +559,7 @@
                             <div key={index} className="bg-white border-2 border-gray-200 rounded-lg p-6">
                                 <div className="flex justify-between items-center mb-3">
                                     <label className="text-gray-700 font-medium">
-                                        Unique differentiator #{index + 1}: <span className="text-xs text-gray-500">(describe in 3+ words)</span>
+                                        Unique differentiator #{index + 1}: <span className="text-xs text-gray-400">(describe in 3+ words)</span>
                                         {index >= 2 && <span className="text-xs text-gray-400 ml-2">(optional)</span>}
                                     </label>
                                     {differentiator.length >= 15 && (
@@ -579,15 +579,18 @@
                                         index === 1 ? "Example: Automated root cause analysis with suggested fixes" :
                                         "Example: One-click integration with existing monitoring tools"
                                     }
-                                    className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                    className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                                 />
-                                <div className="flex justify-between text-sm mt-2">
+                                <div className="flex justify-between items-center text-sm mt-2">
                                     <span className="text-gray-500">
                                         Focus on capabilities only you can deliver
                                     </span>
-                                    <span className={`font-medium ${differentiator.length >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
-                                        {differentiator.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                    </span>
+                                    <div className={`flex items-center space-x-1 ${differentiator.length >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {differentiator.length >= 15 && <CheckCircle size={16} />}
+                                        <span className="font-medium">
+                                            {differentiator.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                        </span>
+                                    </div>
                                 </div>
                             </div>
                         ))}
@@ -678,7 +681,7 @@
                                         <div className="flex justify-between items-center mb-3">
                                             <label className="text-gray-700 font-medium flex items-center">
                                                 <Gem className="text-orange-600 mr-2" size={18} />
-                                                Customer value this creates: <span className="text-xs text-gray-500 ml-2">(describe in 5+ words)</span>
+                                                Customer value this creates: <span className="text-xs text-gray-400 ml-2">(describe in 5+ words)</span>
                                             </label>
                                             {values[index] && values[index].length >= 20 && (
                                                 <CheckCircle className="text-green-500" size={20} />
@@ -691,15 +694,18 @@
                                             value={values[index] || ''}
                                             onChange={(e) => updateValue(index, e.target.value)}
                                             placeholder="Example: Prevents 80% of API failures before they impact customers, reducing revenue loss from outages by $500K annually and improving customer satisfaction scores"
-                                            className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                            className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                                         />
-                                        <div className="flex justify-between text-sm mt-2">
+                                        <div className="flex justify-between items-center text-sm mt-2">
                                             <span className="text-gray-500">
                                                 Include metrics, cost savings, or measurable improvements
                                             </span>
-                                            <span className={`font-medium ${values[index] && values[index].length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                {values[index] ? values[index].trim().split(/\s+/).filter(w => w.length > 0).length : 0} words
-                                            </span>
+                                            <div className={`flex items-center space-x-1 ${values[index] && values[index].length >= 25 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                {values[index] && values[index].length >= 25 && <CheckCircle size={16} />}
+                                                <span className="font-medium">
+                                                    {values[index] ? values[index].trim().split(/\s+/).filter(w => w.length > 0).length : 0} words
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>

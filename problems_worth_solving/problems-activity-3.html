@@ -317,6 +317,34 @@
             );
         };
 
+        // Word count and validation utility
+        const getWordCount = (text) => {
+            return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        };
+
+        const renderWordCountFeedback = (text, minWords, fieldId) => {
+            const wordCount = getWordCount(text);
+            const isValid = wordCount >= minWords;
+            
+            return (
+                <div className="flex justify-between items-center mt-2 text-sm">
+                    <span className="text-gray-500">
+                        (describe in {minWords}+ words)
+                    </span>
+                    {isValid ? (
+                        <div className="flex items-center text-green-600">
+                            <CheckCircle size={16} className="mr-1" />
+                            <span>{wordCount} words</span>
+                        </div>
+                    ) : (
+                        <span className="text-gray-400">
+                            {wordCount} words
+                        </span>
+                    )}
+                </div>
+            );
+        };
+
         const ProblemScoringWorksheet = () => {
             const [currentStep, setCurrentStep] = useState(1);
             const [problemStatement, setProblemStatement] = useState("");
@@ -426,9 +454,8 @@
                 const newStatement = e.target.value;
                 setProblemStatement(newStatement);
                 
-                // Count words (splitting by whitespace and filtering empty strings)
-                const words = newStatement.trim().split(/\s+/).filter(w => w.length > 0);
-                setWordCount(words.length);
+                // Update word count using utility function
+                setWordCount(getWordCount(newStatement));
             };
 
             const criteriaData = [
@@ -556,16 +583,16 @@
 
             const isStepComplete = () => {
                 if (currentStep === 1) {
-                    return problemStatement.length >= 20;
+                    return getWordCount(problemStatement) >= 5;
                 }
                 if (currentStep === 2) {
                     // Check if the user has assigned any score (1-5) to all criteria
                     const allScored = Object.keys(criteriaData).length === 
                                       Object.keys(scores).filter(key => scores[key] >= 1).length;
                     
-                    // Check if all criteria have minimum evidence (still 10 chars internally)
+                    // Check if all criteria have minimum evidence (word-based)
                     const allEvidence = Object.keys(criteriaData).length === 
-                                        Object.keys(evidence).filter(key => evidence[key].length >= 10).length;
+                                        Object.keys(evidence).filter(key => getWordCount(evidence[key]) >= 3).length;
                                         
                     return allScored && allEvidence;
                 }
@@ -585,7 +612,7 @@
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            Problem Statement: <span className="text-xs text-gray-500">(min. 5 words)</span>
+                            Problem Statement:
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
                             A good problem statement describes: WHO has the problem, WHAT the problem is, and WHY it matters.
@@ -594,17 +621,10 @@
                             value={problemStatement}
                             onChange={handleProblemStatementChange}
                             placeholder="Example: Development teams at fast-growing tech companies struggle to prevent API failures before they impact customers, leading to lost revenue and damaged reputation."
-                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                         />
                         
-                        <div className="flex justify-between text-sm mt-2">
-                            <span className="text-gray-500">
-                                Min. 5 words required
-                            </span>
-                            <span className={`font-medium ${wordCount >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {wordCount} word{wordCount !== 1 ? 's' : ''}
-                            </span>
-                        </div>
+                        {renderWordCountFeedback(problemStatement, 5, 'problemStatement')}
                         
                         <div className="mt-4 flex items-start space-x-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
                             <div className="text-blue-500 mt-1">
@@ -706,14 +726,15 @@
                                 
                                 <div className="mb-4">
                                     <label className="block text-sm font-medium mb-2">
-                                        Evidence for your score: <span className="text-xs text-gray-500">(min. 2-3 words)</span>
+                                        Evidence for your score:
                                     </label>
                                     <textarea
                                         value={evidence[criterion.id]}
                                         onChange={(e) => handleEvidenceChange(criterion.id, e.target.value)}
                                         placeholder={`What specific evidence supports your ${criterion.title} score?`}
-                                        className="w-full p-3 border border-gray-300 rounded-lg resize-none h-20 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 bg-white"
+                                        className="w-full p-3 border border-gray-300 rounded-lg resize-none h-20 focus:border-orange-500 focus:ring-2 focus:ring-orange-200 bg-white placeholder-gray-400"
                                     />
+                                    {renderWordCountFeedback(evidence[criterion.id], 3, `evidence-${criterion.id}`)}
                                 </div>
                                 
                                 <div className="text-sm space-y-1">

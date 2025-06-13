@@ -299,6 +299,34 @@
             );
         };
 
+        // Word count and validation utility
+        const getWordCount = (text) => {
+            return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+        };
+
+        const renderWordCountFeedback = (text, minWords, fieldId) => {
+            const wordCount = getWordCount(text);
+            const isValid = wordCount >= minWords;
+            
+            return (
+                <div className="flex justify-between items-center mt-2 text-sm">
+                    <span className="text-gray-500">
+                        (describe in {minWords}+ words)
+                    </span>
+                    {isValid ? (
+                        <div className="flex items-center text-green-600">
+                            <CheckCircle size={16} className="mr-1" />
+                            <span>{wordCount} words</span>
+                        </div>
+                    ) : (
+                        <span className="text-gray-400">
+                            {wordCount} words
+                        </span>
+                    )}
+                </div>
+            );
+        };
+
         const ProblemOriginStoryActivity = () => {
             const [currentStep, setCurrentStep] = useState(1);
             const [timer, setTimer] = useState(null);
@@ -383,12 +411,12 @@
 
             const isStepComplete = (step) => {
                 if (step === 1) {
-                    return responses.momentOfRealization.length > 10 && 
-                           responses.whoExperienced.length > 5 && 
-                           responses.whyMatters.length > 10;
+                    return getWordCount(responses.momentOfRealization) >= 10 && 
+                           getWordCount(responses.whoExperienced) >= 5 && 
+                           getWordCount(responses.whyMatters) >= 10;
                 } else if (step === 2) {
-                    return responses.whatSurprised.length > 10 && 
-                           responses.howRealProblem.length > 10;
+                    return getWordCount(responses.whatSurprised) >= 10 && 
+                           getWordCount(responses.howRealProblem) >= 10;
                 }
                 return false;
             };
@@ -425,9 +453,10 @@
                             <textarea
                                 value={responses.momentOfRealization}
                                 onChange={(e) => handleInputChange('momentOfRealization', e.target.value)}
-                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
                                 placeholder="Describe the moment when you first identified this problem..."
                             ></textarea>
+                            {renderWordCountFeedback(responses.momentOfRealization, 10, 'momentOfRealization')}
                         </div>
                         
                         <div>
@@ -437,9 +466,10 @@
                             <textarea
                                 value={responses.whoExperienced}
                                 onChange={(e) => handleInputChange('whoExperienced', e.target.value)}
-                                className="w-full h-16 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                className="w-full h-16 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
                                 placeholder="Describe the people or organizations affected by this problem..."
                             ></textarea>
+                            {renderWordCountFeedback(responses.whoExperienced, 5, 'whoExperienced')}
                         </div>
                         
                         <div>
@@ -449,9 +479,10 @@
                             <textarea
                                 value={responses.whyMatters}
                                 onChange={(e) => handleInputChange('whyMatters', e.target.value)}
-                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
                                 placeholder="Explain why this problem was significant to those experiencing it..."
                             ></textarea>
+                            {renderWordCountFeedback(responses.whyMatters, 10, 'whyMatters')}
                         </div>
                     </div>
 
@@ -527,9 +558,10 @@
                             <textarea
                                 value={responses.whatSurprised}
                                 onChange={(e) => handleInputChange('whatSurprised', e.target.value)}
-                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
                                 placeholder="What was unexpected or interesting about this problem?"
                             ></textarea>
+                            {renderWordCountFeedback(responses.whatSurprised, 10, 'whatSurprised')}
                         </div>
                         
                         <div>
@@ -539,9 +571,10 @@
                             <textarea
                                 value={responses.howRealProblem}
                                 onChange={(e) => handleInputChange('howRealProblem', e.target.value)}
-                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                className="w-full h-24 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 placeholder-gray-400"
                                 placeholder="What evidence confirms this is a genuine problem?"
                             ></textarea>
+                            {renderWordCountFeedback(responses.howRealProblem, 10, 'howRealProblem')}
                         </div>
                     </div>
 

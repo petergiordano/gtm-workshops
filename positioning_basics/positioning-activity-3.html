@@ -290,9 +290,9 @@
 
             const isStepComplete = () => {
                 if (currentStep === 1) {
-                    return targetCustomer.length >= 20;
+                    return targetCustomer.length >= 25;
                 } else if (currentStep === 2) {
-                    return corePain.length >= 15;
+                    return corePain.length >= 25;
                 }
                 return false;
             };
@@ -422,7 +422,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            FOR: <span className="text-xs text-gray-500">(describe your target customer precisely)</span>
+                            FOR: <span className="text-xs text-gray-400">(describe in 5+ words)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
                             Refine this description based on your ECP work. Be specific about who values your unique benefits most.
@@ -430,17 +430,20 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                         <textarea
                             value={targetCustomer}
                             onChange={(e) => setTargetCustomer(e.target.value)}
-                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm"
+                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm placeholder-gray-400"
                             placeholder="Example: Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure and value reliability over cost"
                         />
                         
-                        <div className="flex justify-between text-sm mt-2">
+                        <div className="flex justify-between items-center text-sm mt-2">
                             <span className="text-gray-500">
                                 Include role, company characteristics, and what makes them value your solution
                             </span>
-                            <span className={`font-medium ${targetCustomer.length >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {targetCustomer.length >= 20 ? '✓ Complete' : 'Needs more detail'}
-                            </span>
+                            <div className={`flex items-center space-x-1 ${targetCustomer.length >= 25 ? 'text-green-600' : 'text-gray-500'}`}>
+                                {targetCustomer.length >= 25 && <CheckCircle size={16} />}
+                                <span className="font-medium">
+                                    {targetCustomer.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                </span>
+                            </div>
                         </div>
                         
                         <div className="mt-4 grid grid-cols-3 gap-4">
@@ -503,7 +506,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
 
                     <div className="bg-white border-2 border-gray-200 rounded-lg p-6">
                         <label className="block text-gray-700 font-medium mb-2">
-                            WHO STRUGGLES WITH: <span className="text-xs text-gray-500">(describe in 5+ words)</span>
+                            WHO STRUGGLES WITH: <span className="text-xs text-gray-400">(describe in 5+ words)</span>
                         </label>
                         <p className="text-gray-500 text-sm mb-3">
                             What specific pain point does your customer value directly address? Think about the struggle that drives them to seek a solution.
@@ -512,16 +515,19 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                             value={corePain}
                             onChange={(e) => setCorePain(e.target.value)}
                             placeholder="Example: API failures that impact customers and cause revenue loss before teams can respond"
-                            className="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                            className="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                         />
                         
-                        <div className="flex justify-between text-sm mt-2">
+                        <div className="flex justify-between items-center text-sm mt-2">
                             <span className="text-gray-500">
                                 Focus on the pain your value directly solves, not general problems
                             </span>
-                            <span className={`font-medium ${corePain.length >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {corePain.length >= 15 ? '✓ Complete' : 'Needs more detail'}
-                            </span>
+                            <div className={`flex items-center space-x-1 ${corePain.length >= 25 ? 'text-green-600' : 'text-gray-500'}`}>
+                                {corePain.length >= 25 && <CheckCircle size={16} />}
+                                <span className="font-medium">
+                                    {corePain.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                </span>
+                            </div>
                         </div>
                         
                         <div className="mt-4 flex items-start space-x-3 p-3 bg-blue-50 border border-blue-100 rounded-lg">
