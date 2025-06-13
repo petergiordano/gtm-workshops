@@ -694,10 +694,10 @@
                         </div>
                     </div>
 
-                    <div className="text-center space-x-4">
+                    <div className="flex justify-between items-center mt-6 gap-4">
                         <button
                             onClick={resetActivity}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                            className="bg-gray-500 text-white px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors flex-shrink-0"
                         >
                             Reset Activity
                         </button>
@@ -727,22 +727,43 @@
                                 setExportData(newExportData);
                                 setActivityComplete(true);
                                 console.log('[Problems-1] Export data generated:', newExportData);
-                                
-                                // Small delay to show export section, then navigate
-                                setTimeout(() => {
-                                    window.location.href = 'index.html';
-                                }, 100);
                             }}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                            className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition-colors font-semibold flex-shrink-0"
                         >
-                            Return to Workshop
+                            Generate Code
                         </button>
                         
                         <button
-                            onClick={() => window.location.href = 'problems-activity-2.html'}
-                            className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                            onClick={() => {
+                                // Generate export data before continuing
+                                const newExportData = {
+                                    version: "1.0",
+                                    createdAt: importedData?.createdAt || new Date().toISOString(),
+                                    lastUpdated: new Date().toISOString(),
+                                    day1: {
+                                        ...(importedData?.day1 || {}),
+                                        activity1: {
+                                            momentOfRealization: responses.momentOfRealization,
+                                            whoExperienced: responses.whoExperienced,
+                                            whyMatters: responses.whyMatters,
+                                            whatSurprised: responses.whatSurprised,
+                                            howRealProblem: responses.howRealProblem,
+                                            completedAt: new Date().toISOString()
+                                        }
+                                    },
+                                    day2_1: importedData?.day2_1 || {},
+                                    day2_2: importedData?.day2_2 || {},
+                                    day3: importedData?.day3 || {}
+                                };
+                                setExportData(newExportData);
+                                setActivityComplete(true);
+                                
+                                // Navigate to next activity
+                                window.location.href = 'problems-activity-2.html';
+                            }}
+                            className="bg-orange-500 text-white px-4 py-2 rounded text-sm hover:bg-orange-600 transition-colors font-semibold flex-shrink-0"
                         >
-                            Continue to Market Landing Zone Analysis
+                            Continue to Next Activity
                         </button>
                     </div>
                 </div>

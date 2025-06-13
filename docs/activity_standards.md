@@ -398,21 +398,73 @@ const WordCountFeedback = ({ text, minWords = 5 }) => {
   - Forward: bg-orange-500 text-white px-8 py-3 font-semibold
 
 ### Activity Completion Navigation
-- **Final Step**: Include "Continue to [Next Activity]" button following workshop sequence
-- **Button Pattern**: 
-  ```html
+
+#### Standardized 4-Button Layout
+All activity completion pages MUST use this exact 4-button layout:
+
+```html
+<div className="flex justify-between items-center mt-6 gap-2">
   <button
-    onClick={() => window.location.href = 'next-activity.html'}
-    className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+    onClick={resetActivity}
+    className="bg-gray-500 text-white px-3 py-2 rounded text-sm hover:bg-gray-600 transition-colors flex-shrink-0"
   >
-    Continue to [Activity Name]
+    Reset Activity
   </button>
-  ```
-- **Button Text Examples**:
-  - "Continue to Market Landing Zone Analysis" (problems-activity-1 → problems-activity-2)
-  - "Continue to Activity 2" (general pattern)
-  - "Continue to Activity 3" (market-entry-activity-2 → market-entry-activity-3)
-- **Layout**: Center-aligned with other completion buttons (Reset, Return to Workshop)
+  
+  <button
+    onClick={() => {
+      // Generate export data logic here
+      setExportData(newExportData);
+      setActivityComplete(true);
+    }}
+    className="bg-green-500 text-white px-3 py-2 rounded text-sm hover:bg-green-600 transition-colors font-semibold flex-shrink-0"
+  >
+    Generate Code
+  </button>
+  
+  <button
+    onClick={() => window.location.href = 'index.html'}
+    className="bg-gray-500 text-white px-3 py-2 rounded text-sm hover:bg-gray-600 transition-colors flex-shrink-0"
+  >
+    Return to Workshop
+  </button>
+  
+  <button
+    onClick={() => {
+      // Generate export data and navigate
+      setExportData(newExportData);
+      setActivityComplete(true);
+      window.location.href = 'next-activity.html';
+    }}
+    className="bg-orange-500 text-white px-3 py-2 rounded text-sm hover:bg-orange-600 transition-colors font-semibold flex-shrink-0"
+  >
+    Continue to Next Activity
+  </button>
+</div>
+```
+
+#### Button Layout Specifications
+- **Container**: `flex justify-between items-center` with `mt-6 gap-2`
+- **Sizing**: All buttons use `px-3 py-2` and `text-sm` for consistent sizing
+- **Spacing**: `gap-2` between buttons, `flex-shrink-0` to prevent text wrapping
+- **Colors**:
+  - Reset: Gray secondary (`bg-gray-500`)
+  - Generate Code: Green primary (`bg-green-500 font-semibold`)
+  - Return: Gray secondary (`bg-gray-500`)
+  - Continue: Orange primary (`bg-orange-500 font-semibold`)
+
+#### Button Text Examples
+- **Generate Code**: Always "Generate Code" (shortened for space)
+- **Continue Button**:
+  - "Continue to Next Activity" (when space allows)
+  - "Continue to Activity 2" (specific naming)
+  - "Continue to Market Landing Zone Analysis" (descriptive when short enough)
+
+#### Critical Requirements
+1. **Generate Code Button**: REQUIRED - Users need this to save progress between activities
+2. **ExportSection Integration**: Generate Code button triggers `setExportData()` and `setActivityComplete(true)` to show progress code
+3. **Consistent Spacing**: Use exact CSS classes specified to ensure buttons fit within viewport width
+4. **Button Order**: Reset | Generate Code | Return | Continue (left to right)
 
 ### Workshop-to-Workshop Navigation
 - **Last Activity Rule**: The final activity (Activity 3) of each workshop MUST include navigation to the next workshop

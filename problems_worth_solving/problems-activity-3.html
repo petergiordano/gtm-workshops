@@ -198,9 +198,7 @@
                 onImport(data);
                 setImportStatus({ type: 'success', message: 'Progress imported successfully!' });
                 
-                if (autoHide) {
-                    setTimeout(() => setShowImport(false), 1500);
-                }
+                // Keep import section visible with success message - don't auto-hide
             };
 
             const handleStartFresh = () => {
@@ -1005,41 +1003,50 @@
                         
                         <button
                             onClick={() => {
-                                // Generate export data when completing the activity
-                                const newExportData = {
-                                    version: "1.0",
-                                    createdAt: importedData?.createdAt || new Date().toISOString(),
-                                    lastUpdated: new Date().toISOString(),
-                                    day1: {
-                                        ...(importedData?.day1 || {}),
-                                        problemStatement: problemStatement, // This is the key export for Day 2-1
-                                        activity3: {
-                                            problemStatement: problemStatement,
-                                            scores: scores,
-                                            evidence: evidence,
-                                            totalScore: totalScore,
-                                            meetsThreshold: meetsThreshold(),
-                                            completedAt: new Date().toISOString()
-                                        }
-                                    },
-                                    day2_1: importedData?.day2_1 || {},
-                                    day2_2: importedData?.day2_2 || {},
-                                    day3: importedData?.day3 || {}
-                                };
-                                setExportData(newExportData);
-                                setActivityComplete(true);
-                                console.log('[Problems-3] Export data generated:', newExportData);
+                                if (!activityComplete) {
+                                    // Generate export data when completing the activity
+                                    const newExportData = {
+                                        version: "1.0",
+                                        createdAt: importedData?.createdAt || new Date().toISOString(),
+                                        lastUpdated: new Date().toISOString(),
+                                        day1: {
+                                            ...(importedData?.day1 || {}),
+                                            problemStatement: problemStatement, // This is the key export for Day 2-1
+                                            activity3: {
+                                                problemStatement: problemStatement,
+                                                scores: scores,
+                                                evidence: evidence,
+                                                totalScore: totalScore,
+                                                meetsThreshold: meetsThreshold(),
+                                                completedAt: new Date().toISOString()
+                                            }
+                                        },
+                                        day2_1: importedData?.day2_1 || {},
+                                        day2_2: importedData?.day2_2 || {},
+                                        day3: importedData?.day3 || {}
+                                    };
+                                    setExportData(newExportData);
+                                    setActivityComplete(true);
+                                    console.log('[Problems-3] Export data generated:', newExportData);
+                                } else {
+                                    // If already completed, navigate to workshop
+                                    window.location.href = 'index.html';
+                                }
                             }}
-                            className="px-6 py-2 rounded-lg text-white font-medium bg-gray-500 hover:bg-gray-600 transition-colors"
+                            className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+                                activityComplete 
+                                    ? 'bg-gray-500 hover:bg-gray-600' 
+                                    : 'bg-green-500 hover:bg-green-600'
+                            }`}
                         >
-                            Save Progress & Complete
+                            {activityComplete ? 'Return to Workshop' : 'Generate Code'}
                         </button>
                         
                         <button
-                            onClick={() => window.location.href = '../finding_your_early_customers/index.html'}
+                            onClick={() => window.location.href = '../index.html'}
                             className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
                         >
-                            Continue to Finding Your Early Customers
+                            Back to All Workshops
                         </button>
                     </div>
                 </div>

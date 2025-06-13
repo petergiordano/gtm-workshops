@@ -7,9 +7,12 @@ What This Test Code Contains:
 - Activity 1 (Problem Origin Story): Director of Engineering consultation at Series B SaaS company
 - Activity 2 (Market Landing Zone): Complete competitive analysis with real competitors (Datadog, New Relic, Dynatrace)
 - Activity 3 (Problem Scoring): High-scoring validation (23/25) meeting all thresholds:
+
+Use this for text entry area on step 1 of problems-activity-3.html
+
   - Urgency: 5 (Critical $100k/hour downtime costs)
-  - Value: 5 (Companies already spending $2.5K-$4K/month on monitoring tools)  
   - Importance: 5 (Board-level OKRs: profitability and customer satisfaction)
+  - Value: 5 (Companies already spending $2.5K-$4K/month on monitoring tools)  
   - Market Gap: 4 (No existing predictive API failure prevention solutions)
   - Accessibility: 4 (Identifiable through GitHub, dev communities, existing tool users)
 
