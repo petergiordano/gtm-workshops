@@ -18,8 +18,11 @@
 ├── problems_worth_solving
 │   ├── index.html
 │   ├── problems-activity-1.html
-        - right now user must start timer in order for "continue to partner sharing" to be revealed. Change UX so user can continue without having to start the time. .
-        - Need a button on last "page" of the activity to continue to next activity (check the other activity files to follow same ux and text display to the user)
-        - 
 │   ├── problems-activity-2.html
 │   └── problems-activity-3.html
+
+
+
+OTHER:
+- for all activity html file with more than 1 step, add a back button to go back one step (except for first 'page' of the activity where the choices would be go back to current workshop or go back to all workshops)
+- Every activity html file needs to have the title of the workshop and specific activity listed at the top. For example, the file ecp-activity-1.html should show "Finding your Early Customers: Early Market vs Mainstream Identification" at the top of each of the 'pages' in the activity. this should be in the sticky header so the user can always see it.
