@@ -146,49 +146,49 @@
         // Market factors configuration
         const marketFactors = [
             {
-                id: 'customer_behavior',
-                title: 'Customer Behavior',
+                id: 'market_size',
+                title: 'Market Size & Growth',
+                icon: '📊',
+                japanPrompt: 'What is the market size and growth rate in Japan?',
+                usPrompt: 'How does the US market size and growth compare?',
+                japanPlaceholder: 'e.g., $500M market, 5% annual growth, mature market',
+                usPlaceholder: 'e.g., $5B market, 15% annual growth, emerging segment'
+            },
+            {
+                id: 'customer_dynamics',
+                title: 'Customer Dynamics',
                 icon: '👥',
-                japanPrompt: 'How do customers make buying decisions in Japan?',
-                usPrompt: 'How do US customers differ in their buying behavior?',
-                japanPlaceholder: 'e.g., Consensus-driven, long evaluation cycles, relationship-first',
-                usPlaceholder: 'e.g., Individual authority, quick pilots, results-first'
+                japanPrompt: 'How do customers buy and use solutions in Japan?',
+                usPrompt: 'How do US customer dynamics differ?',
+                japanPlaceholder: 'e.g., Enterprise-focused, long sales cycles, consensus decisions',
+                usPlaceholder: 'e.g., SMB-friendly, self-service, individual decision makers'
             },
             {
-                id: 'competition',
-                title: 'Competition',
+                id: 'competitive_landscape',
+                title: 'Competitive Landscape',
                 icon: '🏆',
-                japanPrompt: 'What is the competitive landscape in Japan?',
-                usPrompt: 'How does US competition differ?',
-                japanPlaceholder: 'e.g., 3 established players, focus on reliability',
-                usPlaceholder: 'e.g., 20+ competitors, focus on innovation speed'
+                japanPrompt: 'Who are the main competitors in Japan?',
+                usPrompt: 'How is the US competitive landscape different?',
+                japanPlaceholder: 'e.g., 3 dominant players, focus on reliability and service',
+                usPlaceholder: 'e.g., Fragmented market, 20+ competitors, innovation-driven'
             },
             {
-                id: 'regulations',
-                title: 'Regulations',
+                id: 'regulatory_environment',
+                title: 'Regulatory Environment',
                 icon: '📋',
-                japanPrompt: 'What regulations apply in Japan?',
-                usPrompt: 'What US regulations must you comply with?',
-                japanPlaceholder: 'e.g., JPIPA data privacy, industry certifications',
-                usPlaceholder: 'e.g., SOC2, GDPR, state privacy laws'
+                japanPrompt: 'What regulations and compliance requirements exist in Japan?',
+                usPrompt: 'What US regulations must you navigate?',
+                japanPlaceholder: 'e.g., JPIPA for data privacy, industry-specific certifications',
+                usPlaceholder: 'e.g., SOC2, HIPAA, state privacy laws, FedRAMP'
             },
             {
-                id: 'market_dynamics',
-                title: 'Market Dynamics',
-                icon: '📈',
-                japanPrompt: 'How does the Japan market operate?',
-                usPrompt: 'How do US market dynamics differ?',
-                japanPlaceholder: 'e.g., Steady growth, long-term contracts',
-                usPlaceholder: 'e.g., Rapid scaling, monthly contracts'
-            },
-            {
-                id: 'business_culture',
-                title: 'Business Culture',
-                icon: '🤝',
-                japanPrompt: 'What cultural norms exist in Japan?',
-                usPrompt: 'How does US business culture differ?',
-                japanPlaceholder: 'e.g., Formal hierarchy, indirect communication',
-                usPlaceholder: 'e.g., Flat structure, direct communication'
+                id: 'operational_needs',
+                title: 'Operational Needs',
+                icon: '🛠️',
+                japanPrompt: 'What operational requirements exist in Japan?',
+                usPrompt: 'What operational changes are needed for the US?',
+                japanPlaceholder: 'e.g., Japanese language support, local office preferred',
+                usPlaceholder: 'e.g., 24/7 support, US entity, local data centers'
             }
         ];
 
@@ -266,11 +266,11 @@
             
             // Market factor comparison state
             const [factorData, setFactorData] = useState({
-                customer_behavior: { japan: '', us: '' },
-                competition: { japan: '', us: '' },
-                regulations: { japan: '', us: '' },
-                market_dynamics: { japan: '', us: '' },
-                business_culture: { japan: '', us: '' }
+                market_size: { japan: '', us: '' },
+                customer_dynamics: { japan: '', us: '' },
+                competitive_landscape: { japan: '', us: '' },
+                regulatory_environment: { japan: '', us: '' },
+                operational_needs: { japan: '', us: '' }
             });
             
             // Gap Priority Matrix state
@@ -294,11 +294,11 @@
             // Reset function
             const resetActivity = () => {
                 setFactorData({
-                    customer_behavior: { japan: '', us: '' },
-                    competition: { japan: '', us: '' },
-                    regulations: { japan: '', us: '' },
-                    market_dynamics: { japan: '', us: '' },
-                    business_culture: { japan: '', us: '' }
+                    market_size: { japan: '', us: '' },
+                    customer_dynamics: { japan: '', us: '' },
+                    competitive_landscape: { japan: '', us: '' },
+                    regulatory_environment: { japan: '', us: '' },
+                    operational_needs: { japan: '', us: '' }
                 });
                 setPriorities([]);
                 setAdaptationNotes('');
@@ -648,10 +648,10 @@
                 <div className="space-y-4">
                     <div className="text-center mb-4">
                         <h3 className="text-xl font-bold text-gray-800 mb-2">
-                            5-Factor Market Comparison
+                            Global Market Strategy Assessment
                         </h3>
                         <p className="text-gray-600 text-sm">
-                            Compare key market factors between Japan and US to identify gaps and opportunities
+                            Compare key market factors between Japan and US to identify critical gaps and opportunities
                         </p>
                     </div>
 
