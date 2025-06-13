@@ -246,6 +246,30 @@
             const [importExpanded, setImportExpanded] = useState(false);
             const [importedContext, setImportedContext] = useState(null);
 
+            // Reset function
+            const resetActivity = () => {
+                setStrengths(['', '', '']);
+                setLimitations(['', '', '']);
+                setSixMonthMetrics(['', '', '']);
+                setSixMonthTargets(['', '', '']);
+                setTwelveMonthMetrics(['', '', '']);
+                setTwelveMonthTargets(['', '', '']);
+                setImportedContext(null);
+                setShowImportSection(true);
+                setImportExpanded(false);
+                setCurrentStep(1);
+                setActiveTab('6months');
+                setWorkshopData({
+                    version: "1.0",
+                    createdAt: new Date().toISOString(),
+                    lastUpdated: new Date().toISOString(),
+                    day1: {},
+                    day2_1: {},
+                    day2_2: {},
+                    day3: {}
+                });
+            };
+
             // Validation helpers
             const isSection1Complete = () => {
                 const validStrengths = strengths.filter(s => s.trim().length >= 10).length;
@@ -955,7 +979,14 @@
                     )}
 
                     {/* Main Content */}
-                    <div className="bg-white rounded-lg shadow-lg p-4 relative">
+                    <div className="bg-white rounded-lg shadow-lg p-6 relative">
+                        <button
+                            onClick={resetActivity}
+                            className="absolute -top-2 -right-2 w-8 h-8 bg-gray-200 hover:bg-orange-500 hover:text-white rounded-full flex items-center justify-center transition-all duration-200 text-gray-600"
+                            title="Reset Activity"
+                        >
+                            <span className="text-lg font-bold">↻</span>
+                        </button>
                         {currentStep === 1 && renderSection1()}
                         {currentStep === 2 && renderSection2()}
                         {currentStep === 3 && renderSection3()}
