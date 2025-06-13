@@ -962,7 +962,7 @@
                         )}
                     </div>
 
-                    <div className="flex justify-between">
+                    <div className="text-center space-x-4">
                         <button
                             onClick={prevStep}
                             className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
@@ -995,9 +995,16 @@
                                 setActivityComplete(true);
                                 console.log('[Problems-3] Export data generated:', newExportData);
                             }}
-                            className="px-6 py-2 rounded-lg text-white font-medium bg-green-500 hover:bg-green-600 transition-colors"
+                            className="px-6 py-2 rounded-lg text-white font-medium bg-gray-500 hover:bg-gray-600 transition-colors"
                         >
                             Save Progress & Complete
+                        </button>
+                        
+                        <button
+                            onClick={() => window.location.href = '../finding_your_early_customers/index.html'}
+                            className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                        >
+                            Continue to Finding Your Early Customers
                         </button>
                     </div>
                 </div>

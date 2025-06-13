@@ -414,6 +414,28 @@ const WordCountFeedback = ({ text, minWords = 5 }) => {
   - "Continue to Activity 3" (market-entry-activity-2 → market-entry-activity-3)
 - **Layout**: Center-aligned with other completion buttons (Reset, Return to Workshop)
 
+### Workshop-to-Workshop Navigation
+- **Last Activity Rule**: The final activity (Activity 3) of each workshop MUST include navigation to the next workshop
+- **Cross-Workshop Navigation Pattern**:
+  ```html
+  <button
+    onClick={() => window.location.href = '../next_workshop/index.html'}
+    className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+  >
+    Continue to [Next Workshop Name]
+  </button>
+  ```
+- **Workshop Sequence Navigation**:
+  - problems-activity-3.html → "Continue to Finding Your Early Customers"
+  - ecp-activity-3.html → "Continue to Positioning Basics"  
+  - positioning-activity-3.html → "Continue to Market Entry Readiness"
+  - market-entry-activity-3.html → "Complete Workshop Series" (final workshop)
+- **Implementation Requirements**:
+  - Button must be the primary action (orange styling)
+  - Other buttons (Reset, Save Progress) should be secondary (gray styling)
+  - Use relative paths: `../workshop_name/index.html`
+  - Clear descriptive text indicating the next workshop name
+
 ## Accessibility Guidelines
 
 ### Color Contrast
