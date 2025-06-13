@@ -494,26 +494,28 @@
                             </span>
                         </div>
                         
-                        {!timer ? (
-                            <button
-                                onClick={handleStartIndividualReflection}
-                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
-                            >
-                                Start Timer
-                            </button>
-                        ) : (
+                        <div className="flex items-center space-x-4">
+                            {!timer ? (
+                                <button
+                                    onClick={handleStartIndividualReflection}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                                >
+                                    Start Timer (Optional)
+                                </button>
+                            ) : null}
+                            
                             <button
                                 onClick={() => setCurrentStep(2)}
-                                disabled={!isStepComplete(1) && timeLeft > 0}
+                                disabled={!isStepComplete(1)}
                                 className={`px-4 py-2 rounded-lg transition-colors ${
-                                    isStepComplete(1) || timeLeft === 0
+                                    isStepComplete(1)
                                         ? 'bg-orange-500 text-white hover:bg-orange-600'
                                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                                 }`}
                             >
                                 Continue to Partner Sharing
                             </button>
-                        )}
+                        </div>
                     </div>
                 </div>
             );
@@ -586,21 +588,28 @@
                             </span>
                         </div>
                         
-                        {!partnerSharingStarted ? (
-                            <button
-                                onClick={handleStartPartnerSharing}
-                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
-                            >
-                                Start Timer
-                            </button>
-                        ) : (
+                        <div className="flex items-center space-x-4">
+                            {!partnerSharingStarted ? (
+                                <button
+                                    onClick={handleStartPartnerSharing}
+                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
+                                >
+                                    Start Timer (Optional)
+                                </button>
+                            ) : null}
+                            
                             <button
                                 onClick={() => setCurrentStep(3)}
-                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                                disabled={!isStepComplete(2)}
+                                className={`px-4 py-2 rounded-lg transition-colors ${
+                                    isStepComplete(2)
+                                        ? 'bg-orange-500 text-white hover:bg-orange-600'
+                                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                                }`}
                             >
                                 Continue to Summary
                             </button>
-                        )}
+                        </div>
                     </div>
                 </div>
             );
@@ -658,13 +667,14 @@
                         </div>
                     </div>
 
-                    <div className="text-center">
+                    <div className="text-center space-x-4">
                         <button
                             onClick={resetActivity}
-                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors mr-4"
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
                         >
                             Reset Activity
                         </button>
+                        
                         <button
                             onClick={() => {
                                 // Generate export data when completing the activity
@@ -694,9 +704,16 @@
                                     window.location.href = 'index.html';
                                 }, 100);
                             }}
-                            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
                         >
                             Return to Workshop
+                        </button>
+                        
+                        <button
+                            onClick={() => window.location.href = 'problems-activity-2.html'}
+                            className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+                        >
+                            Continue to Market Landing Zone Analysis
                         </button>
                     </div>
                 </div>
