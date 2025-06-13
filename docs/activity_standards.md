@@ -337,6 +337,23 @@ const WordCountFeedback = ({ text, minWords = 5 }) => {
 - **No External Storage**: All data remains in-session
 - **Completion Threshold**: Word-based requirements (internally validated using character counts)
 
+### Timer Implementation Standards
+- **Timer Behavior**: All activity timers are OPTIONAL and do not block progression
+- **User Experience**: Users can complete activities without starting timers
+- **Primary Validation**: Based on text field completion (word count requirements)
+- **Timer Controls**:
+  - Start Timer button: Optional helper for guided pacing
+  - Continue button: Always available when required fields are complete
+  - Layout: Timer and continue buttons side-by-side when timer not started
+- **Button Styling**:
+  - Timer button: `bg-gray-500` (secondary/optional styling)
+  - Continue button: `bg-orange-500` (primary action)
+  - Timer label: "Start Timer (Optional)" to indicate non-blocking nature
+- **Validation Logic**: 
+  - `disabled={!isStepComplete(stepNumber)}` - based purely on field completion
+  - Remove timer-based validation conditions
+  - Timer serves as optional pacing tool only
+
 ### Responsive Design
 - **Landscape Priority**: Optimize for 16:9 landscape orientation first
 - **Mobile-responsive**: Secondary consideration - stack columns on small screens
@@ -379,6 +396,23 @@ const WordCountFeedback = ({ text, minWords = 5 }) => {
 - **Style**:
   - Back: bg-gray-500 text-white px-6 py-2
   - Forward: bg-orange-500 text-white px-8 py-3 font-semibold
+
+### Activity Completion Navigation
+- **Final Step**: Include "Continue to [Next Activity]" button following workshop sequence
+- **Button Pattern**: 
+  ```html
+  <button
+    onClick={() => window.location.href = 'next-activity.html'}
+    className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 transition-colors font-semibold"
+  >
+    Continue to [Activity Name]
+  </button>
+  ```
+- **Button Text Examples**:
+  - "Continue to Market Landing Zone Analysis" (problems-activity-1 → problems-activity-2)
+  - "Continue to Activity 2" (general pattern)
+  - "Continue to Activity 3" (market-entry-activity-2 → market-entry-activity-3)
+- **Layout**: Center-aligned with other completion buttons (Reset, Return to Workshop)
 
 ## Accessibility Guidelines
 
