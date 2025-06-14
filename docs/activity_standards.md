@@ -327,10 +327,66 @@ const WordCountFeedback = ({ text, minWords = 5 }) => {
 ## Technical Implementation
 
 ### Technology Stack
-- **Framework**: React 18
+- **Framework**: React 18 (REQUIRED)
 - **Styling**: Tailwind CSS
 - **Scripts**: Babel for JSX transpilation
 - **Icons**: Custom SVG components (Clock, Target, CheckCircle, etc.)
+
+### React 18 Implementation Standards
+
+#### Required React Rendering Pattern
+All activities MUST use the React 18 `createRoot` API for rendering. The deprecated `ReactDOM.render()` method will cause rendering failures.
+
+**Correct Implementation:**
+```javascript
+// Get the container element
+const container = document.getElementById('root');
+
+// Create a root
+const root = ReactDOM.createRoot(container);
+
+// Render the app
+root.render(<YourComponentName />);
+```
+
+**❌ Deprecated Pattern (DO NOT USE):**
+```javascript
+// This will NOT work with React 18
+ReactDOM.render(<YourComponentName />, document.getElementById('root'));
+```
+
+#### HTML Structure Requirements
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Title</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    <script type="text/babel">
+        // Your React component code here
+        
+        // REQUIRED: Use React 18 rendering at the end
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<YourComponentName />);
+    </script>
+</body>
+</html>
+```
+
+#### Component Development Standards
+- **Hooks**: Use React 18 hooks (`useState`, `useEffect`, etc.)
+- **Concurrent Features**: Components should be compatible with React 18's concurrent rendering
+- **Error Boundaries**: Ensure proper error handling with React 18's improved error boundaries
+- **StrictMode Compatibility**: All components must work correctly in React StrictMode
 
 ### Data Management
 - **State Management**: React useState hooks
