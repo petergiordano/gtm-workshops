@@ -1,5 +1,5 @@
 # Day 1 - Problems worth solving
-## problems-activity-1.html (Problem Origin Story Activity)
+## Activity 1 - problems-activity-1.html (Problem Origin Story Activity)
 
 **Step 1 - Individual Reflection**
 - What specific moment made you realize this problem exists? [Text entry box (describe in 10+ words)]
@@ -15,7 +15,7 @@
 
 ---
 
-## problems-activity-2.html (Market Landing Zone Analysis)
+## Activity 2 - problems-activity-2.html (Market Landing Zone Analysis)
 
 **Step 1 - Map Your Market Landscape**
 - Place competitor focus markers [Interactive diagram clicks - requires at least 1 competitor marker]
@@ -35,7 +35,7 @@
 
 ---
 
-## problems-activity-3.html (Problem Scoring Worksheet)
+## Activity 3 - problems-activity-3.html (Problem Scoring Worksheet)
 
 **Step 1 - Define Your Problem Statement**
 - Problem Statement [Text area - minimum 5 words/20 characters required, describing WHO has the problem, WHAT the problem is, and WHY it matters]
@@ -57,7 +57,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 # Day 2-1 - Finding your early customers
 
-## **ecp-activity-1.html**
+## Activity 1 - **ecp-activity-1.html**
 
 **Step 1 - Identify Early Market Customers**
 * **Manufacturing Company A:** Classify as "Early Market" or "Mainstream". [Button selection]
@@ -71,7 +71,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 ---
 
-## **ecp-activity-2.html**
+## Activity 2 - **ecp-activity-2.html**
 
 **Step 1 - Map Components**
 * For each of the six "Posh AMP Example Elements," select the matching "ECP Characteristic" from the list. [Dropdown menu selection for each of the six elements].
@@ -82,7 +82,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 ---
 
-## **ecp-activity-3.html**
+## Activity 3 - **ecp-activity-3.html**
 
 **Step 1 - Build ECP**
 * **Common Needs:** Based on your validated problem, who has this problem most urgently? [Text entry box (describe in 10+ words)].
@@ -101,7 +101,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 # Day 2-2 - Positioning and Value Proposition Basics
 
 
-## **positioning-activity-1.html**
+## Activity 1 - **positioning-activity-1.html**
 
 **Step 1 - Confirm Your Early Customer Profile**
 * **Your Early Customer Profile:** Refine the description of the target customer, building on previous work. [Text entry box (describe in 5+ words, requires at least 25 characters to proceed)]
@@ -115,7 +115,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 ---
 
-## **positioning-activity-2.html**
+## Activity 2 - **positioning-activity-2.html**
 
 **Step 1 - Identify Your Unique Differentiators**
 * **Unique differentiator #1:** Describe the strongest unique capability. [Text entry box (describe in 3+ words, requires at least 15 characters)]
@@ -132,7 +132,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 ---
 
-## **positioning-activity-3.html**
+## Activity 3 - **positioning-activity-3.html**
 
 **Step 1 - Confirm Your Target Customer**
 * **FOR:** Refine the description of the target customer who values your unique benefits most. [Text entry box (describe in 5+ words, requires at least 25 characters to proceed)]
@@ -146,25 +146,25 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 # Day 3 - Market Entry Readiness
 
-## **market-entry-activity-1.html**
+## Activity 1 - **market-entry-activity-1.html**
 
-**Section 1 - Current Position Assessment**
+**Step 1 - Current Position Assessment**
 * **Local Strengths:** List up to three advantages you have in your current market. [3 text entry boxes (requires at least 2 strengths with 10+ words each)]
 * **Limitations for Global Markets:** List up to three challenges you will face expanding globally. [3 text entry boxes (requires at least 2 limitations with 10+ words each)]
 
-**Section 2 - Success Metrics Builder**
+**Step 2 - Success Metrics Builder**
 * **6-Month Metrics:** Define up to three key metrics for the first six months. [3 text entry boxes (requires at least 2 metrics with 5+ words each)]
 * **6-Month Target Goals:** Define the target goal for each 6-month metric. [3 text entry boxes (requires at least 2 targets with 5+ words each)]
 * **12-Month Metrics:** Define up to three key metrics for the first twelve months. [3 text entry boxes (requires at least 2 metrics with 5+ words each)]
 * **12-Month Target Goals:** Define the target goal for each 12-month metric. [3 text entry boxes (requires at least 2 targets with 5+ words each)]
 * Requirement: To complete this section, the user must provide at least two metric/target pairs for both the 6-month and 12-month timeframes.
 
-**Section 3 - Complete Activity**
+**Step 3 - Complete Activity**
 * No user entry - This is a summary screen. The user can continue to the next activity or save their progress.
 
 ---
 
-## **market-entry-activity-2.html**
+## Activity 2 - **market-entry-activity-2.html**
 
 **Step 1 - Global Market Strategy Assessment**
 * For each of the 5 market factors (Market Size & Growth, Customer Dynamics, etc.), describe the situation in both Japan and the US. [A pair of text entry boxes for each of the 5 factors (requires 25+ characters, or 5+ words, in each box)]
@@ -179,7 +179,7 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 ---
 
-## **market-entry-activity-3.html**
+## Activity 3 - **market-entry-activity-3.html**
 
 **Step 1 - Strategic Planning Framework**
 * **Market Entry Approach:** Define your go-to-market strategy. [Text entry box (describe in 10+ words)]
@@ -193,5 +193,5 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 
 **Step 3 - Complete Strategy**
 * No user entry - This screen provides a comprehensive summary of the entire Market Entry workshop journey and assembles a final, copyable strategy document. The user can save their final progress code.
----
+
 
