@@ -1,5 +1,81 @@
 # Technical Implementation Guide
 
+## React 18 Implementation Requirements
+
+### Required Technology Stack
+- **React Version**: 18.x (REQUIRED)
+- **ReactDOM Version**: 18.x (REQUIRED)
+- **Babel**: @babel/standalone for JSX transpilation
+- **Styling**: Tailwind CSS via CDN
+
+### React 18 Rendering Pattern (MANDATORY)
+
+All workshop activities MUST use the React 18 `createRoot` API. The legacy `ReactDOM.render()` method will cause rendering failures.
+
+#### ✅ Correct Implementation
+```javascript
+// At the end of your <script type="text/babel"> section
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<YourActivityComponent />);
+```
+
+#### ❌ Legacy Pattern (WILL NOT WORK)
+```javascript
+// DO NOT USE - This will fail with React 18
+ReactDOM.render(<YourActivityComponent />, document.getElementById('root'));
+```
+
+### HTML Template Structure
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity Title</title>
+    <!-- REQUIRED: React 18 CDN links -->
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body>
+    <div id="root"></div>
+    
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Your component code here...
+        const YourActivityComponent = () => {
+            // Component implementation
+            return <div>Your activity content</div>;
+        };
+        
+        // REQUIRED: React 18 rendering pattern
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<YourActivityComponent />);
+    </script>
+</body>
+</html>
+```
+
+### Migration Steps for Existing Activities
+
+1. **Update CDN links** to React 18 versions
+2. **Replace rendering code** at the end of the script
+3. **Test thoroughly** to ensure no breaking changes
+4. **Verify error boundaries** work correctly
+
+### Component Development Standards
+
+- **Hooks Compatibility**: All hooks must be compatible with React 18's concurrent features
+- **StrictMode Ready**: Components should function correctly in React StrictMode
+- **Error Boundaries**: Implement proper error handling for React 18's improved error boundary system
+- **Concurrent Rendering**: Components should be safe for React 18's concurrent rendering
+
 ## Code Architecture
 
 ### Encoding/Decoding Functions

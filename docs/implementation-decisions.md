@@ -1,5 +1,34 @@
 # Implementation Decisions & Context
 
+## React 18 Migration Decision
+
+### Decision: Migrate from React 17 to React 18
+**Date**: June 2025  
+**Rationale**:
+- **Rendering Failures**: React 17's `ReactDOM.render()` method causing workshop activities to fail loading
+- **Modern Features**: Access to React 18's concurrent features and improved error boundaries
+- **Long-term Support**: React 18 is the current stable version with ongoing support
+- **Performance**: Better rendering performance for interactive workshop components
+
+**Migration Impact**:
+```javascript
+// BEFORE (React 17 - DEPRECATED):
+ReactDOM.render(<Component />, document.getElementById('root'));
+
+// AFTER (React 18 - REQUIRED):
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container);
+root.render(<Component />);
+```
+
+**Implementation Requirements**:
+- All activities MUST use React 18 CDN links
+- All activities MUST use `createRoot` API for rendering
+- Components must be compatible with React 18's concurrent rendering
+- Error boundaries updated for React 18's improved error handling
+
+**Validation**: React 18 implementation resolved all workshop rendering issues and improved overall stability.
+
 ## Key Architectural Decisions
 
 ### 1. Progress Codes vs Alternative Solutions

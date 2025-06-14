@@ -1,10 +1,27 @@
 # Version Compatibility Matrix
 
+## React Version Requirements
+
+### React 18.x (Required)
+- **Migration Date**: June 2025
+- **Status**: MANDATORY for all activities
+- **CDN Links**: 
+  - `https://unpkg.com/react@18/umd/react.development.js`
+  - `https://unpkg.com/react-dom@18/umd/react-dom.development.js`
+- **Rendering API**: Must use `ReactDOM.createRoot()` - `ReactDOM.render()` is deprecated
+- **Compatibility**: All activities updated and tested with React 18
+
+### React 17.x (Deprecated)
+- **Status**: NO LONGER SUPPORTED
+- **Issue**: `ReactDOM.render()` method causes rendering failures
+- **Migration**: All activities migrated to React 18
+
 ## Progress Code Versions
 
 ### Version 1.0 (Current)
 - **Released**: June 2025
 - **Structure**: Basic 4-day workshop data
+- **React Requirement**: React 18.x
 - **Compatibility**: N/A (first version)
 
 ### Future Version Planning
