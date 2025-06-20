@@ -13,7 +13,7 @@ This document contains design specifications for all GTM Workshop activities, in
 
 ### Core Design Principles
 - **Visual Style**: Modern, clean, card-based layout
-- **Color Scheme**: Orange (#FF7F00) primary, blue (#3B82F6) secondary
+- **Color Scheme**: Orange (#FF9000) primary, blue (#3B82F6) secondary
 - **Typography**: System fonts with clear hierarchy
 - **Spacing**: Generous padding for readability
 
