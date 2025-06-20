@@ -58,31 +58,35 @@ Please read the current markdown template and enhance it with professional struc
 
 ### **Phase 2: Dev Mode Implementation**
 
-**Step 2A: Create Test Data File**
+**Step 2A: Locate Test Data File**
 ```
-Create test data file [ACTIVITY_NAME].json for development testing
+Locate the corresponding test data file in test_data/[ACTIVITY_NAME].json
 
-Read docs/user-entry-test-responses.md to get the exact test data for this specific activity.
-Create a JSON file with the same name as the HTML file containing the test responses from the markdown file.
+The test data files are already created and populated with data from docs/user-entry-test-responses.md.
 
-Structure should match the React state variables exactly and include:
-- All required fields using the responses from docs/user-entry-test-responses.md
-- Complete data sets that demonstrate the activity's full functionality
+File mapping structure:
+- [workshop_folder]/[activity-name]-#A.html → test_data/[activity-name]-#A.json
 
-Please read docs/user-entry-test-responses.md, find the section for this activity, and create the JSON file with the provided test data.
+Examples:
+- market_entry_readiness/market-entry-activity-1A.html → test_data/market-entry-activity-1A.json
+- problems_worth_solving/problems-activity-2A.html → test_data/problems-activity-2A.json
+- positioning_basics/positioning-activity-3A.html → test_data/positioning-activity-3A.json
+- finding_your_early_customers/ecp-activity-1A.html → test_data/ecp-activity-1A.json
+
+Each JSON file contains complete test data that matches the React state variables exactly.
 ```
 
 **Step 2B: Embed Test Data & Dev Mode**
 ```
-Embed test data from [ACTIVITY_NAME].json into [ACTIVITY_NAME].html
+Embed test data from test_data/[ACTIVITY_NAME].json into [ACTIVITY_NAME].html
 
-Read the test data from the JSON file and embed it directly in the HTML file to eliminate fetch dependencies.
+Read the test data from the corresponding JSON file in the /test_data/ folder and embed it directly in the HTML file to eliminate fetch dependencies.
 
 Specific changes:
-1. Read the JSON file to get the exact test data structure
+1. Read the test_data/[ACTIVITY_NAME].json file to get the exact test data structure
 2. Add the test data as a JavaScript object directly in the script section:
    const embeddedTestData = {
-     // Copy entire contents from JSON file here
+     // Copy entire contents from test_data/[ACTIVITY_NAME].json here
    };
 3. Add dev mode state variables:
    const [devMode, setDevMode] = useState(false);
@@ -99,7 +103,7 @@ Specific changes:
    - Shows loading state while filling
 7. Ensure field mapping matches the React state variables exactly
 
-Please read both the JSON and HTML files, then embed the test data and implement the dev mode functionality.
+Please read both the test_data/[ACTIVITY_NAME].json and the HTML files, then embed the test data and implement the dev mode functionality.
 ```
 
 ### **Phase 3: Professional Completion Screen**
@@ -235,12 +239,49 @@ This helps users understand the workshop progression.
 
 **File Naming Convention:**
 - Use "A" versions for enhanced activities (reference docs/main-workshop-file-list.md)
-- JSON files match HTML names exactly (e.g., market-entry-activity-2A.json)
+- JSON files are located in test_data/ folder
+- Mapping: [workshop_folder]/[activity-name]-#A.html → test_data/[activity-name]-#A.json
+
+**Complete File Mapping Reference:**
+```
+Workshop Files → Test Data Files:
+├── problems_worth_solving/
+│   ├── problems-activity-1A.html → test_data/problems-activity-1A.json
+│   ├── problems-activity-2A.html → test_data/problems-activity-2A.json
+│   └── problems-activity-3A.html → test_data/problems-activity-3A.json
+├── finding_your_early_customers/
+│   ├── ecp-activity-1A.html → test_data/ecp-activity-1A.json
+│   ├── ecp-activity-2A.html → test_data/ecp-activity-2A.json
+│   └── ecp-activity-3A.html → test_data/ecp-activity-3A.json
+├── positioning_basics/
+│   ├── positioning-activity-1A.html → test_data/positioning-activity-1A.json
+│   ├── positioning-activity-2A.html → test_data/positioning-activity-2A.json
+│   └── positioning-activity-3A.html → test_data/positioning-activity-3A.json
+└── market_entry_readiness/
+    ├── market-entry-activity-1A.html → test_data/market-entry-activity-1A.json
+    ├── market-entry-activity-2A.html → test_data/market-entry-activity-2A.json
+    └── market-entry-activity-3A.html → test_data/market-entry-activity-3A.json
+```
 
 **React State Variable Mapping:**
 - Ensure test data object keys match React useState variable names exactly
-- Use exact responses from docs/user-entry-test-responses.md
+- All responses from docs/user-entry-test-responses.md are already embedded in JSON files
 - Include all form fields, tabs, and completion states
+- Test data files are pre-populated and ready to embed directly into HTML files
+
+**Test Data Structure Example:**
+```javascript
+// Example: test_data/market-entry-activity-1A.json
+const embeddedTestData = {
+  "strengths": ["Global team in place", "Previous US partnerships", "Strong digital presence"],
+  "limitations": ["Limited local partners", "No regulatory knowledge", "Pricing not validated"],
+  "sixMonthMetrics": ["Signed US partner", "US landing page live"],
+  "sixMonthTargets": ["1 signed", "Page launched with US messaging"],
+  "twelveMonthMetrics": ["Revenue from US", "US-based customers"],
+  "twelveMonthTargets": ["$50K", "5+ logos"],
+  "currentStep": 3
+};
+```
 
 **Dev Mode Features:**
 - Double-click activity title to toggle dev mode on/off
