@@ -1,3 +1,5 @@
+# 🔧 Qu
+
 # Migration Plan: gtm-workshops to React + Supabase
 
 **Last updated:** 2025-06-10
