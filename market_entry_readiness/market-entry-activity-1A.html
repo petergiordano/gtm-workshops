@@ -41,6 +41,44 @@
 <body>
     <div id="root"></div>
 
+    <!-- Test Data from test_data/market-entry-activity-1A.json -->
+    <script type="application/json" id="testData">
+    {
+      "strengths": [
+        "Strong engineering talent pool and AI/ML expertise within Tokyo's tech ecosystem, providing a solid foundation for innovation.",
+        "Existing relationships with Japanese tech companies and SaaS startups, offering an initial customer base and partnership opportunities.",
+        "Government support for digital transformation and AI innovation in Japan, creating a favorable environment for growth."
+      ],
+      "limitations": [
+        "Limited local market size for enterprise API monitoring solutions in Japan, necessitating global expansion for significant growth.",
+        "Conservative enterprise adoption of new monitoring tools in Japan, which could slow market penetration.",
+        "Limited experience with US enterprise sales cycles, requiring new strategies and team building for the target market."
+      ],
+      "sixMonthMetrics": [
+        "US enterprise pilots",
+        "Technical integrations",
+        "Sales partnerships"
+      ],
+      "sixMonthTargets": [
+        "3 Fortune 500 pilot customers",
+        "5 major platform integrations",
+        "2 US channel partner agreements"
+      ],
+      "twelveMonthMetrics": [
+        "Annual Recurring Revenue (ARR)",
+        "Customer acquisition",
+        "Product-market fit indicators"
+      ],
+      "twelveMonthTargets": [
+        "$1.5M ARR from US market",
+        "15 enterprise customers",
+        "95% customer satisfaction (NPS >50)"
+      ],
+      "activeTab": "6months",
+      "currentStep": 3
+    }
+    </script>
+
     <script type="text/babel">
         const { useState, useEffect } = React;
 
@@ -158,57 +196,53 @@
                 setActiveTab('6months');
             };
 
-            // Embedded test data (from market-entry-activity-1A.json)
-            const embeddedTestData = {
-                currentStep: 3,
-                strengths: [
-                    "Strong engineering talent pool and AI/ML expertise within Tokyo's tech ecosystem, providing a solid foundation for innovation.",
-                    "Existing relationships with Japanese tech companies and SaaS startups, offering an initial customer base and partnership opportunities.",
-                    "Government support for digital transformation and AI innovation in Japan, creating a favorable environment for growth."
-                ],
-                limitations: [
-                    "Limited local market size for enterprise API monitoring solutions in Japan, necessitating global expansion for significant growth.",
-                    "Conservative enterprise adoption of new monitoring tools in Japan, which could slow market penetration.",
-                    "Limited experience with US enterprise sales cycles, requiring new strategies and team building for the target market."
-                ],
-                sixMonthMetrics: [
-                    "US enterprise pilots",
-                    "Technical integrations",
-                    "Sales partnerships"
-                ],
-                sixMonthTargets: [
-                    "3 Fortune 500 pilot customers",
-                    "5 major platform integrations",
-                    "2 US channel partner agreements"
-                ],
-                twelveMonthMetrics: [
-                    "Annual Recurring Revenue (ARR)",
-                    "Customer acquisition",
-                    "Product-market fit indicators"
-                ],
-                twelveMonthTargets: [
-                    "$1.5M ARR from US market",
-                    "15 enterprise customers",
-                    "95% customer satisfaction (NPS >50)"
-                ],
-                activeTab: "6months"
+            // Reusable dev mode hook for loading test data
+            const loadTestDataFromScript = (setters) => {
+                try {
+                    const dataEl = document.getElementById('testData');
+                    if (dataEl) {
+                        const data = JSON.parse(dataEl.textContent);
+                        Object.entries(setters).forEach(([key, setter]) => {
+                            if (data[key] !== undefined) {
+                                setter(data[key]);
+                            }
+                        });
+                        console.log('✅ Test data loaded successfully from script tag');
+                        return true;
+                    } else {
+                        console.error('❌ Test data script tag not found');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to parse test data:', error);
+                    return false;
+                }
             };
 
-            // Dev fill function (uses embedded data)
+            // Dev fill function (uses external test data)
             const devFillData = () => {
                 setDevFillLoading(true);
                 try {
-                    // Populate state with embedded test data
-                    setStrengths(embeddedTestData.strengths);
-                    setLimitations(embeddedTestData.limitations);
-                    setSixMonthMetrics(embeddedTestData.sixMonthMetrics);
-                    setSixMonthTargets(embeddedTestData.sixMonthTargets);
-                    setTwelveMonthMetrics(embeddedTestData.twelveMonthMetrics);
-                    setTwelveMonthTargets(embeddedTestData.twelveMonthTargets);
-                    setActiveTab(embeddedTestData.activeTab);
-                    setCurrentStep(embeddedTestData.currentStep);
+                    // Define setters for the loadTestDataFromScript function
+                    const setters = {
+                        strengths: setStrengths,
+                        limitations: setLimitations,
+                        sixMonthMetrics: setSixMonthMetrics,
+                        sixMonthTargets: setSixMonthTargets,
+                        twelveMonthMetrics: setTwelveMonthMetrics,
+                        twelveMonthTargets: setTwelveMonthTargets,
+                        activeTab: setActiveTab,
+                        currentStep: setCurrentStep
+                    };
                     
-                    console.log('✅ Dev data loaded successfully (embedded)');
+                    // Load test data using the reusable hook
+                    const success = loadTestDataFromScript(setters);
+                    
+                    if (success) {
+                        console.log('✅ Dev data loaded successfully (from test_data JSON)');
+                    } else {
+                        throw new Error('Failed to load test data from script tag');
+                    }
                 } catch (error) {
                     console.error('❌ Failed to load dev data:', error);
                     alert(`Failed to load test data: ${error.message}`);
