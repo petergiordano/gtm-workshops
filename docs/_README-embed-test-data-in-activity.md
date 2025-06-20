@@ -62,14 +62,14 @@ Please read the current markdown template and enhance it with professional struc
 ```
 Create test data file [ACTIVITY_NAME].json for development testing
 
-Read user-entry-test-responses.md to get the exact test data for this specific activity.
+Read docs/user-entry-test-responses.md to get the exact test data for this specific activity.
 Create a JSON file with the same name as the HTML file containing the test responses from the markdown file.
 
 Structure should match the React state variables exactly and include:
-- All required fields using the responses from user-entry-test-responses.md
+- All required fields using the responses from docs/user-entry-test-responses.md
 - Complete data sets that demonstrate the activity's full functionality
 
-Please read user-entry-test-responses.md, find the section for this activity, and create the JSON file with the provided test data.
+Please read docs/user-entry-test-responses.md, find the section for this activity, and create the JSON file with the provided test data.
 ```
 
 **Step 2B: Embed Test Data & Dev Mode**
@@ -123,7 +123,7 @@ Please read the current completion screen and implement the visual redesign.
 ```
 Add Google Docs integration instructions to [ACTIVITY_NAME] completion screen
 
-Read Copy-to-Clipboard-UX-Design-Specific.md to get the exact UX design pattern used in market-entry-activity-1A.html.
+Read docs/Copy-to-Clipboard-UX-Design-Specific.md to get the exact UX design pattern used in market-entry-activity-1A.html.
 
 Implement the same copy-to-clipboard UX including:
 - Clear 4-step Google Docs workflow with "Copy Activity Summary" button
@@ -135,15 +135,15 @@ Implement the same copy-to-clipboard UX including:
 - Non-blocking notifications (no alerts)
 - Fallback for older browsers/file:// protocol
 
-Please read Copy-to-Clipboard-UX-Design-Specific.md and the reference implementation, then add the Google Docs integration section with identical UX patterns.
+Please read docs/Copy-to-Clipboard-UX-Design-Specific.md and the reference implementation, then add the Google Docs integration section with identical UX patterns.
 ```
 
 ## 📋 **Activity-Specific Customizations**
 
-### **Reference Files:**
-- **user-entry-test-responses.md**: Contains all test data for each activity
-- **Copy-to-Clipboard-UX-Design-Specific.md**: Exact UX pattern for copy functionality
-- **main-workshop-file-list.md**: Complete list of workshop folders and activity files
+### **Reference Files (all in /docs folder):**
+- **docs/user-entry-test-responses.md**: Contains all test data for each activity
+- **docs/Copy-to-Clipboard-UX-Design-Specific.md**: Exact UX pattern for copy functionality
+- **docs/main-workshop-file-list.md**: Complete list of workshop folders and activity files
 
 ### **For Each Activity Type:**
 
@@ -171,7 +171,7 @@ Please read Copy-to-Clipboard-UX-Design-Specific.md and the reference implementa
 
 **✅ Functionality:**
 - [ ] Progress code system completely removed
-- [ ] All form fields have test data from user-entry-test-responses.md
+- [ ] All form fields have test data from docs/user-entry-test-responses.md
 - [ ] Dev mode toggle works (double-click title)
 - [ ] Dev mode shows 🔧 icon and orange title text
 - [ ] "Fill Test Data" button populates all fields correctly
@@ -234,12 +234,12 @@ This helps users understand the workshop progression.
 ## 🔧 **Implementation Notes:**
 
 **File Naming Convention:**
-- Use "A" versions for enhanced activities (reference main-workshop-file-list.md)
+- Use "A" versions for enhanced activities (reference docs/main-workshop-file-list.md)
 - JSON files match HTML names exactly (e.g., market-entry-activity-2A.json)
 
 **React State Variable Mapping:**
 - Ensure test data object keys match React useState variable names exactly
-- Use exact responses from user-entry-test-responses.md
+- Use exact responses from docs/user-entry-test-responses.md
 - Include all form fields, tabs, and completion states
 
 **Dev Mode Features:**
@@ -249,7 +249,7 @@ This helps users understand the workshop progression.
 - One-click population of all form fields
 
 **Copy-to-Clipboard UX:**
-- Follow exact pattern from Copy-to-Clipboard-UX-Design-Specific.md
+- Follow exact pattern from docs/Copy-to-Clipboard-UX-Design-Specific.md
 - Maintain consistent styling and user experience
 - Use "Copy Activity Summary" button naming
 - Ensure textarea has id="markdownSummary" for copy function
@@ -296,8 +296,8 @@ This helps users understand the workshop progression.
 
 **After completing all activity enhancements, update these files in the new branch:**
 
-- **activity_standards.md** - Add new standards for markdown summary blocks, dev mode, and copy-to-clipboard UX
-- **todo.md** - Update completion status and add any new requirements discovered during implementation
+- **docs/activity_standards.md** - Add new standards for markdown summary blocks, dev mode, and copy-to-clipboard UX
+- **docs/TODO.md** - Update completion status and add any new requirements discovered during implementation
 - **Review all files in /docs** - Ensure all documentation reflects the new enhanced activity patterns and methodologies
 
 This methodology ensures **consistent quality** and **professional appearance** across all 12 activities while making each one **developmentally efficient** to implement and test.
