@@ -1,0 +1,7 @@
+{
+  "commonNeeds": "Development teams who are struggling to prevent API failures before they impact customers have this problem most urgently. They need solutions that can provide preemptive action rather than just reactive monitoring.",
+  "problemUrgency": "The problem is urgent because these customers are currently experiencing API issues weekly, with each failure costing approximately $100,000 per hour in lost revenue. This leads to significant operational costs, manual interventions, and lost productivity.",
+  "desiredBusinessValue": "Customers desire increased overall profitability and operational efficiency through reduced API failure-related operational costs and decreased Mean Time to Resolution (MTTR) for API incidents. They also seek early warnings, automated problem resolution, measurable reliability improvements like a 50% reduction in downtime, and 90% faster incident response.",
+  "basicCustomerProfile": "Mid to large-sized companies with modern API infrastructure and established DevOps teams are most likely to have this urgent problem. Specifically, this includes high-growth SaaS companies (Series B+) and large enterprises (cloud-native, Fortune 500) with critical API infrastructure and high downtime costs.",
+  "currentStep": 4
+}

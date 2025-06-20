@@ -1,0 +1,14 @@
+{
+  "problemStatement": "Development teams struggle to prevent API failures before they impact customers. Current monitoring solutions are reactive, not predictive, leading to significant costs—approximately $100,000 per hour in lost revenue for each failure and high operational costs due to downtime and manual interventions. This negatively impacts overall profitability and operational efficiency.",
+  "urgencyScore": 5,
+  "urgencyEvidence": "API failures cost $100k/hr. Teams need immediate alerts, and companies where API failures cost $100k+/hour are prioritizing systems ensuring business continuity. This indicates a clear and immediate pain point.",
+  "importanceScore": 5,
+  "importanceEvidence": "API failures significantly affect revenue and reputation, and reducing API failure-related operational costs is a clear, immediate pain point for target customers. The problem impacts overall profitability and operational efficiency and is visible at the CTO-level.",
+  "valueScore": 5,
+  "valueEvidence": "Posh AMP offers significant business value, including achieving up to a 50% reduction in system failures, leading to an estimated 30% improved MTBF and $500K in annual OpEx savings. It also aims for a 75% increase in the Incident Automation Rate, reducing operational costs by up to 30% and speeding incident response by 75%. There is a clear budget for monitoring, and a strong ROI case based on downtime costs.",
+  "marketGapScore": 5,
+  "marketGapEvidence": "Few predictive solutions exist in the market, and traditional API monitoring tools are purely reactive, lacking predictive capabilities. There is a rising focus on business resilience, and companies are prioritizing systems that ensure business continuity.",
+  "accessibilityScore": 4,
+  "accessibilityEvidence": "Development teams are easy to identify and are willing to try new tools. The target customers are mid to large-sized companies with modern API infrastructure and established DevOps teams. Posh AMP is designed to integrate seamlessly across multiple platforms and tools, providing familiar context while differentiating through its novel predictive approach.",
+  "currentStep": 3
+}

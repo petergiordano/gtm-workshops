@@ -1,0 +1,8 @@
+{
+  "realizedProblem": "The realization stems from observing the significant operational costs and lost revenue associated with purely reactive API monitoring, where failures costing approximately $100,000 per hour occur frequently due to a lack of preemptive capabilities.",
+  "whoExperiencing": "Development teams and DevOps teams in mid to large-sized companies with modern API infrastructure and established DevOps teams experiencing weekly API issues.",
+  "whyMattered": "It mattered due to high costs from downtime, manual interventions, and lost productivity caused by API failures. These issues directly impact overall profitability and operational efficiency, making the reduction of API failure-related costs a crucial pain point for them.",
+  "surprisingAspect": "The surprising aspect is the prevalence of reactive monitoring and the lack of effective predictive solutions in the market, despite API failures costing significant amounts per hour.",
+  "howKnowReal": "The problem is confirmed by the quantifiable impact of API failures, such as the $100,000 per hour cost of incidents and the common struggle among development teams to prevent these failures. This leads companies to prioritize systems that ensure business continuity.",
+  "currentStep": 3
+}

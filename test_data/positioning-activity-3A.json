@@ -1,0 +1,5 @@
+{
+  "targetCustomer": "FOR development and DevOps teams within mid to large-sized companies, including high-growth SaaS (Series B+) and cloud-native Fortune 500 enterprises, who consistently experience weekly API failures and prioritize preemptive action over reactive solutions.",
+  "corePain": "WHO STRUGGLES WITH the inability to prevent API failures before they impact customers, resulting in significant operational costs, lost revenue (approximately $100k/hour per failure), and excessive manual intervention due to current monitoring being reactive rather than predictive, causing a lack of early warning signs.",
+  "currentStep": 3
+}

@@ -1,0 +1,38 @@
+{
+  "marketEntryApproach": "Posh's go-to-market strategy involves a direct sales model combined with strategic technology partnerships, focusing on leveraging cloud providers and DevOps platforms.",
+  "resourceAllocation": "Budget will be allocated towards SOC2 compliance and security efforts ($150K), building a US sales team ($800K for 4 people), and marketing with demand generation ($300K).",
+  "teamBuildingStrategy": "The strategy involves building a US-based sales team, establishing local customer success resources, and ensuring 24/7 support across multiple time zones for the target market.",
+  "timeline": [
+    {
+      "period": "Months 1-2 (Q1 2025)",
+      "primaryGoal": "Establish foundational cloud partnerships and initiate compliance.",
+      "successCriteria": "Secure 2-3 major cloud provider partnerships (AWS, Azure, GCP). Begin SOC2 compliance and security efforts."
+    },
+    {
+      "period": "Months 3-4 (Q2 2025)",
+      "primaryGoal": "Form the US sales team and achieve initial platform integrations.",
+      "successCriteria": "Hire a 4-person US sales team. Complete 5 major DevOps platform integrations."
+    },
+    {
+      "period": "Months 5-6 (Q2 2025)",
+      "primaryGoal": "Acquire initial pilot customers and launch marketing campaigns.",
+      "successCriteria": "Secure 3 Fortune 500 pilot customers. Initiate comprehensive marketing and demand generation."
+    },
+    {
+      "period": "Months 7-8 (Q3 2025)",
+      "primaryGoal": "Expand system integrator partnerships and accelerate customer acquisition.",
+      "successCriteria": "Secure 1-2 system integrator (SI) partner agreements. Progress towards enterprise customer targets."
+    },
+    {
+      "period": "Months 9-10 (Q4 2025)",
+      "primaryGoal": "Scale the customer base and refine product-market fit.",
+      "successCriteria": "Continue acquiring enterprise customers towards the 12-month goal. Gather early product-market fit indicators."
+    },
+    {
+      "period": "Months 11-12 (Q4 2025)",
+      "primaryGoal": "Achieve annual revenue and customer satisfaction targets.",
+      "successCriteria": "Attain $1.5M ARR from the US market. Secure 15 enterprise customers. Achieve 95% customer satisfaction (NPS >50)."
+    }
+  ],
+  "currentStep": 3
+}

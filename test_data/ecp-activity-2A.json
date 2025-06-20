@@ -1,0 +1,11 @@
+{
+  "mappings": {
+    "predictiveAnalytics": "Predictive alerts more important than custom dashboards",
+    "realTimeApiLogs": "Currently experiencing API issues weekly",
+    "automatedProblemResolution": "Reduce downtime costs by X%, improve MTTR by Y%",
+    "seamlessIntegration": "Development teams needing to prevent API failures before they impact customers",
+    "crossPlatformIntegration": "Modern API infrastructure, DevOps team in place",
+    "unifiedMonitoringDashboard": "Engineering leader can approve up to $X"
+  },
+  "currentStep": 2
+}
