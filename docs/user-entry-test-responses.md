@@ -1,5 +1,5 @@
 
-# Day 1 - Problems worth solving
+# Workshop 1 - Day 1 - Problems worth solving
 ## Activity 1: Problem Origin Story, File: problems-activity-1.html
 ### Step 1: Individual Reflection
 
@@ -64,7 +64,7 @@
 
 ---
 
-# Day 2-1 - Finding your early customers
+# Workshop 2 - Day 2-1 - Finding your early customers
 ## Activity 1: Identify Early Market Customers, File: ecp-activity-1.html
 ### Step 1: Identify Early Market Customers
 
@@ -123,7 +123,7 @@
 
 ---
 
-# Day 2-2 - Positioning and Value Proposition Basics
+# Workshop 3 - Day 2-2 - Positioning and Value Proposition Basics
 ## Activity 1: Confirm Early Customer Profile & Competitive Alternative, File: positioning-activity-1.html
 ### Step 1: Confirm Your Early Customer Profile
 
@@ -188,7 +188,7 @@
 
 ---
 
-# Day 3 - Market Entry Readiness
+# Workshop 4 - Day 3 - Market Entry Readiness
 ## Activity 1: Current Position & Success Metrics, File: market-entry-activity-1.html
 ### Step 1: Current Position Assessment
 
