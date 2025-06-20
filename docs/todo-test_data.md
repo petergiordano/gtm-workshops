@@ -2,33 +2,63 @@
 
 ## 🎯 **Goal:** Implement embedded test data and dev mode across all 12 activity files
 
+## 📊 **Progress Summary:**
+- ✅ **Phase 1 Complete:** Reusable dev mode hook created
+- ✅ **Phase 2 Complete:** Reference implementation updated (market-entry-activity-1A.html)
+- 🎯 **Current:** Phase 3 - Rolling out to remaining 11 activities
+- **Next Step:** `market-entry-activity-2A.html` → `test_data/market-entry-activity-2A.json`
+
 ### **Phase 1: Create Reusable Components**
-- [ ] **Create a Reusable Dev Mode Hook** as a reusable function to avoid repeating logic in every file
-  - Create centralized function for loading test data
-  - Implement consistent dev mode behavior across all activities
-  - Example implementation:
+- [x] **Create a Reusable Dev Mode Hook** as a reusable function to avoid repeating logic in every file ✅
+  - ✅ Created centralized function for loading test data
+  - ✅ Implemented consistent dev mode behavior across all activities
+  - ✅ Final implementation:
   ```javascript
-  function loadTestDataFromScriptTag(setters) {
-    const dataEl = document.getElementById('testData');
-    if (dataEl) {
-      const data = JSON.parse(dataEl.textContent);
-      Object.entries(setters).forEach(([key, setter]) => {
-        if (data[key]) setter(data[key]);
-      });
-      alert("✅ Test data loaded.");
+  const loadTestDataFromScript = (setters) => {
+    try {
+      const dataEl = document.getElementById('testData');
+      if (dataEl) {
+        const data = JSON.parse(dataEl.textContent);
+        Object.entries(setters).forEach(([key, setter]) => {
+          if (data[key] !== undefined) {
+            setter(data[key]);
+          }
+        });
+        console.log('✅ Test data loaded successfully from script tag');
+        return true;
+      } else {
+        console.error('❌ Test data script tag not found');
+        return false;
+      }
+    } catch (error) {
+      console.error('❌ Failed to parse test data:', error);
+      return false;
     }
-  }
+  };
   ```
-  - Consider embedding this as a reusable script block or utility function
 
 ### **Phase 2: Update Reference Implementation**
-- [ ] **Update market-entry-activity-1A.html** to use `test_data/market-entry-activity-1A.json` instead of embedded data
-  - Replace current embedded test data with data from JSON file
-  - Implement reusable dev mode hook
-  - Ensure dev mode functionality remains intact
-  - Verify copy-to-clipboard and completion screen work correctly
+- [x] **Update market-entry-activity-1A.html** to use `test_data/market-entry-activity-1A.json` instead of embedded data ✅
+  - ✅ Replaced embedded test data with external JSON in script tag
+  - ✅ Implemented reusable dev mode hook
+  - ✅ Dev mode functionality working correctly
+  - ✅ Copy-to-clipboard and completion screen verified
 
 ### **Phase 3: Implement Test Data Embedding (11 remaining activities)**
+
+#### **NEXT PRIORITY: Market Entry Readiness (2 remaining activities)**
+- [ ] **🎯 market-entry-activity-2A.html** → `test_data/market-entry-activity-2A.json` **[NEXT STEP]**
+  - Remove progress code system  
+  - Embed test data from `test_data/market-entry-activity-2A.json`
+  - Implement reusable dev mode hook (copy from market-entry-activity-1A.html)
+  - Add markdown export and copy-to-clipboard UX
+  - Add professional completion screen
+
+- [ ] **market-entry-activity-3A.html** → `test_data/market-entry-activity-3A.json`
+  - Remove progress code system
+  - Embed test data and implement reusable dev mode hook
+  - Add markdown export and copy-to-clipboard UX
+  - Add professional completion screen
 
 #### **Problems Worth Solving (3 activities)**
 - [ ] **problems-activity-1A.html** → `test_data/problems-activity-1A.json`
@@ -87,19 +117,6 @@
   - Add markdown export and copy-to-clipboard UX
   - Add professional completion screen
 
-#### **Market Entry Readiness (2 remaining activities)**
-- [ ] **market-entry-activity-2A.html** → `test_data/market-entry-activity-2A.json`
-  - Remove progress code system
-  - Embed test data and implement reusable dev mode hook
-  - Add markdown export and copy-to-clipboard UX
-  - Add professional completion screen
-
-- [ ] **market-entry-activity-3A.html** → `test_data/market-entry-activity-3A.json`
-  - Remove progress code system
-  - Embed test data and implement reusable dev mode hook
-  - Add markdown export and copy-to-clipboard UX
-  - Add professional completion screen
-
 ### **Phase 4: Quality Assurance & Testing**
 - [ ] **Test dev mode functionality** across all activities
   - Double-click title toggles dev mode
@@ -142,11 +159,12 @@
   - Add any new requirements discovered during implementation
 
 ### **Implementation Order (Recommended)**
-1. **Create reusable dev mode hook** (Phase 1)
-2. **Update market-entry-activity-1A.html** to use JSON file and reusable hook (Phase 2)
-3. **Continue with market-entry-activity-2A.html** (Phase 3 - next logical step)
-4. **Move to problems-activity-1A.html** (Phase 3 - different workshop type)
-5. **Complete remaining activities** in logical workshop order (Phase 3)
+1. ✅ **Create reusable dev mode hook** (Phase 1) - COMPLETED
+2. ✅ **Update market-entry-activity-1A.html** to use JSON file and reusable hook (Phase 2) - COMPLETED
+3. 🎯 **Continue with market-entry-activity-2A.html** (Phase 3 - NEXT STEP)
+4. **Complete market-entry-activity-3A.html** (Phase 3 - finish Market Entry workshop)
+5. **Move to problems-activity-1A.html** (Phase 3 - different workshop type)
+6. **Complete remaining activities** in logical workshop order (Phase 3)
 
 ### **Reference Files**
 - `docs/_README-embed-test-data-in-activity.md` - Implementation methodology
