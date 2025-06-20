@@ -30,15 +30,6 @@
         .laptop-textarea:focus {
             max-height: 200px;
         }
-        /* Collapsible import section */
-        .import-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.3s ease;
-        }
-        .import-content.expanded {
-            max-height: 500px;
-        }
         /* Side-by-side responsive layout */
         @media (max-width: 768px) {
             .laptop-grid {
@@ -53,87 +44,6 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Progress Code System - Encoding/Decoding Functions
-        const encodeProgressCode = (workshopData) => {
-            try {
-                const jsonString = JSON.stringify(workshopData);
-                const base64 = btoa(jsonString);
-                return `GSAP2025-${base64}`;
-            } catch (error) {
-                console.error('Error encoding progress code:', error);
-                return null;
-            }
-        };
-
-        const decodeProgressCode = (code) => {
-            try {
-                // First, clean the code of any line breaks and whitespace
-                const cleanedCode = code
-                    .trim()
-                    .split('\n')           // Split by line breaks
-                    .join('')              // Join back together without breaks
-                    .replace(/\s+/g, '');  // Remove any remaining whitespace
-                
-                let base64;
-                if (cleanedCode.startsWith('GSAP2025-')) {
-                    // Standard format with prefix
-                    base64 = cleanedCode.substring(9);
-                } else if (cleanedCode.length > 0) {
-                    // Raw base64 without prefix (legacy test files)
-                    base64 = cleanedCode;
-                } else {
-                    throw new Error('Invalid progress code format');
-                }
-                
-                // Validate base64 characters
-                const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
-                if (!base64Regex.test(base64)) {
-                    console.error('Invalid base64 characters detected');
-                    console.error('Base64 sample:', base64.substring(0, 100));
-                    throw new Error('Progress code contains invalid characters');
-                }
-                
-                console.log('Base64 length:', base64.length);
-                console.log('Base64 ends with:', base64.substring(base64.length - 10));
-                
-                const jsonString = atob(base64);
-                console.log('Decoded JSON length:', jsonString.length);
-                console.log('JSON preview:', jsonString.substring(0, 200));
-                
-                const parsed = JSON.parse(jsonString);
-                console.log('Parsed structure:', Object.keys(parsed));
-                
-                return parsed;
-            } catch (error) {
-                console.error('Decode error:', error.message);
-                console.error('Full error:', error);
-                return null;
-            }
-        };
-
-        // Cross-browser clipboard copy with Safari fallback
-        const copyToClipboard = async (text) => {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    return true;
-                } catch (err) {
-                    console.error('Fallback copy failed:', err);
-                    return false;
-                } finally {
-                    document.body.removeChild(textArea);
-                }
-            }
-        };
 
         // Icon components
         const Building = ({ size = 20, className = "" }) => (
@@ -232,19 +142,9 @@
             const [twelveMonthMetrics, setTwelveMonthMetrics] = useState(['', '', '']);
             const [twelveMonthTargets, setTwelveMonthTargets] = useState(['', '', '']);
             
-            // Progress Code System state
-            const [workshopData, setWorkshopData] = useState({
-                version: "1.0",
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString(),
-                day1: {},
-                day2_1: {},
-                day2_2: {},
-                day3: {}
-            });
-            const [showImportSection, setShowImportSection] = useState(true);
-            const [importExpanded, setImportExpanded] = useState(false);
-            const [importedContext, setImportedContext] = useState(null);
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
 
             // Reset function
             const resetActivity = () => {
@@ -254,20 +154,73 @@
                 setSixMonthTargets(['', '', '']);
                 setTwelveMonthMetrics(['', '', '']);
                 setTwelveMonthTargets(['', '', '']);
-                setImportedContext(null);
-                setShowImportSection(true);
-                setImportExpanded(false);
                 setCurrentStep(1);
                 setActiveTab('6months');
-                setWorkshopData({
-                    version: "1.0",
-                    createdAt: new Date().toISOString(),
-                    lastUpdated: new Date().toISOString(),
-                    day1: {},
-                    day2_1: {},
-                    day2_2: {},
-                    day3: {}
-                });
+            };
+
+            // Embedded test data (from market-entry-activity-1A.json)
+            const embeddedTestData = {
+                currentStep: 3,
+                strengths: [
+                    "Strong engineering talent pool and AI/ML expertise within Tokyo's tech ecosystem, providing a solid foundation for innovation.",
+                    "Existing relationships with Japanese tech companies and SaaS startups, offering an initial customer base and partnership opportunities.",
+                    "Government support for digital transformation and AI innovation in Japan, creating a favorable environment for growth."
+                ],
+                limitations: [
+                    "Limited local market size for enterprise API monitoring solutions in Japan, necessitating global expansion for significant growth.",
+                    "Conservative enterprise adoption of new monitoring tools in Japan, which could slow market penetration.",
+                    "Limited experience with US enterprise sales cycles, requiring new strategies and team building for the target market."
+                ],
+                sixMonthMetrics: [
+                    "US enterprise pilots",
+                    "Technical integrations",
+                    "Sales partnerships"
+                ],
+                sixMonthTargets: [
+                    "3 Fortune 500 pilot customers",
+                    "5 major platform integrations",
+                    "2 US channel partner agreements"
+                ],
+                twelveMonthMetrics: [
+                    "Annual Recurring Revenue (ARR)",
+                    "Customer acquisition",
+                    "Product-market fit indicators"
+                ],
+                twelveMonthTargets: [
+                    "$1.5M ARR from US market",
+                    "15 enterprise customers",
+                    "95% customer satisfaction (NPS >50)"
+                ],
+                activeTab: "6months"
+            };
+
+            // Dev fill function (uses embedded data)
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    // Populate state with embedded test data
+                    setStrengths(embeddedTestData.strengths);
+                    setLimitations(embeddedTestData.limitations);
+                    setSixMonthMetrics(embeddedTestData.sixMonthMetrics);
+                    setSixMonthTargets(embeddedTestData.sixMonthTargets);
+                    setTwelveMonthMetrics(embeddedTestData.twelveMonthMetrics);
+                    setTwelveMonthTargets(embeddedTestData.twelveMonthTargets);
+                    setActiveTab(embeddedTestData.activeTab);
+                    setCurrentStep(embeddedTestData.currentStep);
+                    
+                    console.log('✅ Dev data loaded successfully (embedded)');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                    alert(`Failed to load test data: ${error.message}`);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // Toggle dev mode (double-click title)
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
             };
 
             // Validation helpers
@@ -289,78 +242,7 @@
 
             const isActivityComplete = () => isSection1Complete() && isSection2Complete();
 
-            // Handle import
-            const handleImport = (input) => {
-                if (input && input.startFresh) {
-                    setShowImportSection(false);
-                    return { success: true };
-                }
-                
-                if (input && input.hideImportSection) {
-                    setShowImportSection(false);
-                    return { success: true };
-                }
-                
-                // Clean the progress code input thoroughly
-                const cleanedCode = input
-                    .trim()                    // Remove leading/trailing whitespace
-                    .replace(/\s+/g, '')       // Remove ALL whitespace including line breaks
-                    .replace(/[\r\n]+/g, '');  // Extra insurance against newlines
-                
-                console.log('Attempting to import code:', cleanedCode.substring(0, 50) + '...'); // Debug log
-                
-                const decoded = decodeProgressCode(cleanedCode);
-                if (!decoded) {
-                    console.error('Failed to decode:', cleanedCode); // Debug log
-                    return { success: false, error: 'Invalid progress code. Please check that you copied the entire code correctly.' };
-                }
-                
-                setWorkshopData(decoded);
-                setImportedContext(decoded);
-                
-                // Handle different data structures (legacy vs current)
-                const workshops = decoded.workshops || decoded;
-                
-                // Auto-populate based on previous workshop data
-                if (workshops.day1?.problemStatement) {
-                    // Use problem statement to suggest initial strengths
-                    const problemSuggestion = `Strong product-market fit: ${workshops.day1.problemStatement.substring(0, 100)}...`;
-                    setStrengths(prev => [problemSuggestion, prev[1], prev[2]]);
-                }
-                
-                return { success: true };
-            };
 
-            // Update workshop data when activity completes
-            useEffect(() => {
-                if (isActivityComplete()) {
-                    const updatedData = {
-                        ...workshopData,
-                        lastUpdated: new Date().toISOString(),
-                        day3: {
-                            ...workshopData.day3,
-                            activity1: {
-                                currentPosition: {
-                                    strengths: strengths.filter(s => s.trim()),
-                                    limitations: limitations.filter(l => l.trim())
-                                },
-                                successMetrics: {
-                                    sixMonthTargets: {
-                                        metrics: sixMonthMetrics.filter(m => m.trim()),
-                                        targets: sixMonthTargets.filter(t => t.trim())
-                                    },
-                                    twelveMonthTargets: {
-                                        metrics: twelveMonthMetrics.filter(m => m.trim()),
-                                        targets: twelveMonthTargets.filter(t => t.trim())
-                                    }
-                                },
-                                completedAt: new Date().toISOString()
-                            }
-                        }
-                    };
-                    setWorkshopData(updatedData);
-                }
-            }, [strengths, limitations, sixMonthMetrics, sixMonthTargets, twelveMonthMetrics, twelveMonthTargets]);
 
             // Array update helpers
             const updateArrayItem = (arr, setArr, index, value) => {
@@ -369,239 +251,7 @@
                 setArr(newArr);
             };
 
-            // Import Section Component
-            const ImportSection = ({ onImport, isVisible }) => {
-                const [progressCode, setProgressCode] = useState('');
-                const [error, setError] = useState('');
-                const [success, setSuccess] = useState(false);
-                
-                const handleImportClick = () => {
-                    // Clean the progress code input
-                    const cleanedCode = progressCode
-                        .trim()
-                        .replace(/\s+/g, '')
-                        .replace(/[\r\n]+/g, '');
-                    
-                    if (!cleanedCode) {
-                        setError('Please paste a progress code');
-                        return;
-                    }
-                    
-                    // Enhanced debugging
-                    console.log('=== IMPORT DEBUG ===');
-                    console.log('Original length:', progressCode.length);
-                    console.log('Cleaned length:', cleanedCode.length);
-                    console.log('First 100 chars:', cleanedCode.substring(0, 100));
-                    console.log('Last 50 chars:', cleanedCode.substring(cleanedCode.length - 50));
-                    console.log('Starts with GSAP2025-:', cleanedCode.startsWith('GSAP2025-'));
-                    console.log('===================');
-                    
-                    const result = onImport(cleanedCode);
-                    if (result.success) {
-                        setSuccess(true);
-                        setError('');
-                        
-                        // Log what we successfully decoded
-                        console.log('Successfully imported progress code');
-                        
-                        setTimeout(() => {
-                            onImport({ hideImportSection: true });
-                        }, 3000);
-                    } else {
-                        setError(result.error);
-                        setSuccess(false);
-                    }
-                };
-                
-                const handleStartFresh = () => {
-                    setProgressCode('');
-                    setError('');
-                    setSuccess(false);
-                    onImport({ startFresh: true });
-                };
-                
-                if (!isVisible) return null;
-                
-                return (
-                    <div className="bg-white border border-gray-200 rounded-lg mb-4">
-                        <div 
-                            className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-                            onClick={() => setImportExpanded(!importExpanded)}
-                        >
-                            <div className="flex items-center">
-                                <FileText className="text-blue-600 mr-2" size={20} />
-                                <h3 className="text-md font-semibold text-gray-800">Continue Your Progress</h3>
-                            </div>
-                            {importExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-                        </div>
-                        
-                        <div className={`import-content ${importExpanded ? 'expanded' : ''}`}>
-                            <div className="px-4 pb-4">
-                                {importedContext && (
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                                        <h4 className="font-medium text-blue-800 mb-2">Previous Workshop Context:</h4>
-                                        <div className="text-sm space-y-2">
-                                            {(() => {
-                                                const workshops = importedContext.workshops || importedContext;
-                                                const day1 = workshops.day1;
-                                                const day21 = workshops.day21 || workshops.day2_1;
-                                                const day22 = workshops.day22 || workshops.day2_2;
-                                                
-                                                return (
-                                                    <>
-                                                        {day1?.problemStatement && (
-                                                            <div>
-                                                                <strong>Problem:</strong> {day1.problemStatement.substring(0, 100)}...
-                                                            </div>
-                                                        )}
-                                                        {day21?.activity3?.icpSummary && (
-                                                            <div>
-                                                                <strong>Target Customer:</strong> {day21.activity3.icpSummary.substring(0, 100)}...
-                                                            </div>
-                                                        )}
-                                                        {day22?.positioningActivity3?.primaryMessage && (
-                                                            <div>
-                                                                <strong>Positioning:</strong> {day22.positioningActivity3.primaryMessage.substring(0, 100)}...
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                );
-                                            })()}
-                                        </div>
-                                    </div>
-                                )}
-                                
-                                <textarea
-                                    value={progressCode}
-                                    onChange={(e) => setProgressCode(e.target.value)}
-                                    placeholder="Paste your Workshop Progress Code here (starts with GSAP2025-)..."
-                                    className="w-full h-16 p-3 border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm"
-                                />
-                                
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Copy the entire code including the GSAP2025- prefix. The code should be one continuous string.
-                                </p>
-                                
-                                {progressCode.trim().startsWith('GSAP2025-') && (
-                                    <p className="text-xs text-green-600 mt-1">
-                                        ✓ Valid code format detected
-                                    </p>
-                                )}
-                                
-                                {error && (
-                                    <div className="mt-2 text-red-600 text-sm">{error}</div>
-                                )}
-                                
-                                {success && (
-                                    <div className="mt-2 text-green-600 text-sm">
-                                        ✓ Progress loaded successfully! Previous workshop data has been imported.
-                                    </div>
-                                )}
-                                
-                                <div className="flex space-x-3 mt-3">
-                                    <button
-                                        onClick={handleImportClick}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                                    >
-                                        Load Progress
-                                    </button>
-                                    <button
-                                        onClick={handleStartFresh}
-                                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm"
-                                    >
-                                        Start Fresh
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
 
-            // Export Section Component
-            const ExportSection = ({ workshopData }) => {
-                const [showCopySuccess, setShowCopySuccess] = useState(false);
-                const [showHelpModal, setShowHelpModal] = useState(false);
-                const progressCode = encodeProgressCode(workshopData);
-                
-                const handleCopy = async () => {
-                    const success = await copyToClipboard(progressCode);
-                    if (success) {
-                        setShowCopySuccess(true);
-                        setTimeout(() => setShowCopySuccess(false), 2000);
-                    }
-                };
-                
-                const HelpModal = ({ isOpen, onClose }) => {
-                    if (!isOpen) return null;
-                    
-                    return (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-                                <h3 className="text-lg font-semibold mb-4">About Progress Codes</h3>
-                                <p className="text-gray-600 mb-4">
-                                    Progress codes save your workshop responses so you can continue later. 
-                                    They contain only your workshop data - no personal information.
-                                </p>
-                                <ul className="text-sm text-gray-600 space-y-2 mb-4">
-                                    <li>• Codes work across all market entry activities</li>
-                                    <li>• Save codes externally (email, notes)</li>
-                                    <li>• Data stays on your device</li>
-                                    <li>• One code contains all workshop history</li>
-                                </ul>
-                                <button 
-                                    onClick={onClose}
-                                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
-                                >
-                                    Got it
-                                </button>
-                            </div>
-                        </div>
-                    );
-                };
-                
-                return (
-                    <>
-                        <div className="bg-green-50 border border-green-300 rounded-lg p-4 mt-6">
-                            <div className="flex items-center mb-3">
-                                <CheckCircle className="text-green-600 mr-2" size={20} />
-                                <h3 className="text-md font-semibold text-green-800">Activity 1 Complete! Save Your Progress</h3>
-                            </div>
-                            
-                            <p className="text-green-700 mb-3 text-sm">
-                                Copy this code to continue to Activity 2 or return later:
-                            </p>
-                            
-                            <div className="bg-white border border-green-200 rounded-lg p-2 mb-3">
-                                <code className="text-xs font-mono break-all">{progressCode}</code>
-                            </div>
-                            
-                            <div className="flex items-center space-x-4">
-                                <button
-                                    onClick={handleCopy}
-                                    className="flex items-center bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
-                                >
-                                    <Copy className="mr-2" size={14} />
-                                    Copy Code
-                                </button>
-                                
-                                <button
-                                    onClick={() => setShowHelpModal(true)}
-                                    className="text-green-700 hover:text-green-800 text-sm underline"
-                                >
-                                    What's this?
-                                </button>
-                                
-                                {showCopySuccess && (
-                                    <span className="text-green-600 text-sm">✓ Copied!</span>
-                                )}
-                            </div>
-                        </div>
-                        
-                        <HelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
-                    </>
-                );
-            };
 
             const renderSection1 = () => (
                 <div className="space-y-4">
@@ -934,6 +584,226 @@
                         </div>
                     </div>
 
+                    {/* Assessment Summary Cards */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 className="font-medium text-blue-800 mb-2">📊 Readiness Score</h5>
+                            <div className="text-2xl font-bold text-blue-700">
+                                ${(() => {
+                                    const strengthsCount = strengths.filter(s => s.trim().length >= 10).length;
+                                    const limitationsCount = limitations.filter(l => l.trim().length >= 10).length;
+                                    const metricsCount = [...sixMonthMetrics, ...twelveMonthMetrics].filter(m => m.trim().length >= 5).length;
+                                    const completed = strengthsCount + limitationsCount + metricsCount;
+                                    const percentage = Math.round((completed / 12) * 100);
+                                    return percentage + '%';
+                                })()}
+                            </div>
+                            <p className="text-sm text-blue-600 mt-1">Assessment Complete</p>
+                        </div>
+                        
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h5 className="font-medium text-green-800 mb-2">✅ Progress Summary</h5>
+                            <div className="space-y-1 text-sm">
+                                <div className="flex justify-between">
+                                    <span>Strengths:</span>
+                                    <span className="font-medium">{strengths.filter(s => s.trim()).length}/3</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Limitations:</span>
+                                    <span className="font-medium">{limitations.filter(l => l.trim()).length}/3</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span>Success Metrics:</span>
+                                    <span className="font-medium">{[...sixMonthMetrics, ...twelveMonthMetrics].filter(m => m.trim()).length}/6</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Export Professional Report */}
+                    <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+                        <div className="flex items-center mb-3">
+                            <FileText className="text-blue-600 mr-2" size={20} />
+                            <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 mb-3">
+                            Your assessment has been formatted as a professional markdown report with executive summary, 
+                            position analysis, readiness scoring, and action items.
+                        </p>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                            <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                            <ol className="text-sm text-blue-700 space-y-1">
+                                <li>1. Click "Copy Activity Summary" below</li>
+                                <li>2. Open Google Docs and create a new document</li>
+                                <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                <li>4. Your report will appear with proper formatting, tables, and styling!</li>
+                            </ol>
+                            <p className="text-xs text-blue-600 mt-2">
+                                💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including tables, headers, and bullet points.
+                            </p>
+                        </div>
+
+                        <textarea
+                            id="markdownSummary"
+                            readOnly
+                            className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                            value={(() => {
+                                const strengthsCompleted = strengths.filter(s => s.trim().length >= 10).length;
+                                const limitationsCompleted = limitations.filter(l => l.trim().length >= 10).length;
+                                const metricsCount = [...sixMonthMetrics, ...twelveMonthMetrics].filter(m => m.trim().length >= 5).length;
+                                const percentage = Math.round(((strengthsCompleted + limitationsCompleted + metricsCount) / 12) * 100);
+                                const readinessStatus = percentage >= 80 ? percentage + '% - Strong 🟢' : 
+                                                      percentage >= 60 ? percentage + '% - Moderate 🟡' : 
+                                                      percentage + '% - Developing 🟠';
+                                
+                                return `## Market Entry Readiness: Foundation & Goals
+
+### 📋 Executive Summary
+
+**Market Entry Readiness Score: ${readinessStatus}**
+
+**Assessment Completion:**
+- Strengths Identified: ${strengthsCompleted}/3
+- Limitations Mapped: ${limitationsCompleted}/3  
+- Success Metrics Defined: ${metricsCount}/6
+
+---
+
+### ✅ Strengths
+${strengths.filter(s => s.trim()).map((s, i) => `${i+1}. ${s}`).join('\n')}
+
+### ⚠️ Limitations  
+${limitations.filter(l => l.trim()).map((l, i) => `${i+1}. ${l}`).join('\n')}
+
+### 📊 Success Metrics & Targets
+
+| Metric | 6-Month Target | 12-Month Target |
+|--------|----------------|-----------------|
+${(() => {
+  const rows = [];
+  const maxRows = Math.max(sixMonthMetrics.filter(m => m.trim()).length, twelveMonthMetrics.filter(m => m.trim()).length);
+  for (let i = 0; i < maxRows; i++) {
+    const metric6 = sixMonthMetrics[i]?.trim() || '';
+    const target6 = sixMonthTargets[i]?.trim() || '';
+    const metric12 = twelveMonthMetrics[i]?.trim() || '';
+    const target12 = twelveMonthTargets[i]?.trim() || '';
+    const metricName = metric6 || metric12 || '[Not provided]';
+    rows.push(`| ${metricName} | ${target6 || '[Not set]'} | ${target12 || '[Not set]'} |`);
+  }
+  return rows.join('\n');
+})()}
+
+### 📅 Assessment Details
+
+**Report Generated:** ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short'
+})}
+
+**Activity:** Foundation & Goals Assessment (Activity 1 of 3)  
+**Workshop Series:** Market Entry Readiness - GTM Program  
+**Next Steps:** Continue to Activity 2 - Market Reality Check
+
+*This assessment provides foundational insights for market entry planning. Results should be reviewed with strategic advisors and updated as market conditions evolve.*`;
+                            })()}
+                        />
+                        
+                        <div className="flex flex-col items-center">
+                            <button
+                                onClick={(event) => {
+                                    // Copy to clipboard with fallback
+                                    const copyToClipboard = async (text) => {
+                                        try {
+                                            // Try modern clipboard API first
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                await navigator.clipboard.writeText(text);
+                                                return true;
+                                            } else {
+                                                // Fallback for older browsers or file:// protocol
+                                                const textArea = document.createElement('textarea');
+                                                textArea.value = text;
+                                                textArea.style.position = 'fixed';
+                                                textArea.style.left = '-999999px';
+                                                document.body.appendChild(textArea);
+                                                textArea.focus();
+                                                textArea.select();
+                                                
+                                                try {
+                                                    const successful = document.execCommand('copy');
+                                                    document.body.removeChild(textArea);
+                                                    return successful;
+                                                } catch (err) {
+                                                    document.body.removeChild(textArea);
+                                                    return false;
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.error('Copy failed:', err);
+                                            return false;
+                                        }
+                                    };
+
+                                    const el = document.getElementById('markdownSummary');
+                                    const statusDiv = document.getElementById('copyStatus');
+                                    
+                                    copyToClipboard(el.value).then((success) => {
+                                        if (success) {
+                                            // Show success status below button
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">✅ Copied to Clipboard!</p>
+                                                    <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                                                </div>
+                                            `;
+                                            
+                                            // Also show floating notification
+                                            const notification = document.createElement('div');
+                                            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;';
+                                            notification.textContent = '✅ Activity summary copied!';
+                                            document.body.appendChild(notification);
+                                            
+                                            // Fade out notification
+                                            setTimeout(() => {
+                                                notification.style.transition = 'opacity 0.5s';
+                                                notification.style.opacity = '0';
+                                                setTimeout(() => notification.remove(), 500);
+                                            }, 2500);
+                                            
+                                            // Clear status after 3 seconds
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        } else {
+                                            // Show error status
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">❌ Copy Failed</p>
+                                                    <p class="text-sm">Please select and copy the text manually.</p>
+                                                </div>
+                                            `;
+                                            
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        }
+                                    });
+                                }}
+                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                            >
+                                📋 Copy Activity Summary
+                            </button>
+                            <div id="copyStatus"></div>
+                        </div>
+                    </div>
+
+                    {/* Next Steps */}
                     <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
                         <h4 className="text-md font-bold text-orange-800 mb-2">🎯 Next: Market Reality Check</h4>
                         <p className="text-orange-700 text-sm mb-2">
@@ -949,9 +819,6 @@
                             </div>
                         </div>
                     </div>
-
-                    {/* Export Section */}
-                    <ExportSection workshopData={workshopData} />
 
                     <div className="text-center space-x-4 mt-6">
                         <button
@@ -989,8 +856,12 @@
                             </a>
                         </div>
                         <div className="flex items-center justify-between mb-2">
-                            <h1 className="text-xl font-bold text-gray-800">
-                                Activity 1: Foundation and Goals Assessment
+                            <h1 
+                                className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 1: Foundation and Goals Assessment {devMode && '🔧'}
                             </h1>
                             <div className="text-sm text-gray-600">
                                 Activity 1 of 3
@@ -1008,15 +879,24 @@
                             <span>Metrics</span>
                             <span>Complete</span>
                         </div>
+                        
+                        {/* Dev Mode Controls */}
+                        {devMode && (
+                            <div className="mt-3 pt-3 border-t border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button
+                                        onClick={devFillData}
+                                        disabled={devFillLoading}
+                                        className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Import Section */}
-                    {currentStep < 3 && (
-                        <ImportSection 
-                            onImport={handleImport}
-                            isVisible={showImportSection}
-                        />
-                    )}
 
                     {/* Main Content */}
                     <div className="bg-white rounded-lg shadow-lg p-6 relative">
