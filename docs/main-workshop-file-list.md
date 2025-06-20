@@ -1,25 +1,27 @@
 /gtm-workshops
 ├── index.html
-├── finding_your_early_customers
-│   ├── ecp-activity-1.html
-│   ├── ecp-activity-2.html
-│   ├── ecp-activity-3.html
-│   └── index.html
-├── market_entry_readiness
-│   ├── index.html
-│   ├── market-entry-activity-1.html
-│   ├── market-entry-activity-2.html
-│   └── market-entry-activity-3.html
-├── positioning_basics
-│   ├── index.html
-│   ├── positioning-activity-1.html
-│   ├── positioning-activity-2.html
-│   └── positioning-activity-3.html
-├── problems_worth_solving
+├── Workshop-1-problems_worth_solving
 │   ├── index.html
 │   ├── problems-activity-1.html
 │   ├── problems-activity-2.html
 │   └── problems-activity-3.html
+├── Workshop-2-finding_your_early_customers
+│   ├── ecp-activity-1.html
+│   ├── ecp-activity-2.html
+│   ├── ecp-activity-3.html
+│   └── index.html
+├── Workshop-3-positioning_basics
+│   ├── index.html
+│   ├── positioning-activity-1.html
+│   ├── positioning-activity-2.html
+│   └── positioning-activity-3.html
+├── Workshop-4-market_entry_readiness
+│   ├── index.html
+│   ├── market-entry-activity-1.html
+│   ├── market-entry-activity-2.html
+│   └── market-entry-activity-3.html
+
+
 
 
 
