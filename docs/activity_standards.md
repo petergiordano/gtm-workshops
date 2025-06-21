@@ -913,3 +913,41 @@ For activities that import from multiple days:
   </button>
 </div>
 ```
+
+## Activity Summary Markdown Export Standards
+
+### Heading Hierarchy
+- **Main heading**: Level 1 (`#`) - Activity title and workshop context
+  - Example: `# Market Entry Readiness: Foundation & Goals`
+  - Example: `# Market Entry Readiness: Market Reality Check`
+  - Example: `# Problems Worth Solving: Problem Validation`
+- **Section headings**: Level 3 (`###`) - Major report sections
+  - Example: `### 📋 Executive Summary`
+  - Example: `### 🌏 Market Factor Analysis`
+  - Example: `### ✅ Problem Validation Results`
+- **Subsections**: Level 4 (`####`) or below as needed
+
+### Content Structure Template
+```markdown
+# [Workshop Series]: [Activity Name]
+
+### 📋 Executive Summary
+[Key metrics, completion status, and summary scores]
+
+### [Main Content Sections]
+[Tables, analysis, findings specific to the activity]
+
+### 📅 Assessment Details
+[Timestamp, activity info, next steps, workshop context]
+```
+
+### Implementation Requirements
+- **All activities** with markdown export functionality must use Level 1 (`#`) for the main heading
+- **Consistent format**: `# [Workshop Series]: [Activity Name]`
+- **Applied to**: Activities with embedded test data and professional report export
+- **Copy-to-clipboard integration**: Works seamlessly with Google Docs "Paste from markdown" feature
+
+### Example Implementations
+- `market_entry_readiness/market-entry-activity-1A.html` - Level 1 heading implemented
+- `market_entry_readiness/market-entry-activity-2A.html` - Level 1 heading implemented
+- All future A-version activities should follow this standard

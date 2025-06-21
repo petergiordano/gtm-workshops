@@ -482,6 +482,37 @@ if (isLaptopOptimized) {
 - [ ] No layout shift on interaction
 - [ ] Memory efficient with multiple tabs
 
+### Activity Summary Markdown Export Standards
+
+#### Heading Hierarchy
+- **Main heading**: Level 1 (`#`) - Activity title and workshop context
+  - Example: `# Market Entry Readiness: Foundation & Goals`
+  - Example: `# Market Entry Readiness: Market Reality Check`
+- **Section headings**: Level 3 (`###`) - Major report sections
+  - Example: `### 📋 Executive Summary`
+  - Example: `### 🌏 Market Factor Analysis`
+- **Subsections**: Level 4 (`####`) or below as needed
+
+#### Content Structure
+```markdown
+# [Workshop Series]: [Activity Name]
+
+### 📋 Executive Summary
+[Key metrics and completion status]
+
+### [Main Content Sections]
+[Tables, analysis, findings]
+
+### 📅 Assessment Details
+[Timestamp, activity info, next steps]
+```
+
+#### Implementation Files
+This standard applies to all activity files with markdown export functionality:
+- `market_entry_readiness/market-entry-activity-1A.html`
+- `market_entry_readiness/market-entry-activity-2A.html`
+- All future activity implementations with embedded test data
+
 ---
 
 ## Version History
