@@ -25,6 +25,17 @@
 <body>
     <div id="root"></div>
 
+    <!-- Test Data from test_data/ecp-activity-3A.json -->
+    <script type="application/json" id="testData">
+    {
+      "commonNeeds": "Development teams who are struggling to prevent API failures before they impact customers have this problem most urgently. They need solutions that can provide preemptive action rather than just reactive monitoring.",
+      "problemUrgency": "The problem is urgent because these customers are currently experiencing API issues weekly, with each failure costing approximately $100,000 per hour in lost revenue. This leads to significant operational costs, manual interventions, and lost productivity.",
+      "desiredBusinessValue": "Customers desire increased overall profitability and operational efficiency through reduced API failure-related operational costs and decreased Mean Time to Resolution (MTTR) for API incidents. They also seek early warnings, automated problem resolution, measurable reliability improvements like a 50% reduction in downtime, and 90% faster incident response.",
+      "basicCustomerProfile": "Mid to large-sized companies with modern API infrastructure and established DevOps teams are most likely to have this urgent problem. Specifically, this includes high-growth SaaS companies (Series B+) and large enterprises (cloud-native, Fortune 500) with critical API infrastructure and high downtime costs.",
+      "currentStep": 1
+    }
+    </script>
+
     <script type="text/babel">
         const { useState } = React;
 
@@ -83,333 +94,161 @@
             </svg>
         );
 
-        // ImportSection Component (placed before ECPBuilderActivity)
-        const ImportSection = ({ onImport, isVisible }) => {
-            const [importCode, setImportCode] = useState('');
-            const [isStartingFresh, setIsStartingFresh] = useState(false);
-
-            const handleLoadProgress = () => {
-                if (!importCode.trim()) {
-                    onImport({ success: false, error: 'Please enter a progress code' });
-                    return;
-                }
-
-                const result = onImport({ success: true, code: importCode.trim() });
-                if (result.success) {
-                    // Hide section after 3 seconds on success
-                    setTimeout(() => {
-                        // This will be handled by parent component
-                    }, 3000);
-                }
-            };
-
-            const handleStartFresh = () => {
-                setIsStartingFresh(true);
-                onImport({ success: true, startFresh: true });
-            };
-
-            if (!isVisible) return null;
-
-            return (
-                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
-                    <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center">
-                            <FileText className="text-blue-600 mr-2" size={24} />
-                            <h3 className="text-lg font-semibold text-blue-900">Continue Your Progress</h3>
-                        </div>
-                        <button
-                            onClick={() => onImport({ success: true, hide: true })}
-                            className="text-blue-400 hover:text-blue-600"
-                        >
-                            <X size={20} />
-                        </button>
-                    </div>
-                    
-                    <p className="text-blue-700 mb-3 text-sm">
-                        Have a progress code from Day 1? Enter it below to continue with your validated problem.
-                    </p>
-                    
-                    <div className="space-y-2">
-                        <textarea
-                            value={importCode}
-                            onChange={(e) => setImportCode(e.target.value)}
-                            placeholder="Paste your progress code here..."
-                            className="w-full px-3 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono text-sm h-20"
-                        />
-                        
-                        <div className="flex gap-2">
-                            <button
-                                onClick={handleLoadProgress}
-                                className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                            >
-                                Load Progress
-                            </button>
-                            <button
-                                onClick={handleStartFresh}
-                                className="text-blue-600 hover:text-blue-800 transition-colors"
-                            >
-                                Start Fresh Instead
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            );
-        };
+        // Removed ImportSection component - using embedded test data instead
 
         const ECPBuilderActivity = () => {
-            // Progress Code System - Encoding/Decoding Functions
-            const encodeProgressCode = (workshopData) => {
-                try {
-                    const jsonString = JSON.stringify(workshopData);
-                    const base64 = btoa(jsonString);
-                    return `GSAP2025-${base64}`;
-                } catch (error) {
-                    console.error('Error encoding progress code:', error);
-                    return null;
-                }
-            };
-
-            const decodeProgressCode = (code) => {
-                try {
-                    console.log('🔧 decodeProgressCode called with:', code?.substring(0, 50) + '...');
-                    
-                    // Handle both old and new formats
-                    let jsonString;
-                    
-                    if (code.startsWith('GSAP2025-')) {
-                        // New format with prefix
-                        const base64 = code.substring(9);
-                        console.log('🔧 New format - extracted base64 part, length:', base64.length);
-                        jsonString = atob(base64);
-                    } else {
-                        // Old format without prefix - handle legacy codes
-                        console.log('🔧 Legacy format detected - migrating...');
-                        const base64 = code.replace(/-/g, '+').replace(/_/g, '/');
-                        const padding = (4 - (base64.length % 4)) % 4;
-                        const paddedBase64 = base64 + '='.repeat(padding);
-                        jsonString = atob(paddedBase64);
-                    }
-                    
-                    console.log('🔧 Decoded to JSON string, length:', jsonString.length);
-                    const parsed = JSON.parse(jsonString);
-                    
-                    // Migrate old nested format to new flat format
-                    if (parsed.workshops) {
-                        console.log('🔧 Migrating old nested format to new flat format');
-                        const migrated = {
-                            version: "1.0",
-                            createdAt: new Date().toISOString(),
-                            lastUpdated: new Date().toISOString(),
-                            day1: parsed.workshops.day1 || {},
-                            day2_1: parsed.workshops.day2_1 || {},
-                            day2_2: parsed.workshops.day2_2 || {},
-                            day3: parsed.workshops.day3 || {}
-                        };
-                        console.log('✅ Migration complete');
-                        return migrated;
-                    }
-                    
-                    console.log('✅ Successfully parsed JSON');
-                    return parsed;
-                } catch (error) {
-                    console.error('❌ Error decoding progress code:', error.message);
-                    console.error('❌ Full error:', error);
-                    return null;
-                }
-            };
-
-            const copyToClipboard = async (text) => {
-                try {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(text);
-                        return true;
-                    } else {
-                        // Fallback for Safari
-                        const textArea = document.createElement('textarea');
-                        textArea.value = text;
-                        textArea.style.position = 'fixed';
-                        textArea.style.opacity = '0';
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        try {
-                            document.execCommand('copy');
-                            return true;
-                        } catch (err) {
-                            console.error('Fallback copy failed:', err);
-                            return false;
-                        } finally {
-                            document.body.removeChild(textArea);
-                        }
-                    }
-                } catch (err) {
-                    console.error('Failed to copy:', err);
-                    return false;
-                }
-            };
+            // Removed Progress Code System - using embedded test data instead
 
             // State Management
             const [currentStep, setCurrentStep] = useState(1);
             const [responses, setResponses] = useState({});
             const [completedSteps, setCompletedSteps] = useState([]);
-            const [workshopData, setWorkshopData] = useState({
-                version: "1.0",
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString(),
-                day1: {},
-                day2_1: {},
-                day2_2: {},
-                day3: {}
-            });
-            const [showImportSection, setShowImportSection] = useState(true);
-            const [importError, setImportError] = useState('');
-            const [importSuccess, setImportSuccess] = useState(false);
             const [activityComplete, setActivityComplete] = useState(false);
+            
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
 
-            // ExportSection Component 
-            const ExportSection = ({ workshopData }) => {
-                const [copied, setCopied] = useState(false);
-
-                const progressCode = encodeProgressCode(workshopData);
-
-                const handleCopyCode = async () => {
-                    const success = await copyToClipboard(progressCode);
-                    if (success) {
-                        setCopied(true);
-                        setTimeout(() => setCopied(false), 2000);
+            // Reusable dev mode hook for loading test data
+            const loadTestDataFromScript = (setters) => {
+                try {
+                    const dataEl = document.getElementById('testData');
+                    if (dataEl) {
+                        const data = JSON.parse(dataEl.textContent);
+                        Object.entries(setters).forEach(([key, setter]) => {
+                            if (data[key] !== undefined) {
+                                setter(data[key]);
+                            }
+                        });
+                        console.log('✅ Test data loaded successfully from script tag');
+                        return true;
+                    } else {
+                        console.error('❌ Test data script tag not found');
+                        return false;
                     }
-                };
-
-                return (
-                    <div className="bg-green-50 border-2 border-green-200 rounded-lg p-6 mt-6">
-                        <div className="flex items-center mb-4">
-                            <Copy className="text-green-600 mr-2" size={24} />
-                            <h3 className="text-lg font-semibold text-green-900">Save Your Progress</h3>
-                        </div>
-                        
-                        <p className="text-green-700 mb-4 text-sm">
-                            Copy this code to continue in tomorrow's Positioning workshop:
-                        </p>
-                        
-                        <div className="bg-white border border-green-300 rounded p-3 mb-4 font-mono text-xs break-all">
-                            {progressCode}
-                        </div>
-                        
-                        <button
-                            onClick={handleCopyCode}
-                            className={`w-full py-2 rounded font-semibold transition-colors ${
-                                copied 
-                                    ? 'bg-green-600 text-white' 
-                                    : 'bg-green-500 text-white hover:bg-green-600'
-                            }`}
-                        >
-                            {copied ? '✓ Copied!' : 'Copy Code'}
-                        </button>
-                        
-                        {/* Yellow warning box */}
-                        <div className="bg-yellow-50 border-2 border-yellow-200 rounded-lg p-4 mt-4">
-                            <div className="flex items-start">
-                                <AlertCircle className="text-yellow-600 mr-2 flex-shrink-0" size={20} />
-                                <div>
-                                    <p className="text-yellow-800 font-semibold text-sm mb-1">
-                                        Important: Save this code!
-                                    </p>
-                                    <p className="text-yellow-700 text-sm">
-                                        This progress code contains all your workshop data. Copy it now and save it somewhere safe. 
-                                        You'll need it to continue in future workshops.
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
+                } catch (error) {
+                    console.error('❌ Failed to parse test data:', error);
+                    return false;
+                }
             };
 
-            // Handle import
-            const handleImport = (action) => {
-                // Handle different action types
-                if (action.hide) {
-                    setShowImportSection(false);
-                    return { success: true };
-                }
-                
-                if (action.startFresh) {
-                    console.log('[ECP-3] Starting fresh - no import');
-                    setShowImportSection(false);
-                    setImportSuccess(true);
-                    setImportError('');
-                    return { success: true };
-                }
-                
-                if (!action.success) {
-                    setImportError(action.error || 'Import failed');
-                    setImportSuccess(false);
-                    return { success: false, error: action.error };
-                }
-                
-                if (action.code) {
-                    // Try to decode the progress code
-                    const data = decodeProgressCode(action.code);
-                    if (!data) {
-                        const errorMsg = 'Invalid progress code format';
-                        setImportError(errorMsg);
-                        setImportSuccess(false);
-                        return { success: false, error: errorMsg };
-                    }
-
-                    // Check version compatibility
-                    if (data.version && data.version !== "1.0" && data.version !== 1) {
-                        const errorMsg = 'Incompatible progress code version';
-                        setImportError(errorMsg);
-                        setImportSuccess(false);
-                        return { success: false, error: errorMsg };
-                    }
-
-                    // Update workshop data
-                    setWorkshopData(data);
-                    console.log('[ECP-3] Imported data:', data);
+            // Dev fill function (uses embedded test data)
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
                     
-                    // Auto-populate responses from day2_1.activity3 data if it exists
-                    if (data.day2_1?.activity3) {
-                        const activity3Data = data.day2_1.activity3;
-                        const newResponses = {};
-                        
-                        if (activity3Data.common_needs) newResponses.common_needs = activity3Data.common_needs;
-                        if (activity3Data.problem_urgency) newResponses.problem_urgency = activity3Data.problem_urgency;
-                        if (activity3Data.business_value) newResponses.business_value = activity3Data.business_value;
-                        if (activity3Data.basic_profile) newResponses.basic_profile = activity3Data.basic_profile;
-                        
-                        if (Object.keys(newResponses).length > 0) {
-                            setResponses(newResponses);
-                            console.log('[ECP-3] Auto-populated responses from previous activity 3 data:', newResponses);
-                            
-                            // Update completed steps
-                            const updatedCompletedSteps = [];
-                            Object.keys(newResponses).forEach(id => {
-                                if (newResponses[id] && newResponses[id].length >= 50) {
-                                    updatedCompletedSteps.push(id);
-                                }
-                            });
-                            setCompletedSteps(updatedCompletedSteps);
-                        }
-                    }
+                    setResponses({
+                        commonNeeds: testData.commonNeeds,
+                        problemUrgency: testData.problemUrgency,
+                        desiredBusinessValue: testData.desiredBusinessValue,
+                        basicCustomerProfile: testData.basicCustomerProfile
+                    });
+                    setCompletedSteps(['commonNeeds', 'problemUrgency', 'desiredBusinessValue', 'basicCustomerProfile']);
+                    setCurrentStep(testData.currentStep || 1);
                     
-                    setImportSuccess(true);
-                    setImportError('');
-                    
-                    // Hide import section after 3 seconds
-                    setTimeout(() => {
-                        setShowImportSection(false);
-                    }, 3000);
-                    
-                    return { success: true };
+                    console.log('✅ Dev data loaded successfully (from embedded test data)');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                    alert(`Failed to load test data: ${error.message}`);
+                } finally {
+                    setDevFillLoading(false);
                 }
-                
-                return { success: false, error: 'Unknown action' };
             };
+
+            // Toggle dev mode (double-click title)
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            // Markdown export function for professional activity summary
+            const generateMarkdownSummary = () => {
+                const completionPercentage = Math.round((completedSteps.length / 4) * 100);
+                const activityStatus = completedSteps.length === 4 ? 'Complete ECP Framework 🟢' : 
+                                      completedSteps.length >= 3 ? 'Nearly Complete 🟡' : 
+                                      'In Progress 🟠';
+                
+                return `# Finding Your Early Customers: ECP Hypothesis Builder
+
+### 📋 Executive Summary
+
+**Activity Completion Status: ${completionPercentage}%**
+
+**ECP Development Progress: ${activityStatus}**
+- Completed Steps: ${completedSteps.length}/4 ECP characteristics defined
+- Completion time: ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  month: 'long', 
+  day: 'numeric',
+  year: 'numeric'
+})}
+
+---
+
+### 🎯 Early Customer Profile Framework
+
+**1. Common Needs (Target Customer & Core Problem)**
+${responses.commonNeeds || '[Not completed]'}
+
+**2. Problem Urgency (Frequency & Impact)**
+${responses.problemUrgency || '[Not completed]'}
+
+**3. Desired Business Value (ROI & Outcomes)**
+${responses.desiredBusinessValue || '[Not completed]'}
+
+**4. Basic Customer Profile (Company Characteristics)**
+${responses.basicCustomerProfile || '[Not completed]'}
+
+---
+
+### 🔍 ECP Validation Checklist
+
+**Framework Completeness:**
+- ✅ Common Needs: ${responses.commonNeeds ? 'Defined' : 'Pending'}
+- ✅ Problem Urgency: ${responses.problemUrgency ? 'Defined' : 'Pending'}  
+- ✅ Business Value: ${responses.desiredBusinessValue ? 'Defined' : 'Pending'}
+- ✅ Customer Profile: ${responses.basicCustomerProfile ? 'Defined' : 'Pending'}
+
+### 💡 Strategic Next Steps
+
+**With Your Completed ECP:**
+1. **Customer Discovery Interviews** - Test your assumptions with 10-15 target customers
+2. **Problem Validation** - Confirm urgency and willingness to pay for solutions
+3. **Market Segmentation** - Refine customer characteristics based on interview insights
+4. **Solution Development** - Design MVP features that address your validated ECP
+
+**Key Success Metrics:**
+- Interview completion rate >80% (indicates good customer targeting)
+- Problem confirmation rate >60% (validates urgency assumption)
+- Budget authority identification >50% (confirms buying potential)
+
+### 📅 Assessment Details
+
+**Report Generated:** ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short'
+})}
+
+**Activity:** ECP Hypothesis Builder (Activity 3 of 3)  
+**Workshop Series:** Finding Your Early Customers - GTM Program  
+**Next Steps:** Begin customer discovery interviews with your defined ECP
+
+*This comprehensive ECP framework provides the foundation for effective customer discovery and market validation. Use these insights to guide your next phase of customer development.*`;
+            };
+
+            // Removed ExportSection component - using embedded test data instead
+
+            // Removed handleImport function - using embedded test data instead
 
             const ecpElements = [
                 {
-                    id: 'common_needs',
+                    id: 'commonNeeds',
                     title: 'Common Needs',
                     subtitle: 'Jobs to be Done',
                     prompt: 'Based on the problem you validated yesterday, WHO has this problem most urgently?',
@@ -417,7 +256,7 @@
                     hint: 'Think about the TYPE of organization and ROLE of people who feel this problem most acutely'
                 },
                 {
-                    id: 'problem_urgency', 
+                    id: 'problemUrgency', 
                     title: 'Problem Urgency',
                     subtitle: 'Why Now?',
                     prompt: 'What makes this problem URGENT for your target customers right now?',
@@ -425,7 +264,7 @@
                     hint: 'Focus on pain points that drive immediate action - financial impact, competitive pressure, compliance needs'
                 },
                 {
-                    id: 'business_value',
+                    id: 'desiredBusinessValue',
                     title: 'Desired Business Value', 
                     subtitle: 'Success Metrics',
                     prompt: 'What specific business outcomes do your customers want to achieve?',
@@ -433,7 +272,7 @@
                     hint: 'Be specific with numbers, percentages, time savings, or cost reductions'
                 },
                 {
-                    id: 'basic_profile',
+                    id: 'basicCustomerProfile',
                     title: 'Basic Customer Profile',
                     subtitle: 'Company Characteristics', 
                     prompt: 'What type of companies are most likely to have this urgent problem?',
@@ -446,11 +285,11 @@
                 const newResponses = { ...responses, [elementId]: value };
                 setResponses(newResponses);
                 
-                // Update completed steps based on all responses
+                // Update completed steps based on all responses (using element IDs)
                 const updatedCompletedSteps = [];
-                Object.keys(newResponses).forEach(id => {
-                    if (newResponses[id] && newResponses[id].length >= 50) {
-                        updatedCompletedSteps.push(id);
+                ecpElements.forEach(element => {
+                    if (newResponses[element.id] && newResponses[element.id].length >= 50) {
+                        updatedCompletedSteps.push(element.id);
                     }
                 });
                 setCompletedSteps(updatedCompletedSteps);
@@ -466,28 +305,10 @@
                 const newStep = Math.min(currentStep + 1, 3);
                 setCurrentStep(newStep);
                 
-                // If moving to step 3, complete the activity and update workshop data
+                // If moving to step 3, complete the activity
                 if (newStep === 3 && !activityComplete) {
                     setActivityComplete(true);
-                    
-                    // Update workshop data with current activity responses
-                    const updatedWorkshopData = {
-                        ...workshopData,
-                        lastUpdated: new Date().toISOString(),
-                        day2_1: {
-                            ...workshopData.day2_1,
-                            activity3: {
-                                common_needs: responses.common_needs || '',
-                                problem_urgency: responses.problem_urgency || '',
-                                business_value: responses.business_value || '',
-                                basic_profile: responses.basic_profile || '',
-                                completedAt: new Date().toISOString()
-                            }
-                        }
-                    };
-                    
-                    setWorkshopData(updatedWorkshopData);
-                    console.log('[ECP-3] Activity completed, workshop data updated:', updatedWorkshopData);
+                    console.log('[ECP-3] Activity completed successfully');
                 }
             };
             
@@ -503,19 +324,6 @@
                         <span className="text-lg font-bold">↻</span>
                     </button>
 
-                    {/* Show imported problem statement if available */}
-                    {(workshopData?.day1?.problemStatement || workshopData?.workshops?.day1?.problemStatement) && (
-                        <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-6">
-                            <h4 className="font-bold text-blue-900 mb-2 flex items-center">
-                                <AlertCircle className="mr-2" size={20} />
-                                Your Validated Problem from Day 1
-                            </h4>
-                            <p className="text-blue-800">{workshopData?.day1?.problemStatement || workshopData?.workshops?.day1?.problemStatement}</p>
-                            <p className="text-blue-600 text-sm mt-2 italic">
-                                Use this problem as context for building your Early Customer Profile
-                            </p>
-                        </div>
-                    )}
 
                     {/* ECP Building Form */}
                     <div className="space-y-8">
@@ -688,8 +496,127 @@
                         </ul>
                     </div>
 
-                    {/* Export Section - show when activity is complete */}
-                    {activityComplete && <ExportSection workshopData={workshopData} />}
+                    {/* Export Professional Report */}
+                    {completedSteps.length === 4 && (
+                        <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+                            <div className="flex items-center mb-3">
+                                <FileText className="text-blue-600 mr-2" size={20} />
+                                <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+                            </div>
+                            
+                            <p className="text-sm text-gray-600 mb-3">
+                                Your Early Customer Profile framework has been formatted as a professional markdown report for easy sharing
+                                and documentation.
+                            </p>
+
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Activity Summary" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={(event) => {
+                                        // Copy to clipboard with fallback
+                                        const copyToClipboard = async (text) => {
+                                            try {
+                                                // Try modern clipboard API first
+                                                if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                    await navigator.clipboard.writeText(text);
+                                                    return true;
+                                                } else {
+                                                    // Fallback for older browsers or file:// protocol
+                                                    const textArea = document.createElement('textarea');
+                                                    textArea.value = text;
+                                                    textArea.style.position = 'fixed';
+                                                    textArea.style.left = '-999999px';
+                                                    document.body.appendChild(textArea);
+                                                    textArea.focus();
+                                                    textArea.select();
+                                                    
+                                                    try {
+                                                        const successful = document.execCommand('copy');
+                                                        document.body.removeChild(textArea);
+                                                        return successful;
+                                                    } catch (err) {
+                                                        document.body.removeChild(textArea);
+                                                        return false;
+                                                    }
+                                                }
+                                            } catch (err) {
+                                                console.error('Copy failed:', err);
+                                                return false;
+                                            }
+                                        };
+
+                                        const el = document.getElementById('markdownSummary');
+                                        const statusDiv = document.getElementById('copyStatus');
+                                        
+                                        copyToClipboard(el.value).then((success) => {
+                                            if (success) {
+                                                // Show success status below button
+                                                statusDiv.innerHTML = `
+                                                    <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                                        <p class="font-medium">✅ Copied to Clipboard!</p>
+                                                        <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                                                    </div>
+                                                `;
+                                                
+                                                // Also show floating notification
+                                                const notification = document.createElement('div');
+                                                notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;';
+                                                notification.textContent = '✅ Activity summary copied!';
+                                                document.body.appendChild(notification);
+                                                
+                                                // Fade out notification
+                                                setTimeout(() => {
+                                                    notification.style.transition = 'opacity 0.5s';
+                                                    notification.style.opacity = '0';
+                                                    setTimeout(() => notification.remove(), 500);
+                                                }, 2500);
+                                                
+                                                // Clear status after 3 seconds
+                                                setTimeout(() => {
+                                                    statusDiv.innerHTML = '';
+                                                }, 3000);
+                                            } else {
+                                                // Show error status
+                                                statusDiv.innerHTML = `
+                                                    <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                                        <p class="font-medium">❌ Copy Failed</p>
+                                                        <p class="text-sm">Please select and copy the text manually.</p>
+                                                    </div>
+                                                `;
+                                                
+                                                setTimeout(() => {
+                                                    statusDiv.innerHTML = '';
+                                                }, 3000);
+                                            }
+                                        });
+                                    }}
+                                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                                >
+                                    📋 Copy Activity Summary
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    )}
 
                     <div className="text-center space-x-4">
                         <button
@@ -727,10 +654,30 @@
                             </a>
                         </div>
                         <div className="flex items-center justify-between mb-3">
-                            <h1 className="text-2xl font-bold text-gray-800">
-                                Activity 3: ECP Hypothesis Builder
+                            <h1 
+                                className={`text-2xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 3: ECP Hypothesis Builder {devMode && '🔧'}
                             </h1>
                         </div>
+                        
+                        {/* Dev Mode Controls */}
+                        {devMode && (
+                            <div className="mb-3 pb-3 border-b border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button
+                                        onClick={devFillData}
+                                        disabled={devFillLoading}
+                                        className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         
                         {/* Progress indicator */}
                         <div className="flex items-center space-x-4">
@@ -806,56 +753,9 @@
                             </div>
                         )}
                         
-                        {/* Progress indicators - show on all steps */}
-                        <div className="mt-4">
-                            <div className="grid grid-cols-4 gap-2">
-                                {ecpElements.map((element, index) => {
-                                    const isCompleted = completedSteps.includes(element.id);
-                                    const hasContent = responses[element.id] && responses[element.id].length > 0;
-                                    
-                                    return (
-                                        <div
-                                            key={element.id}
-                                            className={`p-2 rounded-lg text-center text-xs font-medium transition-all duration-200 ${
-                                                isCompleted 
-                                                    ? 'bg-green-100 border-2 border-green-500 text-green-800'
-                                                    : hasContent 
-                                                        ? 'bg-orange-100 border-2 border-orange-300 text-orange-800'
-                                                        : 'bg-gray-100 border-2 border-gray-200 text-gray-600'
-                                            }`}
-                                        >
-                                            <div className="flex items-center justify-center mb-1">
-                                                {isCompleted ? (
-                                                    <CheckCircle size={16} className="text-green-600" />
-                                                ) : (
-                                                    <span className="font-bold">{index + 1}</span>
-                                                )}
-                                            </div>
-                                            {element.title}
-                                        </div>
-                                    );
-                                })}
-                            </div>
-                        </div>
                     </div>
 
-                    {/* Import Section */}
-                    {currentStep === 1 && showImportSection && !activityComplete && (
-                        <ImportSection onImport={handleImport} isVisible={showImportSection} />
-                    )}
-                    
-                    {/* Import Messages */}
-                    {currentStep === 1 && (importSuccess || importError) && (
-                        <div className={`rounded-lg p-4 mb-4 ${
-                            importSuccess ? 'bg-green-50 border-2 border-green-200' : 'bg-red-50 border-2 border-red-200'
-                        }`}>
-                            <p className={`text-sm ${
-                                importSuccess ? 'text-green-700' : 'text-red-700'
-                            }`}>
-                                {importSuccess ? 'Progress imported successfully!' : importError}
-                            </p>
-                        </div>
-                    )}
+                    {/* Removed ImportSection - using embedded test data instead */}
 
                     {/* Main Content */}
                     <div className="bg-white rounded-lg shadow-lg p-6 relative">
