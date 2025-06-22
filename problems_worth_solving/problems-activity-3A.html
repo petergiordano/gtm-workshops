@@ -25,69 +25,28 @@
 <body>
     <div id="root"></div>
 
+    <!-- Test Data from test_data/problems-activity-3A.json -->
+    <script type="application/json" id="testData">
+    {
+      "problemStatement": "Development teams struggle to prevent API failures before they impact customers. Current monitoring solutions are reactive, not predictive, leading to significant costs—approximately $100,000 per hour in lost revenue for each failure and high operational costs due to downtime and manual interventions. This negatively impacts overall profitability and operational efficiency.",
+      "urgencyScore": 5,
+      "urgencyEvidence": "API failures cost $100k/hr. Teams need immediate alerts, and companies where API failures cost $100k+/hour are prioritizing systems ensuring business continuity. This indicates a clear and immediate pain point.",
+      "importanceScore": 5,
+      "importanceEvidence": "API failures significantly affect revenue and reputation, and reducing API failure-related operational costs is a clear, immediate pain point for target customers. The problem impacts overall profitability and operational efficiency and is visible at the CTO-level.",
+      "valueScore": 5,
+      "valueEvidence": "Posh AMP offers significant business value, including achieving up to a 50% reduction in system failures, leading to an estimated 30% improved MTBF and $500K in annual OpEx savings. It also aims for a 75% increase in the Incident Automation Rate, reducing operational costs by up to 30% and speeding incident response by 75%. There is a clear budget for monitoring, and a strong ROI case based on downtime costs.",
+      "marketGapScore": 5,
+      "marketGapEvidence": "Few predictive solutions exist in the market, and traditional API monitoring tools are purely reactive, lacking predictive capabilities. There is a rising focus on business resilience, and companies are prioritizing systems that ensure business continuity.",
+      "accessibilityScore": 4,
+      "accessibilityEvidence": "Development teams are easy to identify and are willing to try new tools. The target customers are mid to large-sized companies with modern API infrastructure and established DevOps teams. Posh AMP is designed to integrate seamlessly across multiple platforms and tools, providing familiar context while differentiating through its novel predictive approach.",
+      "currentStep": 3
+    }
+    </script>
+
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Progress Code System - Encoding/Decoding Functions
-        const encodeProgressCode = (workshopData) => {
-            try {
-                const jsonString = JSON.stringify(workshopData);
-                const base64 = btoa(jsonString);
-                return `GSAP2025-${base64}`;
-            } catch (error) {
-                console.error('Error encoding progress code:', error);
-                return null;
-            }
-        };
-
-        const decodeProgressCode = (code) => {
-            try {
-                console.log('🔧 decodeProgressCode called with:', code?.substring(0, 50) + '...');
-                
-                // Handle both old and new formats
-                let jsonString;
-                
-                if (code.startsWith('GSAP2025-')) {
-                    // New format with prefix
-                    const base64 = code.substring(9);
-                    console.log('🔧 New format - extracted base64 part, length:', base64.length);
-                    jsonString = atob(base64);
-                } else {
-                    // Old format without prefix - handle legacy codes
-                    console.log('🔧 Legacy format detected - migrating...');
-                    const base64 = code.replace(/-/g, '+').replace(/_/g, '/');
-                    const padding = (4 - (base64.length % 4)) % 4;
-                    const paddedBase64 = base64 + '='.repeat(padding);
-                    jsonString = atob(paddedBase64);
-                }
-                
-                console.log('🔧 Decoded to JSON string, length:', jsonString.length);
-                const parsed = JSON.parse(jsonString);
-                
-                // Migrate old nested format to new flat format
-                if (parsed.workshops) {
-                    console.log('🔧 Migrating old nested format to new flat format');
-                    const migrated = {
-                        version: "1.0",
-                        createdAt: new Date().toISOString(),
-                        lastUpdated: new Date().toISOString(),
-                        day1: parsed.workshops.day1 || {},
-                        day2_1: parsed.workshops.day2_1 || {},
-                        day2_2: parsed.workshops.day2_2 || {},
-                        day3: parsed.workshops.day3 || {}
-                    };
-                    console.log('✅ Migration complete');
-                    return migrated;
-                }
-                
-                console.log('✅ Successfully parsed JSON');
-                return parsed;
-            } catch (error) {
-                console.error('❌ Error decoding progress code:', error.message);
-                console.error('❌ Full error:', error);
-                return null;
-            }
-        };
+        // Removed Progress Code System - using embedded test data instead
 
         // Icon components
         const AlertTriangle = ({ size = 20, className = "" }) => (
@@ -170,183 +129,7 @@
             </svg>
         );
 
-        // ImportSection Component
-        const ImportSection = ({ onImport, autoHide = true }) => {
-            const [showImport, setShowImport] = useState(true);
-            const [importCode, setImportCode] = useState('');
-            const [importStatus, setImportStatus] = useState({ type: '', message: '' });
-            const [isStartingFresh, setIsStartingFresh] = useState(false);
-
-            const handleImport = () => {
-                if (!importCode.trim()) {
-                    setImportStatus({ type: 'error', message: 'Please enter a progress code' });
-                    return;
-                }
-
-                const data = decodeProgressCode(importCode.trim());
-                if (!data) {
-                    setImportStatus({ type: 'error', message: 'Invalid progress code format' });
-                    return;
-                }
-
-                // Check version compatibility - handle both old and new formats
-                if (data.version && data.version !== "1.0" && data.version !== 1) {
-                    setImportStatus({ type: 'error', message: 'Incompatible progress code version' });
-                    return;
-                }
-
-                onImport(data);
-                setImportStatus({ type: 'success', message: 'Progress imported successfully!' });
-                
-                // Keep import section visible with success message - don't auto-hide
-            };
-
-            const handleStartFresh = () => {
-                setIsStartingFresh(true);
-                onImport(null);
-                setTimeout(() => setShowImport(false), 300);
-            };
-
-            if (!showImport) return null;
-
-            return (
-                <div className="bg-blue-50 border-2 border-blue-200 rounded-lg p-4 mb-4">
-                    <div className="flex items-start justify-between mb-3">
-                        <div className="flex items-center">
-                            <FileText className="text-blue-600 mr-2" size={24} />
-                            <h3 className="text-lg font-semibold text-blue-900">Continue Your Progress</h3>
-                        </div>
-                        <button
-                            onClick={() => setShowImport(false)}
-                            className="text-blue-400 hover:text-blue-600"
-                        >
-                            <X size={20} />
-                        </button>
-                    </div>
-                    
-                    <p className="text-blue-700 mb-3 text-sm">
-                        Have a progress code from previous activities? Enter it below to continue with your saved data.
-                    </p>
-                    
-                    <div className="flex gap-2 mb-2">
-                        <input
-                            type="text"
-                            value={importCode}
-                            onChange={(e) => setImportCode(e.target.value)}
-                            placeholder="Enter your progress code..."
-                            className="flex-1 px-3 py-2 border border-blue-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-                        />
-                        <button
-                            onClick={handleImport}
-                            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition-colors"
-                        >
-                            Import Progress
-                        </button>
-                    </div>
-                    
-                    {importStatus.message && (
-                        <div className={`text-sm mt-2 ${importStatus.type === 'error' ? 'text-red-600' : 'text-green-600'}`}>
-                            {importStatus.message}
-                        </div>
-                    )}
-                    
-                    <div className="text-center mt-3">
-                        <button
-                            onClick={handleStartFresh}
-                            className="text-blue-600 hover:text-blue-800 text-sm underline"
-                        >
-                            {isStartingFresh ? 'Starting fresh...' : 'Or start fresh without importing →'}
-                        </button>
-                    </div>
-                </div>
-            );
-        };
-
-        // ExportSection Component
-        const ExportSection = ({ data, show }) => {
-            const [copied, setCopied] = useState(false);
-            const [showHelp, setShowHelp] = useState(false);
-
-            if (!show) return null;
-
-            const progressCode = encodeProgressCode(data);
-
-            const copyToClipboard = async () => {
-                try {
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(progressCode);
-                        setCopied(true);
-                    } else {
-                        // Fallback for Safari
-                        const textArea = document.createElement('textarea');
-                        textArea.value = progressCode;
-                        textArea.style.position = 'fixed';
-                        textArea.style.opacity = '0';
-                        document.body.appendChild(textArea);
-                        textArea.select();
-                        try {
-                            document.execCommand('copy');
-                            setCopied(true);
-                        } catch (err) {
-                            console.error('Fallback copy failed:', err);
-                        }
-                        document.body.removeChild(textArea);
-                    }
-                    setTimeout(() => setCopied(false), 2000);
-                } catch (err) {
-                    console.error('Failed to copy:', err);
-                }
-            };
-
-            return (
-                <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4 mt-4">
-                    <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center">
-                            <Download className="text-green-600 mr-2" size={24} />
-                            <h3 className="text-lg font-semibold text-green-900">Activity Complete! Save Your Progress</h3>
-                        </div>
-                        <button
-                            onClick={() => setShowHelp(!showHelp)}
-                            className="text-green-600 hover:text-green-800"
-                            title="What's this?"
-                        >
-                            <HelpCircle size={20} />
-                        </button>
-                    </div>
-                    
-                    {showHelp && (
-                        <div className="bg-green-100 rounded p-3 mb-3 text-sm text-green-800">
-                            <p className="font-semibold mb-1">What is a Progress Code?</p>
-                            <p>Your Progress Code saves all your workshop data in a secure, portable format. Use it to:</p>
-                            <ul className="list-disc ml-5 mt-1">
-                                <li>Continue in tomorrow's Finding Your Early Customers workshop</li>
-                                <li>Return to any workshop later</li>
-                                <li>Share progress with team members or instructors</li>
-                            </ul>
-                        </div>
-                    )}
-                    
-                    <p className="text-green-700 mb-3 text-sm">
-                        Copy this code to continue in tomorrow's workshop:
-                    </p>
-                    
-                    <div className="bg-white border border-green-300 rounded p-3 mb-3 font-mono text-xs break-all">
-                        {progressCode}
-                    </div>
-                    
-                    <button
-                        onClick={copyToClipboard}
-                        className={`w-full py-2 rounded font-semibold transition-colors ${
-                            copied 
-                                ? 'bg-green-600 text-white' 
-                                : 'bg-green-500 text-white hover:bg-green-600'
-                        }`}
-                    >
-                        {copied ? '✓ Copied!' : 'Copy Progress Code'}
-                    </button>
-                </div>
-            );
-        };
+        // Removed ImportSection and ExportSection components - using embedded test data instead
 
         // Word count and validation utility
         const getWordCount = (text) => {
@@ -396,38 +179,159 @@
             });
             const [timeRemaining, setTimeRemaining] = useState(null);
             const [timerActive, setTimerActive] = useState(false);
-            const [importedData, setImportedData] = useState(null);
-            const [exportData, setExportData] = useState(null);
             const [activityComplete, setActivityComplete] = useState(false);
+            
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
 
-            // Handle import
-            const handleImport = (data) => {
-                if (data) {
-                    setImportedData(data);
-                    console.log('[Problems-3] Imported data:', data);
-                    
-                    // Restore Activity 3 data if it exists (handle both old and new formats)
-                    const activity3Data = data.day1?.activity3 || data.workshops?.day1?.activity3;
-                    if (activity3Data) {
-                        setProblemStatement(activity3Data.problemStatement || '');
-                        setScores(activity3Data.scores || {
-                            urgency: 0,
-                            importance: 0,
-                            value: 0,
-                            marketGap: 0,
-                            accessibility: 0
+            // Reusable dev mode hook for loading test data
+            const loadTestDataFromScript = (setters) => {
+                try {
+                    const dataEl = document.getElementById('testData');
+                    if (dataEl) {
+                        const data = JSON.parse(dataEl.textContent);
+                        Object.entries(setters).forEach(([key, setter]) => {
+                            if (data[key] !== undefined) {
+                                setter(data[key]);
+                            }
                         });
-                        setEvidence(activity3Data.evidence || {
-                            urgency: "",
-                            importance: "",
-                            value: "",
-                            marketGap: "",
-                            accessibility: ""
-                        });
+                        console.log('✅ Test data loaded successfully from script tag');
+                        return true;
+                    } else {
+                        console.error('❌ Test data script tag not found');
+                        return false;
                     }
-                } else {
-                    console.log('[Problems-3] Starting fresh - no import');
+                } catch (error) {
+                    console.error('❌ Failed to parse test data:', error);
+                    return false;
                 }
+            };
+
+            // Dev fill function (uses embedded test data)
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    
+                    // Fill all the form fields with test data
+                    setProblemStatement(testData.problemStatement);
+                    setScores({
+                        urgency: testData.urgencyScore,
+                        importance: testData.importanceScore,
+                        value: testData.valueScore,
+                        marketGap: testData.marketGapScore,
+                        accessibility: testData.accessibilityScore
+                    });
+                    setEvidence({
+                        urgency: testData.urgencyEvidence,
+                        importance: testData.importanceEvidence,
+                        value: testData.valueEvidence,
+                        marketGap: testData.marketGapEvidence,
+                        accessibility: testData.accessibilityEvidence
+                    });
+                    setCurrentStep(testData.currentStep || 3);
+                    
+                    console.log('✅ Dev data loaded successfully (from embedded test data)');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                    alert(`Failed to load test data: ${error.message}`);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // Toggle dev mode (double-click title)
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            // Markdown export function for professional activity summary
+            const generateMarkdownSummary = () => {
+                const getScoreStatus = (score) => {
+                    if (score >= 4) return `${score}/5 - Strong 🟢`;
+                    if (score >= 3) return `${score}/5 - Moderate 🟡`;
+                    return `${score}/5 - Weak 🔴`;
+                };
+                
+                const problemQuality = meetsThreshold() ? 'High-Quality Problem 🟢' : 'Needs Improvement 🟡';
+                
+                return `# Problems Worth Solving: Problem Scoring Assessment
+
+### 📋 Executive Summary
+
+**Activity Completion Status: 100%**
+
+**Problem Quality Assessment: ${problemQuality}**
+- Total Score: ${totalScore}/25
+- Criteria meeting threshold: ${Object.values(scores).filter(score => score >= 4).length}/5
+- Completion time: ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  month: 'long', 
+  day: 'numeric',
+  year: 'numeric'
+})}
+
+---
+
+### 🎯 Problem Statement
+
+**Core Problem:**
+${problemStatement || '[Problem statement not defined]'}
+
+---
+
+### 📊 Scoring Matrix Assessment
+
+**Urgency Score:** ${getScoreStatus(scores.urgency)}
+*${evidence.urgency || '[No evidence provided]'}*
+
+**Importance Score:** ${getScoreStatus(scores.importance)}
+*${evidence.importance || '[No evidence provided]'}*
+
+**Value Potential Score:** ${getScoreStatus(scores.value)}
+*${evidence.value || '[No evidence provided]'}*
+
+**Market Gap Score:** ${getScoreStatus(scores.marketGap)}
+*${evidence.marketGap || '[No evidence provided]'}*
+
+**Accessibility Score:** ${getScoreStatus(scores.accessibility)}
+*${evidence.accessibility || '[No evidence provided]'}*
+
+### 🎯 Problem Viability Assessment
+
+**Overall Scoring Analysis:**
+- **Total Score**: ${totalScore}/25 ${totalScore >= 20 ? '(Exceeds threshold ✅)' : '(Below threshold ❌)'}
+- **High-Priority Criteria**: Urgency (${scores.urgency}/5) & Value (${scores.value}/5) ${scores.urgency >= 4 && scores.value >= 4 ? '✅' : '❌'}
+- **Strong Criteria Count**: ${Object.values(scores).filter(score => score >= 4).length}/5 ${Object.values(scores).filter(score => score >= 4).length >= 3 ? '(Sufficient ✅)' : '(Insufficient ❌)'}
+
+**Recommendation:**
+${meetsThreshold() ? 
+  'This problem meets the criteria for a worth-solving problem. Proceed with solution development and market validation.' :
+  'This problem requires strengthening in key areas before proceeding. Focus on improving urgency, importance, or market accessibility.'}
+
+### 💡 Key Takeaway
+
+A strong problem worth solving should score highly across multiple dimensions, with particular emphasis on urgency and value potential. Use this assessment to validate your problem before investing in solution development.
+
+### 📅 Assessment Details
+
+**Report Generated:** ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short'
+})}
+
+**Activity:** Problem Scoring Worksheet (Activity 3 of 3)  
+**Workshop Series:** Problems Worth Solving - GTM Program  
+**Next Steps:** Continue to Finding Your Early Customers workshop
+
+*This assessment validates your problem using a proven scoring framework. Use these insights to focus on problems with the highest potential for market success.*`;
             };
 
             // Total score calculation
@@ -993,53 +897,132 @@
                         )}
                     </div>
 
+                    {/* Export Professional Report */}
+                    <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+                        <div className="flex items-center mb-3">
+                            <FileText className="text-blue-600 mr-2" size={20} />
+                            <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 mb-3">
+                            Your problem scoring assessment has been formatted as a professional markdown report for easy sharing
+                            and documentation.
+                        </p>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                            <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                            <ol className="text-sm text-blue-700 space-y-1">
+                                <li>1. Click "Copy Activity Summary" below</li>
+                                <li>2. Open Google Docs and create a new document</li>
+                                <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                <li>4. Your report will appear with proper formatting!</li>
+                            </ol>
+                            <p className="text-xs text-blue-600 mt-2">
+                                💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                            </p>
+                        </div>
+
+                        <textarea
+                            id="markdownSummary"
+                            readOnly
+                            className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                            value={generateMarkdownSummary()}
+                        />
+                        
+                        <div className="flex flex-col items-center">
+                            <button
+                                onClick={(event) => {
+                                    // Copy to clipboard with fallback
+                                    const copyToClipboard = async (text) => {
+                                        try {
+                                            // Try modern clipboard API first
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                await navigator.clipboard.writeText(text);
+                                                return true;
+                                            } else {
+                                                // Fallback for older browsers or file:// protocol
+                                                const textArea = document.createElement('textarea');
+                                                textArea.value = text;
+                                                textArea.style.position = 'fixed';
+                                                textArea.style.left = '-999999px';
+                                                document.body.appendChild(textArea);
+                                                textArea.focus();
+                                                textArea.select();
+                                                
+                                                try {
+                                                    const successful = document.execCommand('copy');
+                                                    document.body.removeChild(textArea);
+                                                    return successful;
+                                                } catch (err) {
+                                                    document.body.removeChild(textArea);
+                                                    return false;
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.error('Copy failed:', err);
+                                            return false;
+                                        }
+                                    };
+
+                                    const el = document.getElementById('markdownSummary');
+                                    const statusDiv = document.getElementById('copyStatus');
+                                    
+                                    copyToClipboard(el.value).then((success) => {
+                                        if (success) {
+                                            // Show success status below button
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">✅ Copied to Clipboard!</p>
+                                                    <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                                                </div>
+                                            `;
+                                            
+                                            // Also show floating notification
+                                            const notification = document.createElement('div');
+                                            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;';
+                                            notification.textContent = '✅ Activity summary copied!';
+                                            document.body.appendChild(notification);
+                                            
+                                            // Fade out notification
+                                            setTimeout(() => {
+                                                notification.style.transition = 'opacity 0.5s';
+                                                notification.style.opacity = '0';
+                                                setTimeout(() => notification.remove(), 500);
+                                            }, 2500);
+                                            
+                                            // Clear status after 3 seconds
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        } else {
+                                            // Show error status
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">❌ Copy Failed</p>
+                                                    <p class="text-sm">Please select and copy the text manually.</p>
+                                                </div>
+                                            `;
+                                            
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        }
+                                    });
+                                }}
+                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                            >
+                                📋 Copy Activity Summary
+                            </button>
+                            <div id="copyStatus"></div>
+                        </div>
+                    </div>
+
                     <div className="flex justify-between items-center mt-6 gap-4">
                         <button
                             onClick={resetActivity}
                             className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors flex-shrink-0"
                         >
                             Reset Activity
-                        </button>
-                        
-                        <button
-                            onClick={() => {
-                                if (!activityComplete) {
-                                    // Generate export data when completing the activity
-                                    const newExportData = {
-                                        version: "1.0",
-                                        createdAt: importedData?.createdAt || new Date().toISOString(),
-                                        lastUpdated: new Date().toISOString(),
-                                        day1: {
-                                            ...(importedData?.day1 || {}),
-                                            problemStatement: problemStatement, // This is the key export for Day 2-1
-                                            activity3: {
-                                                problemStatement: problemStatement,
-                                                scores: scores,
-                                                evidence: evidence,
-                                                totalScore: totalScore,
-                                                meetsThreshold: meetsThreshold(),
-                                                completedAt: new Date().toISOString()
-                                            }
-                                        },
-                                        day2_1: importedData?.day2_1 || {},
-                                        day2_2: importedData?.day2_2 || {},
-                                        day3: importedData?.day3 || {}
-                                    };
-                                    setExportData(newExportData);
-                                    setActivityComplete(true);
-                                    console.log('[Problems-3] Export data generated:', newExportData);
-                                } else {
-                                    // If already completed, navigate to workshop
-                                    window.location.href = 'index.html';
-                                }
-                            }}
-                            className={`px-4 py-2 rounded-lg text-white font-medium transition-colors flex-shrink-0 ${
-                                activityComplete 
-                                    ? 'bg-gray-500 hover:bg-gray-600' 
-                                    : 'bg-green-500 hover:bg-green-600 font-semibold'
-                            }`}
-                        >
-                            {activityComplete ? 'Return to Workshop' : 'Generate Code'}
                         </button>
                         
                         <button
@@ -1071,8 +1054,12 @@
                             </a>
                         </div>
                         <div className="flex items-center justify-between mb-3">
-                            <h1 className="text-2xl font-bold text-gray-800">
-                                Activity 3: Problem Scoring Worksheet
+                            <h1 
+                                className={`text-2xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 3: Problem Scoring Worksheet {devMode && '🔧'}
                             </h1>
                             <button
                                 onClick={resetActivity}
@@ -1082,6 +1069,22 @@
                                 Reset
                             </button>
                         </div>
+                        
+                        {/* Dev Mode Controls */}
+                        {devMode && (
+                            <div className="mb-3 pb-3 border-b border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button
+                                        onClick={devFillData}
+                                        disabled={devFillLoading}
+                                        className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                         
                         {/* Progress indicator */}
                         <div className="flex items-center space-x-4">
@@ -1114,8 +1117,7 @@
                         </div>
                     </div>
 
-                    {/* Import Section */}
-                    {currentStep === 1 && <ImportSection onImport={handleImport} />}
+                    {/* Removed ImportSection - using embedded test data instead */}
 
                     {/* Main Content */}
                     <div className="bg-white rounded-lg shadow-lg p-6 relative">
@@ -1123,10 +1125,7 @@
                         {currentStep === 2 && renderStep2()}
                         {currentStep === 3 && renderStep3()}
                         
-                        {/* Export Section - show after completing step 3 */}
-                        {currentStep === 3 && activityComplete && (
-                            <ExportSection data={exportData} show={true} />
-                        )}
+                        {/* Removed ExportSection - using markdown export instead */}
                     </div>
 
                     {/* Footer decoration */}
