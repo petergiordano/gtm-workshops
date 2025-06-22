@@ -50,76 +50,52 @@
 <body>
     <div id="root"></div>
 
+    <!-- Test Data from test_data/market-entry-activity-3A.json -->
+    <script type="application/json" id="testData">
+    {
+      "entryApproach": "Posh's go-to-market strategy involves a direct sales model combined with strategic technology partnerships, focusing on leveraging cloud providers and DevOps platforms.",
+      "resourceAllocation": "Budget will be allocated towards SOC2 compliance and security efforts ($150K), building a US sales team ($800K for 4 people), and marketing with demand generation ($300K).",
+      "teamBuilding": "The strategy involves building a US-based sales team, establishing local customer success resources, and ensuring 24/7 support across multiple time zones for the target market.",
+      "milestones": [
+        {
+          "month": "Month 1-2",
+          "goal": "Establish foundational cloud partnerships and initiate compliance.",
+          "successCriteria": "Secure 2-3 major cloud provider partnerships (AWS, Azure, GCP). Begin SOC2 compliance and security efforts."
+        },
+        {
+          "month": "Month 3-4",
+          "goal": "Form the US sales team and achieve initial platform integrations.",
+          "successCriteria": "Hire a 4-person US sales team. Complete 5 major DevOps platform integrations."
+        },
+        {
+          "month": "Month 5-6",
+          "goal": "Acquire initial pilot customers and launch marketing campaigns.",
+          "successCriteria": "Secure 3 Fortune 500 pilot customers. Initiate comprehensive marketing and demand generation."
+        },
+        {
+          "month": "Month 7-8",
+          "goal": "Expand system integrator partnerships and accelerate customer acquisition.",
+          "successCriteria": "Secure 1-2 system integrator (SI) partner agreements. Progress towards enterprise customer targets."
+        },
+        {
+          "month": "Month 9-10",
+          "goal": "Scale the customer base and refine product-market fit.",
+          "successCriteria": "Continue acquiring enterprise customers towards the 12-month goal. Gather early product-market fit indicators."
+        },
+        {
+          "month": "Month 11-12",
+          "goal": "Achieve annual revenue and customer satisfaction targets.",
+          "successCriteria": "Attain $1.5M ARR from the US market. Secure 15 enterprise customers. Achieve 95% customer satisfaction (NPS >50)."
+        }
+      ],
+      "currentStep": 3
+    }
+    </script>
+
     <script type="text/babel">
         const { useState, useEffect } = React;
 
-        // Progress Code System - Encoding/Decoding Functions
-        const encodeProgressCode = (workshopData) => {
-            try {
-                const jsonString = JSON.stringify(workshopData);
-                const base64 = btoa(jsonString);
-                return `GSAP2025-${base64}`;
-            } catch (error) {
-                console.error('Error encoding progress code:', error);
-                return null;
-            }
-        };
-
-        const decodeProgressCode = (code) => {
-            try {
-                const cleanedCode = code
-                    .trim()
-                    .split('\n')
-                    .join('')
-                    .replace(/\s+/g, '');
-                
-                let base64;
-                if (cleanedCode.startsWith('GSAP2025-')) {
-                    base64 = cleanedCode.substring(9);
-                } else if (cleanedCode.length > 0) {
-                    base64 = cleanedCode;
-                } else {
-                    throw new Error('Invalid progress code format');
-                }
-                
-                const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
-                if (!base64Regex.test(base64)) {
-                    throw new Error('Progress code contains invalid characters');
-                }
-                
-                const jsonString = atob(base64);
-                const parsed = JSON.parse(jsonString);
-                
-                return parsed;
-            } catch (error) {
-                console.error('Decode error:', error.message);
-                return null;
-            }
-        };
-
-        // Cross-browser clipboard copy with Safari fallback
-        const copyToClipboard = async (text) => {
-            try {
-                await navigator.clipboard.writeText(text);
-                return true;
-            } catch (err) {
-                const textArea = document.createElement('textarea');
-                textArea.value = text;
-                textArea.style.position = 'fixed';
-                textArea.style.left = '-999999px';
-                document.body.appendChild(textArea);
-                textArea.select();
-                try {
-                    document.execCommand('copy');
-                    return true;
-                } catch (err) {
-                    console.error('Fallback copy failed:', err);
-                    return false;
-                } finally {
-                    document.body.removeChild(textArea);
-                }
-            }
-        };
+        // Removed Progress Code System - using embedded test data instead
 
         // Icon components
         const Rocket = ({ size = 20, className = "" }) => (
@@ -218,19 +194,9 @@
                 { month: 'Month 11-12', goal: '', successCriteria: '' }
             ]);
             
-            // Progress Code System state
-            const [workshopData, setWorkshopData] = useState({
-                version: "1.0",
-                createdAt: new Date().toISOString(),
-                lastUpdated: new Date().toISOString(),
-                day1: {},
-                day2_1: {},
-                day2_2: {},
-                day3: {}
-            });
-            const [showImportSection, setShowImportSection] = useState(true);
-            const [importExpanded, setImportExpanded] = useState(false);
-            const [importedContext, setImportedContext] = useState(null);
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
 
             // Reset function with refresh button
             const resetActivity = () => {
@@ -245,19 +211,7 @@
                     { month: 'Month 9-10', goal: '', successCriteria: '' },
                     { month: 'Month 11-12', goal: '', successCriteria: '' }
                 ]);
-                setImportedContext(null);
-                setShowImportSection(true);
-                setImportExpanded(false);
                 setCurrentStep(1);
-                setWorkshopData({
-                    version: "1.0",
-                    createdAt: new Date().toISOString(),
-                    lastUpdated: new Date().toISOString(),
-                    day1: {},
-                    day2_1: {},
-                    day2_2: {},
-                    day3: {}
-                });
             };
 
             // Validation helpers with word count standards
@@ -279,56 +233,63 @@
 
             const isActivityComplete = () => isStep1Complete() && isStep2Complete();
 
-            // Handle import
-            const handleImport = (input) => {
-                if (input && input.startFresh) {
-                    setShowImportSection(false);
-                    return { success: true };
+            // Reusable dev mode hook for loading test data
+            const loadTestDataFromScript = (setters) => {
+                try {
+                    const dataEl = document.getElementById('testData');
+                    if (dataEl) {
+                        const data = JSON.parse(dataEl.textContent);
+                        Object.entries(setters).forEach(([key, setter]) => {
+                            if (data[key] !== undefined) {
+                                setter(data[key]);
+                            }
+                        });
+                        console.log('✅ Test data loaded successfully from script tag');
+                        return true;
+                    } else {
+                        console.error('❌ Test data script tag not found');
+                        return false;
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to parse test data:', error);
+                    return false;
                 }
-                
-                if (input && input.hideImportSection) {
-                    setShowImportSection(false);
-                    return { success: true };
-                }
-                
-                const cleanedCode = input
-                    .trim()
-                    .replace(/\s+/g, '')
-                    .replace(/[\r\n]+/g, '');
-                
-                const decoded = decodeProgressCode(cleanedCode);
-                if (!decoded) {
-                    return { success: false, error: 'Invalid progress code. Please check that you copied the entire code correctly.' };
-                }
-                
-                setWorkshopData(decoded);
-                setImportedContext(decoded);
-                
-                return { success: true };
             };
 
-            // Update workshop data when activity completes
-            useEffect(() => {
-                if (isActivityComplete()) {
-                    const updatedData = {
-                        ...workshopData,
-                        lastUpdated: new Date().toISOString(),
-                        day3: {
-                            ...workshopData.day3,
-                            activity3: {
-                                strategyPlanning: {
-                                    entryApproach,
-                                    resourceAllocation,
-                                    teamBuilding
-                                },
-                                timelineMilestones: milestones.filter(m => m.goal.trim() || m.successCriteria.trim()),
-                                completedAt: new Date().toISOString()
-                            }
-                        }
+            // Dev fill function (uses external test data)
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    // Define setters for the loadTestDataFromScript function
+                    const setters = {
+                        entryApproach: setEntryApproach,
+                        resourceAllocation: setResourceAllocation,
+                        teamBuilding: setTeamBuilding,
+                        milestones: setMilestones,
+                        currentStep: setCurrentStep
                     };
-                    setWorkshopData(updatedData);
+                    
+                    // Load test data using the reusable hook
+                    const success = loadTestDataFromScript(setters);
+                    
+                    if (success) {
+                        console.log('✅ Dev data loaded successfully (from test_data JSON)');
+                    } else {
+                        throw new Error('Failed to load test data from script tag');
+                    }
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                    alert(`Failed to load test data: ${error.message}`);
+                } finally {
+                    setDevFillLoading(false);
                 }
-            }, [entryApproach, resourceAllocation, teamBuilding, milestones]);
+            };
+
+            // Toggle dev mode (double-click title)
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
 
             // Update milestone
             const updateMilestone = (index, field, value) => {
@@ -337,354 +298,79 @@
                 setMilestones(newMilestones);
             };
 
-            // Generate comprehensive market entry plan
-            const generateFinalPlan = () => {
-                const completedMilestones = milestones.filter(m => m.goal.trim() || m.successCriteria.trim());
+            // Markdown export function for professional activity summary
+            const generateMarkdownSummary = () => {
+                const percentage = Math.round(((milestones.filter(m => m.goal.trim() && m.successCriteria.trim()).length) / 6) * 100);
+                const readinessStatus = percentage >= 80 ? percentage + '% - Ready 🟢' : 
+                                      percentage >= 60 ? percentage + '% - Moderate 🟡' : 
+                                      percentage + '% - Developing 🟠';
                 
-                return `
-# 12-Month US Market Entry Strategy
+                return `# Market Entry Readiness: Entry Strategy Builder
 
-## Executive Summary
-${importedContext?.day1?.activity3?.problemStatement ? `**Problem Being Solved:** ${importedContext.day1.activity3.problemStatement}` : ''}
+### 📋 Executive Summary
 
-${importedContext?.day2_1?.activity3?.common_needs ? `**Target Customer:** ${importedContext.day2_1.activity3.common_needs}` : ''}
+**Strategy Completion Score: ${readinessStatus}**
 
-${importedContext?.day2_2?.activity3?.positioningStatement ? `**Positioning:** FOR ${importedContext.day2_2.activity3.targetCustomer} WHO STRUGGLES WITH ${importedContext.day2_2.activity3.corePain}, OUR PRODUCT IS A ${importedContext.day2_2.activity3.productCategory} THAT PROVIDES ${importedContext.day2_2.activity3.positioningStatement.thatProvides}` : ''}
-
-## Strategic Approach
-
-### Entry Strategy
-${entryApproach}
-
-### Resource Allocation
-${resourceAllocation}
-
-### Team Building
-${teamBuilding}
-
-## Implementation Timeline
-
-${completedMilestones.map(milestone => `
-### ${milestone.month}
-**Goal:** ${milestone.goal}
-**Success Criteria:** ${milestone.successCriteria}
-`).join('')}
-
-## Market Context
-${importedContext?.day3?.activity1 ? `
-### Current Position Assessment
-**Strengths:** ${importedContext.day3.activity1.currentPosition?.strengths?.join(', ') || 'Not specified'}
-**Limitations:** ${importedContext.day3.activity1.currentPosition?.limitations?.join(', ') || 'Not specified'}
-
-### Success Metrics
-**6-Month Targets:** ${importedContext.day3.activity1.successMetrics?.sixMonthTargets?.targets?.join(', ') || 'Not specified'}
-**12-Month Targets:** ${importedContext.day3.activity1.successMetrics?.twelveMonthTargets?.targets?.join(', ') || 'Not specified'}
-` : ''}
-
-${importedContext?.day3?.activity2 ? `
-### Priority Market Gaps
-**Adaptation Strategy:** ${importedContext.day3.activity2.adaptationStrategy || 'Not specified'}
-` : ''}
+**Implementation Planning:**
+- Market Entry Approach: ${entryApproach.trim() ? '✅ Defined' : '❌ Pending'}
+- Resource Allocation: ${resourceAllocation.trim() ? '✅ Planned' : '❌ Pending'}
+- Team Building Strategy: ${teamBuilding.trim() ? '✅ Outlined' : '❌ Pending'}
+- Timeline Milestones: ${milestones.filter(m => m.goal.trim() && m.successCriteria.trim()).length}/6 completed
 
 ---
-*Generated on ${new Date().toLocaleDateString()}*
-*Market Entry Readiness Workshop - GSAP 2025*
-                `.trim();
+
+### 🚀 Market Entry Strategy
+
+**Entry Approach:**
+${entryApproach.trim() || '[Not provided]'}
+
+**Resource Allocation:**
+${resourceAllocation.trim() || '[Not provided]'}
+
+**Team Building Strategy:**
+${teamBuilding.trim() || '[Not provided]'}
+
+### 📅 Implementation Timeline
+
+| Period | Primary Goal | Success Criteria |
+|--------|--------------|------------------|
+${milestones.map(m => `| ${m.month} | ${m.goal.trim() || '[Not set]'} | ${m.successCriteria.trim() || '[Not set]'} |`).join('\n')}
+
+### 📊 Strategic Assessment
+
+**Strategy Components:**
+- Entry methodology clearly defined
+- Resource requirements mapped to strategy
+- Team scaling plan aligned with market entry phases
+- 12-month timeline with measurable milestones
+
+**Implementation Readiness:**
+- Strategic foundation: ${entryApproach.trim() && resourceAllocation.trim() && teamBuilding.trim() ? 'Complete' : 'In Progress'}
+- Timeline planning: ${milestones.filter(m => m.goal.trim() && m.successCriteria.trim()).length >= 4 ? 'Complete' : 'In Progress'}
+- Execution roadmap: Ready for market entry execution
+
+### 📅 Assessment Details
+
+**Report Generated:** ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short'
+})}
+
+**Activity:** Entry Strategy Builder (Activity 3 of 3)  
+**Workshop Series:** Market Entry Readiness - GTM Program  
+**Status:** Market Entry Strategy Complete
+
+*This strategy provides a comprehensive 12-month implementation roadmap for US market entry. Review with stakeholders and adjust timeline based on market conditions and resource availability.*`;
             };
 
-            // Import Section Component
-            const ImportSection = ({ onImport, isVisible }) => {
-                const [progressCode, setProgressCode] = useState('');
-                const [error, setError] = useState('');
-                const [success, setSuccess] = useState(false);
-                
-                const handleImportClick = () => {
-                    const cleanedCode = progressCode
-                        .trim()
-                        .replace(/\s+/g, '')
-                        .replace(/[\r\n]+/g, '');
-                    
-                    if (!cleanedCode) {
-                        setError('Please paste a progress code');
-                        return;
-                    }
-                    
-                    const result = onImport(cleanedCode);
-                    if (result.success) {
-                        setSuccess(true);
-                        setError('');
-                        
-                        setTimeout(() => {
-                            onImport({ hideImportSection: true });
-                        }, 3000);
-                    } else {
-                        setError(result.error);
-                        setSuccess(false);
-                    }
-                };
-                
-                const handleStartFresh = () => {
-                    setProgressCode('');
-                    setError('');
-                    setSuccess(false);
-                    onImport({ startFresh: true });
-                };
-                
-                if (!isVisible) return null;
-                
-                return (
-                    <div className="bg-white border border-gray-200 rounded-lg mb-4">
-                        <div 
-                            className="flex items-center justify-between p-4 cursor-pointer hover:bg-gray-50"
-                            onClick={() => setImportExpanded(!importExpanded)}
-                        >
-                            <div className="flex items-center">
-                                <FileText className="text-blue-600 mr-2" size={20} />
-                                <h3 className="text-md font-semibold text-gray-800">Complete Your Market Entry Journey</h3>
-                            </div>
-                            {importExpanded ? <ChevronDown size={20} /> : <ChevronRight size={20} />}
-                        </div>
-                        
-                        <div className={`import-content ${importExpanded ? 'expanded' : ''}`}>
-                            <div className="px-4 pb-4">
-                                {importedContext && (
-                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
-                                        <h4 className="font-medium text-blue-800 mb-2">Your Workshop Journey:</h4>
-                                        <div className="text-sm space-y-2">
-                                            {(() => {
-                                                const workshops = importedContext.workshops || importedContext;
-                                                const day1 = workshops.day1;
-                                                const day21 = workshops.day21 || workshops.day2_1;
-                                                const day22 = workshops.day22 || workshops.day2_2;
-                                                const day3 = workshops.day3;
-                                                
-                                                return (
-                                                    <>
-                                                        {day1?.activity3?.problemStatement && (
-                                                            <div>
-                                                                <strong>✓ Problem Validated:</strong> {day1.activity3.problemStatement.substring(0, 80)}...
-                                                            </div>
-                                                        )}
-                                                        {day21?.activity3?.common_needs && (
-                                                            <div>
-                                                                <strong>✓ Early Customers:</strong> {day21.activity3.common_needs.substring(0, 80)}...
-                                                            </div>
-                                                        )}
-                                                        {day22?.activity3?.targetCustomer && (
-                                                            <div>
-                                                                <strong>✓ Positioning:</strong> {day22.activity3.targetCustomer.substring(0, 80)}...
-                                                            </div>
-                                                        )}
-                                                        {day3?.activity1 && (
-                                                            <div>
-                                                                <strong>✓ Foundation:</strong> {day3.activity1.currentPosition?.strengths?.length || 0} strengths, {day3.activity1.successMetrics?.sixMonthTargets?.metrics?.length || 0} metrics defined
-                                                            </div>
-                                                        )}
-                                                        {day3?.activity2 && (
-                                                            <div>
-                                                                <strong>✓ Market Reality:</strong> {day3.activity2.gapPriorities?.length || 0} priority gaps identified
-                                                            </div>
-                                                        )}
-                                                    </>
-                                                );
-                                            })()}
-                                        </div>
-                                    </div>
-                                )}
-                                
-                                <textarea
-                                    value={progressCode}
-                                    onChange={(e) => setProgressCode(e.target.value)}
-                                    placeholder="Paste your Workshop Progress Code here (starts with GSAP2025-)..."
-                                    className="w-full h-16 p-3 border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200 text-sm"
-                                />
-                                
-                                <p className="text-xs text-gray-500 mt-1">
-                                    Import your progress from Activities 1 & 2 to build on your foundation and market analysis.
-                                </p>
-                                
-                                {progressCode.trim().startsWith('GSAP2025-') && (
-                                    <p className="text-xs text-green-600 mt-1">
-                                        ✓ Valid code format detected
-                                    </p>
-                                )}
-                                
-                                {error && (
-                                    <div className="mt-2 text-red-600 text-sm">{error}</div>
-                                )}
-                                
-                                {success && (
-                                    <div className="mt-2 text-green-600 text-sm">
-                                        ✓ Progress loaded successfully! Your workshop context is now available.
-                                    </div>
-                                )}
-                                
-                                <div className="flex space-x-3 mt-3">
-                                    <button
-                                        onClick={handleImportClick}
-                                        className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition-colors text-sm"
-                                    >
-                                        Load Progress
-                                    </button>
-                                    <button
-                                        onClick={handleStartFresh}
-                                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors text-sm"
-                                    >
-                                        Start Fresh
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                );
-            };
+            // Removed old ImportSection component - using embedded test data instead
 
-            // Export Section Component
-            const ExportSection = ({ workshopData }) => {
-                const [showCopySuccess, setShowCopySuccess] = useState(false);
-                const [showHelpModal, setShowHelpModal] = useState(false);
-                const [showPlanModal, setShowPlanModal] = useState(false);
-                const progressCode = encodeProgressCode(workshopData);
-                
-                const handleCopy = async () => {
-                    const success = await copyToClipboard(progressCode);
-                    if (success) {
-                        setShowCopySuccess(true);
-                        setTimeout(() => setShowCopySuccess(false), 2000);
-                    }
-                };
-
-                const handleCopyPlan = async () => {
-                    const plan = generateFinalPlan();
-                    const success = await copyToClipboard(plan);
-                    if (success) {
-                        setShowCopySuccess(true);
-                        setTimeout(() => setShowCopySuccess(false), 2000);
-                    }
-                };
-                
-                const HelpModal = ({ isOpen, onClose }) => {
-                    if (!isOpen) return null;
-                    
-                    return (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                            <div className="bg-white rounded-lg p-6 max-w-md mx-4">
-                                <h3 className="text-lg font-semibold mb-4">About Progress Codes</h3>
-                                <p className="text-gray-600 mb-4">
-                                    Progress codes save your complete workshop journey across all 3 days of workshops.
-                                </p>
-                                <ul className="text-sm text-gray-600 space-y-2 mb-4">
-                                    <li>• Contains all your market entry planning work</li>
-                                    <li>• Can be used for future workshop sessions</li>
-                                    <li>• Data stays private on your device</li>
-                                    <li>• One code works across all workshops</li>
-                                </ul>
-                                <button 
-                                    onClick={onClose}
-                                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors"
-                                >
-                                    Got it
-                                </button>
-                            </div>
-                        </div>
-                    );
-                };
-
-                const PlanModal = ({ isOpen, onClose }) => {
-                    if (!isOpen) return null;
-                    
-                    return (
-                        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                            <div className="bg-white rounded-lg p-6 max-w-4xl max-h-[90vh] overflow-y-auto">
-                                <div className="flex justify-between items-center mb-4">
-                                    <h3 className="text-lg font-semibold">Your Complete Market Entry Strategy</h3>
-                                    <button
-                                        onClick={onClose}
-                                        className="text-gray-500 hover:text-gray-700"
-                                    >
-                                        ✕
-                                    </button>
-                                </div>
-                                <div className="bg-gray-50 border rounded-lg p-4 mb-4">
-                                    <pre className="text-sm whitespace-pre-wrap font-mono">{generateFinalPlan()}</pre>
-                                </div>
-                                <div className="flex space-x-3">
-                                    <button
-                                        onClick={handleCopyPlan}
-                                        className="bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 transition-colors flex items-center"
-                                    >
-                                        <Copy className="mr-2" size={16} />
-                                        Copy Plan
-                                    </button>
-                                    <button
-                                        onClick={onClose}
-                                        className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors"
-                                    >
-                                        Close
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    );
-                };
-                
-                return (
-                    <>
-                        <div className="bg-green-50 border border-green-300 rounded-lg p-4 mt-6">
-                            <div className="flex items-center mb-3">
-                                <CheckCircle className="text-green-600 mr-2" size={20} />
-                                <h3 className="text-md font-semibold text-green-800">Market Entry Strategy Complete!</h3>
-                            </div>
-                            
-                            <p className="text-green-700 mb-3 text-sm">
-                                Congratulations! You've completed your comprehensive 12-month US market entry strategy.
-                            </p>
-                            
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
-                                <div className="bg-white border border-green-200 rounded-lg p-3">
-                                    <code className="text-xs font-mono break-all">{progressCode}</code>
-                                </div>
-                                <div className="bg-white border border-green-200 rounded-lg p-3 flex items-center">
-                                    <FileText className="mr-2 text-gray-600" size={16} />
-                                    <span className="text-sm text-gray-700">Complete Strategy Document</span>
-                                </div>
-                            </div>
-                            
-                            <div className="flex flex-wrap items-center gap-3">
-                                <button
-                                    onClick={handleCopy}
-                                    className="flex items-center bg-green-600 text-white px-3 py-2 rounded-lg hover:bg-green-700 transition-colors text-sm"
-                                >
-                                    <Copy className="mr-2" size={14} />
-                                    Copy Progress Code
-                                </button>
-                                
-                                <button
-                                    onClick={() => setShowPlanModal(true)}
-                                    className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
-                                >
-                                    <FileText className="mr-2" size={14} />
-                                    View Full Strategy
-                                </button>
-                                
-                                <button
-                                    onClick={() => setShowHelpModal(true)}
-                                    className="text-green-700 hover:text-green-800 text-sm underline"
-                                >
-                                    What's this?
-                                </button>
-                                
-                                {showCopySuccess && (
-                                    <span className="text-green-600 text-sm">✓ Copied!</span>
-                                )}
-                            </div>
-                        </div>
-                        
-                        <HelpModal isOpen={showHelpModal} onClose={() => setShowHelpModal(false)} />
-                        <PlanModal isOpen={showPlanModal} onClose={() => setShowPlanModal(false)} />
-                    </>
-                );
-            };
+            // Removed old ExportSection component - using new markdown export instead
 
             const renderStep1 = () => (
                 <div className="space-y-4">
@@ -976,19 +662,17 @@ ${importedContext?.day3?.activity2 ? `
                                 </div>
                             </div>
                             
-                            {importedContext && (
-                                <div>
-                                    <h5 className="font-medium text-green-700 mb-1">Workshop Journey Complete:</h5>
-                                    <div className="text-sm text-gray-700 space-y-1">
-                                        {importedContext.day1?.activity3 && <div>✓ Day 1: Problem validated and market landing zone identified</div>}
-                                        {importedContext.day2_1?.activity3 && <div>✓ Day 2-1: Early Customer Profile developed with clear targeting</div>}
-                                        {importedContext.day2_2?.activity3 && <div>✓ Day 2-2: Positioning statement and value proposition completed</div>}
-                                        {importedContext.day3?.activity1 && <div>✓ Day 3-1: Foundation assessment and success metrics established</div>}
-                                        {importedContext.day3?.activity2 && <div>✓ Day 3-2: Market reality check and gap analysis completed</div>}
-                                        <div>✓ Day 3-3: Complete market entry strategy and implementation plan</div>
-                                    </div>
+                            <div>
+                                <h5 className="font-medium text-green-700 mb-1">Workshop Journey Complete:</h5>
+                                <div className="text-sm text-gray-700 space-y-1">
+                                    <div>✓ Day 1: Problem validated and market landing zone identified</div>
+                                    <div>✓ Day 2-1: Early Customer Profile developed with clear targeting</div>
+                                    <div>✓ Day 2-2: Positioning statement and value proposition completed</div>
+                                    <div>✓ Day 3-1: Foundation assessment and success metrics established</div>
+                                    <div>✓ Day 3-2: Market reality check and gap analysis completed</div>
+                                    <div>✓ Day 3-3: Complete market entry strategy and implementation plan</div>
                                 </div>
-                            )}
+                            </div>
                         </div>
                     </div>
 
@@ -1010,8 +694,125 @@ ${importedContext?.day3?.activity2 ? `
                         </div>
                     </div>
 
-                    {/* Export Section */}
-                    <ExportSection workshopData={workshopData} />
+                    {/* Export Professional Report */}
+                    <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+                        <div className="flex items-center mb-3">
+                            <FileText className="text-blue-600 mr-2" size={20} />
+                            <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 mb-3">
+                            Your market entry strategy has been formatted as a professional markdown report with
+                            executive summary, strategic framework, implementation timeline, and next steps.
+                        </p>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                            <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                            <ol className="text-sm text-blue-700 space-y-1">
+                                <li>1. Click "Copy Activity Summary" below</li>
+                                <li>2. Open Google Docs and create a new document</li>
+                                <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                <li>4. Your report will appear with proper formatting, tables, and styling!</li>
+                            </ol>
+                            <p className="text-xs text-blue-600 mt-2">
+                                💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including tables, headers, and bullet points.
+                            </p>
+                        </div>
+
+                        <textarea
+                            id="markdownSummary"
+                            readOnly
+                            className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                            value={generateMarkdownSummary()}
+                        />
+                        
+                        <div className="flex flex-col items-center">
+                            <button
+                                onClick={(event) => {
+                                    // Copy to clipboard with fallback
+                                    const copyToClipboard = async (text) => {
+                                        try {
+                                            // Try modern clipboard API first
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                await navigator.clipboard.writeText(text);
+                                                return true;
+                                            } else {
+                                                // Fallback for older browsers or file:// protocol
+                                                const textArea = document.createElement('textarea');
+                                                textArea.value = text;
+                                                textArea.style.position = 'fixed';
+                                                textArea.style.left = '-999999px';
+                                                document.body.appendChild(textArea);
+                                                textArea.focus();
+                                                textArea.select();
+                                                
+                                                try {
+                                                    const successful = document.execCommand('copy');
+                                                    document.body.removeChild(textArea);
+                                                    return successful;
+                                                } catch (err) {
+                                                    document.body.removeChild(textArea);
+                                                    return false;
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.error('Copy failed:', err);
+                                            return false;
+                                        }
+                                    };
+
+                                    const el = document.getElementById('markdownSummary');
+                                    const statusDiv = document.getElementById('copyStatus');
+                                    
+                                    copyToClipboard(el.value).then((success) => {
+                                        if (success) {
+                                            // Show success status below button
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">✅ Copied to Clipboard!</p>
+                                                    <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                                                </div>
+                                            `;
+                                            
+                                            // Also show floating notification
+                                            const notification = document.createElement('div');
+                                            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;';
+                                            notification.textContent = '✅ Market Entry Strategy copied!';
+                                            document.body.appendChild(notification);
+                                            
+                                            // Fade out notification
+                                            setTimeout(() => {
+                                                notification.style.transition = 'opacity 0.5s';
+                                                notification.style.opacity = '0';
+                                                setTimeout(() => notification.remove(), 500);
+                                            }, 2500);
+                                            
+                                            // Clear status after 3 seconds
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        } else {
+                                            // Show error status
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">❌ Copy Failed</p>
+                                                    <p class="text-sm">Please select and copy the text manually.</p>
+                                                </div>
+                                            `;
+                                            
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        }
+                                    });
+                                }}
+                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                            >
+                                📋 Copy Activity Summary
+                            </button>
+                            <div id="copyStatus"></div>
+                        </div>
+                    </div>
 
                     <div className="text-center space-x-4 mt-6">
                         <button
@@ -1049,8 +850,12 @@ ${importedContext?.day3?.activity2 ? `
                             </a>
                         </div>
                         <div className="flex items-center justify-between mb-2">
-                            <h1 className="text-xl font-bold text-gray-800">
-                                Activity 3: Entry Strategy Builder
+                            <h1 
+                                className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 3: Entry Strategy Builder {devMode && '🔧'}
                             </h1>
                             <div className="text-sm text-gray-600">
                                 Activity 3 of 3
@@ -1068,15 +873,25 @@ ${importedContext?.day3?.activity2 ? `
                             <span>Timeline</span>
                             <span>Complete</span>
                         </div>
+                        
+                        {/* Dev Mode Controls */}
+                        {devMode && (
+                            <div className="mt-3 pt-3 border-t border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button
+                                        onClick={devFillData}
+                                        disabled={devFillLoading}
+                                        className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
-                    {/* Import Section */}
-                    {currentStep < 3 && (
-                        <ImportSection 
-                            onImport={handleImport}
-                            isVisible={showImportSection}
-                        />
-                    )}
+                    {/* Removed old ImportSection - using embedded test data instead */}
 
                     {/* Main Content */}
                     <div className="bg-white rounded-lg shadow-lg p-6 relative">
