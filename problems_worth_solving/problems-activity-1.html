@@ -694,6 +694,184 @@
                         </div>
                     </div>
 
+                    {/* Export Professional Report */}
+                    <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+                        <div className="flex items-center mb-3">
+                            <FileText className="text-blue-600 mr-2" size={20} />
+                            <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 mb-3">
+                            Your problem origin story has been formatted as a professional markdown report for easy sharing
+                            and documentation.
+                        </p>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                            <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                            <ol className="text-sm text-blue-700 space-y-1">
+                                <li>1. Click "Copy Activity Summary" below</li>
+                                <li>2. Open Google Docs and create a new document</li>
+                                <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                <li>4. Your report will appear with proper formatting!</li>
+                            </ol>
+                            <p className="text-xs text-blue-600 mt-2">
+                                💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                            </p>
+                        </div>
+
+                        <textarea
+                            id="markdownSummary"
+                            readOnly
+                            className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                            value={(() => {
+                                const date = new Date();
+                                const formattedDate = date.toLocaleDateString('en-US', { 
+                                    weekday: 'long', 
+                                    year: 'numeric', 
+                                    month: 'long', 
+                                    day: 'numeric',
+                                    hour: '2-digit',
+                                    minute: '2-digit',
+                                    timeZoneName: 'short'
+                                });
+                                
+                                return `# Problem Origin Story: Summary Report
+
+## 📋 Executive Summary
+
+This report documents the origin story of a problem worth solving, capturing the authentic journey from discovery to validation.
+
+---
+
+## 🔍 Problem Discovery
+
+### The Moment of Realization
+${responses.momentOfRealization}
+
+### Who Experienced It
+${responses.whoExperienced}
+
+### Why It Matters
+${responses.whyMatters}
+
+---
+
+## ✅ Problem Validation
+
+### What Surprised Me
+${responses.whatSurprised}
+
+### How I Know It's Real
+${responses.howRealProblem}
+
+---
+
+## 📊 Assessment Details
+
+**Report Generated:** ${formattedDate}
+
+**Activity:** Problem Origin Story (Activity 1 of 3)  
+**Workshop Series:** Problems Worth Solving - GTM Program  
+**Next Steps:** Continue to Activity 2 - Problem Severity Assessment
+
+---
+
+### 💡 Key Insight
+
+Great products start with well-understood problems. This origin story provides the foundation for building something people truly need.
+
+*This assessment documents the authentic discovery and validation of a real problem. Use these insights to guide product development and ensure market fit.*`;
+                            })()}
+                        />
+                        
+                        <div className="flex flex-col items-center">
+                            <button
+                                onClick={(event) => {
+                                    // Copy to clipboard with fallback
+                                    const copyToClipboard = async (text) => {
+                                        try {
+                                            // Try modern clipboard API first
+                                            if (navigator.clipboard && navigator.clipboard.writeText) {
+                                                await navigator.clipboard.writeText(text);
+                                                return true;
+                                            } else {
+                                                // Fallback for older browsers or file:// protocol
+                                                const textArea = document.createElement('textarea');
+                                                textArea.value = text;
+                                                textArea.style.position = 'fixed';
+                                                textArea.style.left = '-999999px';
+                                                document.body.appendChild(textArea);
+                                                textArea.focus();
+                                                textArea.select();
+                                                
+                                                try {
+                                                    const successful = document.execCommand('copy');
+                                                    document.body.removeChild(textArea);
+                                                    return successful;
+                                                } catch (err) {
+                                                    document.body.removeChild(textArea);
+                                                    return false;
+                                                }
+                                            }
+                                        } catch (err) {
+                                            console.error('Copy failed:', err);
+                                            return false;
+                                        }
+                                    };
+
+                                    const el = document.getElementById('markdownSummary');
+                                    const statusDiv = document.getElementById('copyStatus');
+                                    
+                                    copyToClipboard(el.value).then((success) => {
+                                        if (success) {
+                                            // Show success status below button
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">✅ Copied to Clipboard!</p>
+                                                    <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                                                </div>
+                                            `;
+                                            
+                                            // Also show floating notification
+                                            const notification = document.createElement('div');
+                                            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;';
+                                            notification.textContent = '✅ Activity summary copied!';
+                                            document.body.appendChild(notification);
+                                            
+                                            // Fade out notification
+                                            setTimeout(() => {
+                                                notification.style.transition = 'opacity 0.5s';
+                                                notification.style.opacity = '0';
+                                                setTimeout(() => notification.remove(), 500);
+                                            }, 2500);
+                                            
+                                            // Clear status after 3 seconds
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        } else {
+                                            // Show error status
+                                            statusDiv.innerHTML = `
+                                                <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                                    <p class="font-medium">❌ Copy Failed</p>
+                                                    <p class="text-sm">Please select and copy the text manually.</p>
+                                                </div>
+                                            `;
+                                            
+                                            setTimeout(() => {
+                                                statusDiv.innerHTML = '';
+                                            }, 3000);
+                                        }
+                                    });
+                                }}
+                                className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                            >
+                                📋 Copy Activity Summary
+                            </button>
+                            <div id="copyStatus"></div>
+                        </div>
+                    </div>
+
                     <div className="flex justify-between items-center mt-6 gap-4">
                         <button
                             onClick={resetActivity}
@@ -704,29 +882,7 @@
                         
                         <button
                             onClick={() => {
-                                // Generate export data when completing the activity
-                                const newExportData = {
-                                    version: "1.0",
-                                    createdAt: importedData?.createdAt || new Date().toISOString(),
-                                    lastUpdated: new Date().toISOString(),
-                                    day1: {
-                                        ...(importedData?.day1 || {}),
-                                        activity1: {
-                                            momentOfRealization: responses.momentOfRealization,
-                                            whoExperienced: responses.whoExperienced,
-                                            whyMatters: responses.whyMatters,
-                                            whatSurprised: responses.whatSurprised,
-                                            howRealProblem: responses.howRealProblem,
-                                            completedAt: new Date().toISOString()
-                                        }
-                                    },
-                                    day2_1: importedData?.day2_1 || {},
-                                    day2_2: importedData?.day2_2 || {},
-                                    day3: importedData?.day3 || {}
-                                };
-                                setExportData(newExportData);
                                 setActivityComplete(true);
-                                console.log('[Problems-1] Export data generated:', newExportData);
                             }}
                             className="bg-green-500 text-white px-4 py-2 rounded text-sm hover:bg-green-600 transition-colors font-semibold flex-shrink-0"
                         >
@@ -735,31 +891,7 @@
                         
                         <button
                             onClick={() => {
-                                // Generate export data before continuing
-                                const newExportData = {
-                                    version: "1.0",
-                                    createdAt: importedData?.createdAt || new Date().toISOString(),
-                                    lastUpdated: new Date().toISOString(),
-                                    day1: {
-                                        ...(importedData?.day1 || {}),
-                                        activity1: {
-                                            momentOfRealization: responses.momentOfRealization,
-                                            whoExperienced: responses.whoExperienced,
-                                            whyMatters: responses.whyMatters,
-                                            whatSurprised: responses.whatSurprised,
-                                            howRealProblem: responses.howRealProblem,
-                                            completedAt: new Date().toISOString()
-                                        }
-                                    },
-                                    day2_1: importedData?.day2_1 || {},
-                                    day2_2: importedData?.day2_2 || {},
-                                    day3: importedData?.day3 || {}
-                                };
-                                setExportData(newExportData);
-                                setActivityComplete(true);
-                                
-                                // Navigate to next activity
-                                window.location.href = 'problems-activity-2.html';
+                                window.location.href = 'problems-activity-2A.html';
                             }}
                             className="bg-orange-500 text-white px-4 py-2 rounded text-sm hover:bg-orange-600 transition-colors font-semibold flex-shrink-0"
                         >
@@ -840,11 +972,6 @@
                         {currentStep === 1 && renderStep1()}
                         {currentStep === 2 && renderStep2()}
                         {currentStep === 3 && renderStep3()}
-                        
-                        {/* Export Section - show after completing step 3 */}
-                        {currentStep === 3 && activityComplete && (
-                            <ExportSection data={exportData} show={true} />
-                        )}
                     </div>
 
                     {/* Footer decoration */}
