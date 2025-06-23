@@ -951,3 +951,302 @@ For activities that import from multiple days:
 - `market_entry_readiness/market-entry-activity-1A.html` - Level 1 heading implemented
 - `market_entry_readiness/market-entry-activity-2A.html` - Level 1 heading implemented
 - All future A-version activities should follow this standard
+
+## Embedded Test Data Standards
+
+### Overview
+All A-version activities implement an embedded test data system to enable rapid development testing and demonstration. This system replaces the progress code import mechanism with pre-loaded test data and includes professional markdown export functionality.
+
+### Embedded Test Data Implementation
+
+#### HTML Structure
+```html
+<!-- Test Data from test_data/[activity-name].json -->
+<script type="application/json" id="testData">
+{
+  "field1": "Sample data for field 1",
+  "field2": "Sample data for field 2",
+  "currentStep": 3
+}
+</script>
+```
+
+#### JavaScript Implementation Pattern
+```javascript
+// Reusable dev mode hook for loading test data
+const loadTestDataFromScript = (setters) => {
+    try {
+        const dataEl = document.getElementById('testData');
+        if (dataEl) {
+            const data = JSON.parse(dataEl.textContent);
+            Object.entries(setters).forEach(([key, setter]) => {
+                if (data[key] !== undefined) {
+                    setter(data[key]);
+                }
+            });
+            console.log('✅ Test data loaded successfully from script tag');
+            return true;
+        } else {
+            console.error('❌ Test data script tag not found');
+            return false;
+        }
+    } catch (error) {
+        console.error('❌ Failed to parse test data:', error);
+        return false;
+    }
+};
+
+// Dev fill function (uses embedded test data)
+const devFillData = () => {
+    setDevFillLoading(true);
+    try {
+        const testData = JSON.parse(document.getElementById('testData').textContent);
+        
+        // Map test data to component state
+        setField1(testData.field1);
+        setField2(testData.field2);
+        setCurrentStep(testData.currentStep || 1);
+        
+        console.log('✅ Dev data loaded successfully (from embedded test data)');
+    } catch (error) {
+        console.error('❌ Failed to load dev data:', error);
+        alert(`Failed to load test data: ${error.message}`);
+    } finally {
+        setDevFillLoading(false);
+    }
+};
+```
+
+### Dev Mode Functionality
+
+#### Title Double-Click Activation
+```javascript
+// Dev mode state
+const [devMode, setDevMode] = useState(false);
+
+// Toggle dev mode (double-click title)
+const toggleDevMode = () => {
+    setDevMode(!devMode);
+    console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+};
+
+// Apply to title element
+<h1 
+    className={`text-2xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+    onDoubleClick={toggleDevMode}
+    title="Double-click to toggle dev mode"
+>
+    Activity Title {devMode && '🔧'}
+</h1>
+```
+
+#### Dev Mode Controls UI
+```html
+<!-- Dev Mode Controls -->
+{devMode && (
+    <div className="mb-3 pb-3 border-b border-orange-200">
+        <div className="flex items-center justify-between">
+            <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+            <button
+                onClick={devFillData}
+                disabled={devFillLoading}
+                className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+                {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+            </button>
+        </div>
+    </div>
+)}
+```
+
+### Progress Code System Removal
+
+#### Removed Components
+- **ImportSection**: Progress code import functionality
+- **ExportSection**: Progress code export functionality
+- **showImportSection state**: Import section visibility toggle
+
+#### Code Comments Pattern
+```javascript
+// Removed Progress Code System - using embedded test data instead
+
+// Removed ImportSection and ExportSection components - using embedded test data instead
+
+// Removed ImportSection - using embedded test data instead
+```
+
+### Professional Markdown Export
+
+#### Export UI Implementation
+```html
+<!-- Export Professional Report -->
+<div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+    <div className="flex items-center mb-3">
+        <FileText className="text-blue-600 mr-2" size={20} />
+        <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+    </div>
+    
+    <p className="text-sm text-gray-600 mb-3">
+        Your [activity name] has been formatted as a professional markdown report for easy sharing
+        and documentation.
+    </p>
+
+    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+        <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+        <ol className="text-sm text-blue-700 space-y-1">
+            <li>1. Click "Copy Activity Summary" below</li>
+            <li>2. Open Google Docs and create a new document</li>
+            <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+            <li>4. Your report will appear with proper formatting!</li>
+        </ol>
+        <p className="text-xs text-blue-600 mt-2">
+            💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+        </p>
+    </div>
+
+    <textarea
+        id="markdownSummary"
+        readOnly
+        className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+        value={generateMarkdownSummary()}
+    />
+    
+    <div className="flex flex-col items-center">
+        <button
+            onClick={handleCopyToClipboard}
+            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+        >
+            📋 Copy Activity Summary
+        </button>
+        <div id="copyStatus"></div>
+    </div>
+</div>
+```
+
+#### Copy-to-Clipboard with Dual Feedback
+```javascript
+const handleCopyToClipboard = () => {
+    const copyToClipboard = async (text) => {
+        try {
+            // Try modern clipboard API first
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } else {
+                // Fallback for older browsers or file:// protocol
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.focus();
+                textArea.select();
+                
+                try {
+                    const successful = document.execCommand('copy');
+                    document.body.removeChild(textArea);
+                    return successful;
+                } catch (err) {
+                    document.body.removeChild(textArea);
+                    return false;
+                }
+            }
+        } catch (err) {
+            console.error('Copy failed:', err);
+            return false;
+        }
+    };
+
+    const el = document.getElementById('markdownSummary');
+    const statusDiv = document.getElementById('copyStatus');
+    
+    copyToClipboard(el.value).then((success) => {
+        if (success) {
+            // Show success status below button
+            statusDiv.innerHTML = `
+                <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                    <p class="font-medium">✅ Copied to Clipboard!</p>
+                    <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                </div>
+            `;
+            
+            // Also show floating notification
+            const notification = document.createElement('div');
+            notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 9999; font-weight: 500;';
+            notification.textContent = '✅ Activity summary copied!';
+            document.body.appendChild(notification);
+            
+            // Fade out notification
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 500);
+            }, 2500);
+            
+            // Clear status after 3 seconds
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 3000);
+        } else {
+            // Show error status with manual fallback
+            statusDiv.innerHTML = `
+                <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                    <p class="font-medium">❌ Copy Failed</p>
+                    <p class="text-sm">Please select and copy the text manually.</p>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                statusDiv.innerHTML = '';
+            }, 3000);
+        }
+    });
+};
+```
+
+### Navigation Link Updates
+
+#### Fixed "All GTM Workshops" Links
+All A-version activity files must use absolute path to index.html:
+
+```html
+<a 
+    href="../index.html" 
+    className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium"
+>
+    All GTM Workshops <span className="ml-1">↑</span>
+</a>
+```
+
+**Important**: Use `href="../index.html"` instead of `href="../"` to ensure proper navigation to the main workshop landing page.
+
+### Implementation Checklist
+
+#### Required Changes for A-Version Activities
+- [ ] Add embedded test data script tag with realistic test data
+- [ ] Remove ImportSection and ExportSection components
+- [ ] Add dev mode functionality with double-click title activation
+- [ ] Implement professional markdown export with dual feedback copy
+- [ ] Update navigation links to use `../index.html`
+- [ ] Add dev mode controls UI
+- [ ] Include appropriate code comments explaining removed systems
+
+#### Test Data Quality Standards
+- **Realistic**: Use actual workshop scenario data, not placeholder text
+- **Complete**: Include all required fields for full activity completion
+- **Consistent**: Maintain narrative consistency across related activities
+- **Current Step**: Set to final step (usually 3 or 4) to show completed state
+
+#### Navigation Flow Standards
+- **Activity 1A → Activity 2A**: Continue button advances to next A-version
+- **Activity 2A → Activity 3A**: Continue button advances to next A-version  
+- **Activity 3A**: Continue button varies by workshop (next workshop or main index)
+- **All Activities**: "All GTM Workshops" link points to `../index.html`
+
+### File Organization
+- **Test Data**: Store in `test_data/` directory as JSON files
+- **Naming Convention**: `[workshop-folder]-activity-[number]A.json`
+- **Examples**: 
+  - `test_data/market-entry-activity-1A.json`
+  - `test_data/problems-activity-2A.json`
+  - `test_data/positioning-activity-3A.json`
