@@ -175,18 +175,18 @@
   - ✅ Tables and lists render correctly
   - ✅ Timestamp and workshop context included
 
-### **Phase 5: Navigation & Flow Updates**
+### **✅ Phase 5: Navigation & Flow Updates - COMPLETED**
 - [x] **✅ Update navigation links** in A-version files
   - ✅ Continue buttons point to next A-version activity
   - ✅ Back to Workshop links maintained
   - ✅ "Back to Edit" buttons on completion screens
   - ✅ **FIXED:** All GTM Workshops links now point to `../index.html` in all 12 A-version files
 
-- [ ] **Add activity-specific next steps** sections
-  - Orange background styling
-  - Clear titles and descriptions
-  - Bullet points with key topics
-  - Responsive grid layouts
+- [x] **✅ Add activity-specific next steps** sections
+  - ✅ Orange background styling
+  - ✅ Clear titles and descriptions
+  - ✅ Bullet points with key topics
+  - ✅ Responsive grid layouts
 
 ### **Phase 6: Documentation Updates**
 - [ ] **Update docs/activity_standards.md**
