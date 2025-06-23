@@ -1,5 +1,16 @@
 {
-  "targetCustomer": "FOR development and DevOps teams within mid to large-sized companies, including high-growth SaaS (Series B+) and cloud-native Fortune 500 enterprises, who consistently experience weekly API failures and prioritize preemptive action over reactive solutions.",
-  "corePain": "WHO STRUGGLES WITH the inability to prevent API failures before they impact customers, resulting in significant operational costs, lost revenue (approximately $100k/hour per failure), and excessive manual intervention due to current monitoring being reactive rather than predictive, causing a lack of early warning signs.",
+  "targetCustomer": "Directors of Engineering at Series A-B SaaS companies ($10M-$50M ARR) who manage critical API infrastructure, experience weekly API failures, and prioritize preemptive action over reactive solutions to prevent customer impact and revenue loss",
+  "corePain": "API failures that impact customers and cause revenue loss before teams can respond, resulting in significant operational costs, lost revenue, and excessive manual intervention due to reactive monitoring lacking early warning signs",
+  "previousData": {
+    "competitiveAlternative": "Traditional API Monitoring Solutions",
+    "uniqueDifferentiator": [
+      "Predictive Analytics and Machine Learning Engine that proactively identifies potential API issues, performs anomaly detection, and recognizes patterns for future failures",
+      "Automated Problem Resolution Engine with automated scripts to resolve common issues and self-healing capabilities, significantly reducing manual intervention"
+    ],
+    "customerValue": [
+      "Shifts focus from reactive troubleshooting to preemptive prevention, leading to a 50% improvement in Mean Time Between Failures (MTBF) and substantial operational cost savings by preventing costly incidents before they occur",
+      "Significantly reduces downtime and operational costs for customers, resulting in a 75% increase in incident automation rate, 30% reduction in overall operational costs, and 75% faster incident response time"
+    ]
+  },
   "currentStep": 3
 }
