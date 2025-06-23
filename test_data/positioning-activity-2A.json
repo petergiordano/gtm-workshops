@@ -1,9 +1,13 @@
 {
-  "differentiator1": "Posh's strongest unique capability is its **Predictive Analytics and Machine Learning Engine**, which proactively identifies potential API issues, performs anomaly detection, and recognizes patterns for future failures.",
-  "differentiator2": "The second key differentiator is the **Automated Problem Resolution Engine**, which utilizes automated scripts to resolve common issues and offers self-healing capabilities, thereby significantly reducing manual intervention.",
-  "differentiator3": "An additional unique capability is Posh's **Cross-Platform Integration Capabilities**, enabling seamless integration with various cloud environments (AWS, Azure, GCP) and supporting diverse API types (REST, GraphQL, SOAP) for unified monitoring.",
-  "value1": "This capability shifts the focus from reactive troubleshooting to preemptive prevention, leading to a 50% improvement in Mean Time Between Failures (MTBF) and substantial operational cost savings by preventing costly incidents before they occur.",
-  "value2": "This engine significantly reduces downtime and operational costs for customers, resulting in a 75% increase in their incident automation rate, a 30% reduction in overall operational costs, and a 75% faster incident response time.",
-  "value3": "This feature provides customers with comprehensive visibility and streamlined management across their complex and diverse technology infrastructures, achieving a 95% API integration success rate and 100% API visibility, which directly enhances overall system reliability.",
+  "differentiators": [
+    "Predictive Analytics and Machine Learning Engine that proactively identifies potential API issues, performs anomaly detection, and recognizes patterns for future failures",
+    "Automated Problem Resolution Engine with automated scripts to resolve common issues and self-healing capabilities, significantly reducing manual intervention",
+    "Cross-Platform Integration Capabilities enabling seamless integration with various cloud environments (AWS, Azure, GCP) and supporting diverse API types (REST, GraphQL, SOAP)"
+  ],
+  "values": [
+    "Shifts focus from reactive troubleshooting to preemptive prevention, leading to a 50% improvement in Mean Time Between Failures (MTBF) and substantial operational cost savings by preventing costly incidents before they occur",
+    "Significantly reduces downtime and operational costs for customers, resulting in a 75% increase in incident automation rate, 30% reduction in overall operational costs, and 75% faster incident response time",
+    "Provides comprehensive visibility and streamlined management across complex and diverse technology infrastructures, achieving 95% API integration success rate and 100% API visibility, directly enhancing system reliability"
+  ],
   "currentStep": 3
 }
