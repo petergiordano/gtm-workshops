@@ -550,32 +550,64 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                     )}
 
                     <div className="bg-gray-50 border-2 border-gray-200 rounded-lg p-4 mb-6">
-                        <h4 className="font-medium text-gray-700 mb-3">Based on Earlier Workshop Discussions:</h4>
-                        <p className="text-gray-600 text-sm mb-4">Data from Activities 1 & 2 will be used to complete your positioning statement</p>
+                        <h4 className="font-medium text-gray-700 mb-3">Enter Data from Previous Activities:</h4>
+                        <p className="text-gray-600 text-sm mb-4">Please enter your findings from Activities 1 & 2 below</p>
                         <div className="grid grid-cols-2 gap-4 text-sm">
                             <div className="bg-white border border-gray-300 rounded-lg p-3">
-                                <h5 className="font-semibold text-gray-800 mb-1">Competitive Alternative:</h5>
-                                <p className="text-gray-700">
-                                    {previousData.competitiveAlternative || "Will be imported from Activity 1"}
-                                </p>
+                                <label className="block font-semibold text-gray-800 mb-2">
+                                    Competitive Alternative: <span className="text-xs text-gray-400">(from Activity 1)</span>
+                                </label>
+                                <textarea
+                                    value={previousData.competitiveAlternative || ''}
+                                    onChange={(e) => setPreviousData(prev => ({
+                                        ...prev,
+                                        competitiveAlternative: e.target.value
+                                    }))}
+                                    placeholder="Enter the main alternative your customers use today..."
+                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                />
                             </div>
                             <div className="bg-white border border-gray-300 rounded-lg p-3">
-                                <h5 className="font-semibold text-gray-800 mb-1">Unique Differentiators:</h5>
-                                <p className="text-gray-700">
-                                    {Array.isArray(previousData.uniqueDifferentiator) && previousData.uniqueDifferentiator.length > 0
-                                        ? previousData.uniqueDifferentiator.join(', ')
-                                        : "Will be imported from Activity 2"}
-                                </p>
+                                <label className="block font-semibold text-gray-800 mb-2">
+                                    Unique Differentiators: <span className="text-xs text-gray-400">(from Activity 2)</span>
+                                </label>
+                                <textarea
+                                    value={Array.isArray(previousData.uniqueDifferentiator) 
+                                        ? previousData.uniqueDifferentiator.join(', ') 
+                                        : ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        const differentiators = value.split(',').map(item => item.trim()).filter(item => item.length > 0);
+                                        setPreviousData(prev => ({
+                                            ...prev,
+                                            uniqueDifferentiator: differentiators
+                                        }));
+                                    }}
+                                    placeholder="Enter your unique differentiators (separate multiple with commas)..."
+                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                />
                             </div>
                         </div>
                         <div className="mt-4">
                             <div className="bg-white border border-gray-300 rounded-lg p-3">
-                                <h5 className="font-semibold text-gray-800 mb-1">Customer Value:</h5>
-                                <p className="text-gray-700">
-                                    {Array.isArray(previousData.customerValue) && previousData.customerValue.length > 0
-                                        ? previousData.customerValue.join(', ')
-                                        : "Will be imported from Activity 2"}
-                                </p>
+                                <label className="block font-semibold text-gray-800 mb-2">
+                                    Customer Value: <span className="text-xs text-gray-400">(from Activity 2)</span>
+                                </label>
+                                <textarea
+                                    value={Array.isArray(previousData.customerValue) 
+                                        ? previousData.customerValue.join(', ') 
+                                        : ''}
+                                    onChange={(e) => {
+                                        const value = e.target.value;
+                                        const values = value.split(',').map(item => item.trim()).filter(item => item.length > 0);
+                                        setPreviousData(prev => ({
+                                            ...prev,
+                                            customerValue: values
+                                        }));
+                                    }}
+                                    placeholder="Enter the customer value you deliver (separate multiple with commas)..."
+                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                />
                             </div>
                         </div>
                     </div>
