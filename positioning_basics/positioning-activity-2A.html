@@ -496,7 +496,7 @@ ${validValues.length > 0 ? validValues.map((value, i) => `${i + 1}. ${value}`).j
                             value={progressCode}
                             onChange={(e) => setProgressCode(e.target.value)}
                             placeholder="Paste your progress code here..."
-                            className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="w-full h-20 p-3 border border-gray-300 rounded-lg resize focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
                         
                         {error && (
@@ -704,7 +704,7 @@ ${validValues.length > 0 ? validValues.map((value, i) => `${i + 1}. ${value}`).j
                                         index === 1 ? "Example: Automated root cause analysis with suggested fixes" :
                                         "Example: One-click integration with existing monitoring tools"
                                     }
-                                    className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+                                    className="w-full h-20 p-3 border border-gray-300 rounded-lg resize focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                                 />
                                 <div className="flex justify-between items-center text-sm mt-2">
                                     <span className="text-gray-500">
@@ -819,7 +819,7 @@ ${validValues.length > 0 ? validValues.map((value, i) => `${i + 1}. ${value}`).j
                                             value={values[index] || ''}
                                             onChange={(e) => updateValue(index, e.target.value)}
                                             placeholder="Example: Prevents 80% of API failures before they impact customers, reducing revenue loss from outages by $500K annually and improving customer satisfaction scores"
-                                            className="w-full h-24 p-3 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+                                            className="w-full h-24 p-3 border border-gray-300 rounded-lg resize focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                                         />
                                         <div className="flex justify-between items-center text-sm mt-2">
                                             <span className="text-gray-500">
@@ -992,7 +992,7 @@ ${validValues.length > 0 ? validValues.map((value, i) => `${i + 1}. ${value}`).j
                             <textarea
                                 id="markdownSummary"
                                 readOnly
-                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize mb-3"
                                 value={generateMarkdownSummary()}
                             />
                             

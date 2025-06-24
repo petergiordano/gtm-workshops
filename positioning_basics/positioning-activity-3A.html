@@ -564,7 +564,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                                         competitiveAlternative: e.target.value
                                     }))}
                                     placeholder="Enter the main alternative your customers use today..."
-                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
                                 />
                             </div>
                             <div className="bg-white border border-gray-300 rounded-lg p-3">
@@ -584,7 +584,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                                         }));
                                     }}
                                     placeholder="Enter your unique differentiators (separate multiple with commas)..."
-                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
                                 />
                             </div>
                         </div>
@@ -606,7 +606,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                                         }));
                                     }}
                                     placeholder="Enter the customer value you deliver (separate multiple with commas)..."
-                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize-none focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                    className="w-full h-20 p-2 border border-gray-300 rounded text-sm resize focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
                                 />
                             </div>
                         </div>
@@ -622,7 +622,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                         <textarea
                             value={targetCustomer}
                             onChange={(e) => setTargetCustomer(e.target.value)}
-                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm placeholder-gray-400"
+                            className="w-full h-32 p-4 border border-gray-300 rounded-lg resize focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm placeholder-gray-400"
                             placeholder="Example: Development teams at fast-growing B2B SaaS companies (100-1000 employees) who manage critical API infrastructure and value reliability over cost"
                         />
                         
@@ -707,7 +707,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                             value={corePain}
                             onChange={(e) => setCorePain(e.target.value)}
                             placeholder="Example: API failures that impact customers and cause revenue loss before teams can respond"
-                            className="w-full h-24 p-4 border border-gray-300 rounded-lg resize-none focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+                            className="w-full h-24 p-4 border border-gray-300 rounded-lg resize focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
                         />
                         
                         <div className="flex justify-between items-center text-sm mt-2">
@@ -908,7 +908,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                             <textarea
                                 id="markdownSummary"
                                 readOnly
-                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize mb-3"
                                 value={generateMarkdownSummary()}
                             />
                             
@@ -1086,7 +1086,7 @@ WE ARE BETTER BECAUSE: ${uniqueDifferentiatorText}`;
                             value={progressCode}
                             onChange={(e) => setProgressCode(e.target.value)}
                             placeholder="Paste your progress code here..."
-                            className="w-full h-20 p-3 border border-gray-300 rounded-lg resize-none focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
+                            className="w-full h-20 p-3 border border-gray-300 rounded-lg resize focus:border-blue-500 focus:ring-2 focus:ring-blue-200"
                         />
                         
                         {error && (
