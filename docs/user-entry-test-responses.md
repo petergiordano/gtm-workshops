@@ -193,10 +193,14 @@
 ## Activity 1: Current Position & Success Metrics, File: market-entry-activity-1.html
 ### Step 1: Current Position Assessment
 
-| Question/Instruction | Response |
-| :------------------- | :------- |
-| **Local Strengths:** List up to three advantages you have in your current market. | 1. Strong engineering talent pool and AI/ML expertise within Tokyo's tech ecosystem, providing a solid foundation for innovation.<br>2. Existing relationships with Japanese tech companies and SaaS startups, offering an initial customer base and partnership opportunities.<br>3. Government support for digital transformation and AI innovation in Japan, creating a favorable environment for growth. |
-| **Limitations for Global Markets:** List up to three challenges you will face expanding globally. | 1. Limited local market size for enterprise API monitoring solutions in Japan, necessitating global expansion for significant growth.<br>2. Conservative enterprise adoption of new monitoring tools in Japan, which could slow market penetration.<br>3. Limited experience with US enterprise sales cycles, requiring new strategies and team building for the target market. |
+| Elements of your current state | Your Local Strengths | Your Limitations for Global Markets |
+| :----------------------------- | :------------------- | :---------------------------------- |
+| **Unique Attributes** | 1. Proprietary ML-powered predictive analytics engine that prevents API failures before they occur | 1. No established brand recognition in competitive US market dominated by Datadog and New Relic |
+| **Market Knowledge** | 2. Deep understanding of Japanese enterprise API infrastructure and relationship-based sales cycles | 2. Limited knowledge of US ROI-focused buying processes and fast adoption cycles |
+| **Resources** | 3. Strong technical team with proven API monitoring expertise and $2M in local revenue | 3. Limited financial resources ($1.25M budget) for aggressive US market entry against well-funded competitors |
+| **Network/Relationships** | 4. Established partnerships with major Japanese cloud providers and system integrators | 4. No existing relationships with US cloud providers, DevOps platforms, or enterprise prospects |
+| **Infrastructure** | 5. Mature product with proven reliability in Japanese market and Tokyo-based support operations | 5. Lack of US-based infrastructure, sales team, and multi-timezone support capabilities |
+
 
 ### Step 2: Success Metrics Builder
 
