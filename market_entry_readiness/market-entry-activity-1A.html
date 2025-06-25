@@ -44,16 +44,28 @@
     <!-- Test Data from test_data/market-entry-activity-1A.json -->
     <script type="application/json" id="testData">
     {
-      "strengths": [
-        "Strong engineering talent pool and AI/ML expertise within Tokyo's tech ecosystem, providing a solid foundation for innovation.",
-        "Existing relationships with Japanese tech companies and SaaS startups, offering an initial customer base and partnership opportunities.",
-        "Government support for digital transformation and AI innovation in Japan, creating a favorable environment for growth."
-      ],
-      "limitations": [
-        "Limited local market size for enterprise API monitoring solutions in Japan, necessitating global expansion for significant growth.",
-        "Conservative enterprise adoption of new monitoring tools in Japan, which could slow market penetration.",
-        "Limited experience with US enterprise sales cycles, requiring new strategies and team building for the target market."
-      ],
+      "currentPosition": {
+        "uniqueAttributes": {
+          "localStrength": "Proprietary ML-powered predictive analytics engine that prevents API failures before they occur",
+          "globalLimitation": "No established brand recognition in competitive US market dominated by Datadog and New Relic"
+        },
+        "marketKnowledge": {
+          "localStrength": "Deep understanding of Japanese enterprise API infrastructure and relationship-based sales cycles",
+          "globalLimitation": "Limited knowledge of US ROI-focused buying processes and fast adoption cycles"
+        },
+        "resources": {
+          "localStrength": "Strong technical team with proven API monitoring expertise and $2M in local revenue",
+          "globalLimitation": "Limited financial resources ($1.25M budget) for aggressive US market entry against well-funded competitors"
+        },
+        "networkRelationships": {
+          "localStrength": "Established partnerships with major Japanese cloud providers and system integrators",
+          "globalLimitation": "No existing relationships with US cloud providers, DevOps platforms, or enterprise prospects"
+        },
+        "infrastructure": {
+          "localStrength": "Mature product with proven reliability in Japanese market and Tokyo-based support operations",
+          "globalLimitation": "Lack of US-based infrastructure, sales team, and multi-timezone support capabilities"
+        }
+      },
       "sixMonthMetrics": [
         "US enterprise pilots",
         "Technical integrations",
@@ -75,7 +87,7 @@
         "95% customer satisfaction (NPS >50)"
       ],
       "activeTab": "6months",
-      "currentStep": 3
+      "currentStep": 1
     }
     </script>
 
@@ -169,9 +181,14 @@
         const MarketEntryActivity1 = () => {
             const [currentStep, setCurrentStep] = useState(1);
             
-            // Current Position Assessment state
-            const [strengths, setStrengths] = useState(['', '', '']);
-            const [limitations, setLimitations] = useState(['', '', '']);
+            // Current Position Assessment state - 5 elements structure
+            const [currentPosition, setCurrentPosition] = useState({
+                uniqueAttributes: { localStrength: '', globalLimitation: '' },
+                marketKnowledge: { localStrength: '', globalLimitation: '' },
+                resources: { localStrength: '', globalLimitation: '' },
+                networkRelationships: { localStrength: '', globalLimitation: '' },
+                infrastructure: { localStrength: '', globalLimitation: '' }
+            });
             
             // Success Metrics state
             const [activeTab, setActiveTab] = useState('6months');
@@ -186,8 +203,13 @@
 
             // Reset function
             const resetActivity = () => {
-                setStrengths(['', '', '']);
-                setLimitations(['', '', '']);
+                setCurrentPosition({
+                    uniqueAttributes: { localStrength: '', globalLimitation: '' },
+                    marketKnowledge: { localStrength: '', globalLimitation: '' },
+                    resources: { localStrength: '', globalLimitation: '' },
+                    networkRelationships: { localStrength: '', globalLimitation: '' },
+                    infrastructure: { localStrength: '', globalLimitation: '' }
+                });
                 setSixMonthMetrics(['', '', '']);
                 setSixMonthTargets(['', '', '']);
                 setTwelveMonthMetrics(['', '', '']);
@@ -219,30 +241,21 @@
                 }
             };
 
-            // Dev fill function (uses external test data)
+            // Dev fill function (uses embedded test data)
             const devFillData = () => {
                 setDevFillLoading(true);
                 try {
-                    // Define setters for the loadTestDataFromScript function
-                    const setters = {
-                        strengths: setStrengths,
-                        limitations: setLimitations,
-                        sixMonthMetrics: setSixMonthMetrics,
-                        sixMonthTargets: setSixMonthTargets,
-                        twelveMonthMetrics: setTwelveMonthMetrics,
-                        twelveMonthTargets: setTwelveMonthTargets,
-                        activeTab: setActiveTab,
-                        currentStep: setCurrentStep
-                    };
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
                     
-                    // Load test data using the reusable hook
-                    const success = loadTestDataFromScript(setters);
+                    setCurrentPosition(testData.currentPosition);
+                    setSixMonthMetrics(testData.sixMonthMetrics);
+                    setSixMonthTargets(testData.sixMonthTargets);
+                    setTwelveMonthMetrics(testData.twelveMonthMetrics);
+                    setTwelveMonthTargets(testData.twelveMonthTargets);
+                    setActiveTab(testData.activeTab || '6months');
+                    setCurrentStep(testData.currentStep || 1);
                     
-                    if (success) {
-                        console.log('✅ Dev data loaded successfully (from test_data JSON)');
-                    } else {
-                        throw new Error('Failed to load test data from script tag');
-                    }
+                    console.log('✅ Dev data loaded successfully (from embedded test data)');
                 } catch (error) {
                     console.error('❌ Failed to load dev data:', error);
                     alert(`Failed to load test data: ${error.message}`);
@@ -259,9 +272,16 @@
 
             // Validation helpers
             const isSection1Complete = () => {
-                const validStrengths = strengths.filter(s => s.trim().length >= 10).length;
-                const validLimitations = limitations.filter(l => l.trim().length >= 10).length;
-                return validStrengths >= 2 && validLimitations >= 2;
+                // Count how many elements have both fields filled with 10+ words
+                const elements = Object.values(currentPosition);
+                const completedElements = elements.filter(element => {
+                    const strengthWords = element.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                    const limitationWords = element.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                    return strengthWords >= 10 && limitationWords >= 10;
+                }).length;
+                
+                // Require at least 4 of 5 elements to be complete
+                return completedElements >= 4;
             };
 
             const isSection2Complete = () => {
@@ -276,7 +296,16 @@
 
             const isActivityComplete = () => isSection1Complete() && isSection2Complete();
 
-
+            // Helper function to update current position
+            const updateCurrentPosition = (element, field, value) => {
+                setCurrentPosition(prev => ({
+                    ...prev,
+                    [element]: {
+                        ...prev[element],
+                        [field]: value
+                    }
+                }));
+            };
 
             // Array update helpers
             const updateArrayItem = (arr, setArr, index, value) => {
@@ -287,107 +316,133 @@
 
 
 
-            const renderSection1 = () => (
-                <div className="space-y-4">
-                    <div className="text-center mb-4">
-                        <h3 className="text-xl font-bold text-gray-800 mb-2">
-                            Current Position Assessment
-                        </h3>
-                        <p className="text-gray-600 text-sm">
-                            Evaluate your current strengths vs limitations for global market expansion
-                        </p>
-                    </div>
+            const renderSection1 = () => {
+                // Define the 5 elements with their display names
+                const elements = [
+                    { key: 'uniqueAttributes', name: 'Unique Attributes', 
+                      strengthPlaceholder: 'e.g., Proprietary technology, unique product features, or specialized expertise',
+                      limitationPlaceholder: 'e.g., No brand recognition, technology not adapted for global markets' },
+                    { key: 'marketKnowledge', name: 'Market Knowledge',
+                      strengthPlaceholder: 'e.g., Deep understanding of local customer needs and buying behaviors',
+                      limitationPlaceholder: 'e.g., Limited knowledge of international markets, regulations, or cultures' },
+                    { key: 'resources', name: 'Resources',
+                      strengthPlaceholder: 'e.g., Strong financial position, skilled team, or operational excellence',
+                      limitationPlaceholder: 'e.g., Limited budget for expansion, lack of international expertise' },
+                    { key: 'networkRelationships', name: 'Network/Relationships',
+                      strengthPlaceholder: 'e.g., Established local partnerships, strong customer relationships',
+                      limitationPlaceholder: 'e.g., No international partnerships, limited global connections' },
+                    { key: 'infrastructure', name: 'Infrastructure',
+                      strengthPlaceholder: 'e.g., Robust local operations, proven systems and processes',
+                      limitationPlaceholder: 'e.g., No global infrastructure, limited multi-timezone support' }
+                ];
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 laptop-grid">
-                        {/* Strengths */}
-                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                            <div className="flex items-center mb-3">
-                                <CheckCircle className="text-green-600 mr-2" size={20} />
-                                <h4 className="text-md font-semibold text-green-800">Local Strengths</h4>
-                            </div>
-                            <p className="text-green-700 text-sm mb-3">
-                                What advantages do you have in your current market?
+                // Count completed elements
+                const completedElements = elements.filter(element => {
+                    const el = currentPosition[element.key];
+                    const strengthWords = el.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                    const limitationWords = el.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                    return strengthWords >= 10 && limitationWords >= 10;
+                }).length;
+
+                return (
+                    <div className="space-y-4">
+                        <div className="text-center mb-4">
+                            <h3 className="text-xl font-bold text-gray-800 mb-2">
+                                Current Position Assessment
+                            </h3>
+                            <p className="text-gray-600 text-sm">
+                                Evaluate your current state across 5 key elements for global market expansion
                             </p>
-                            
-                            {strengths.map((strength, index) => (
-                                <div key={index} className="mb-3">
-                                    <label className="block text-green-700 text-sm font-medium mb-1">
-                                        Strength {index + 1}:
-                                    </label>
-                                    <textarea
-                                        value={strength}
-                                        onChange={(e) => updateArrayItem(strengths, setStrengths, index, e.target.value)}
-                                        placeholder={
-                                            index === 0 ? "e.g., Strong brand recognition in local market" :
-                                            index === 1 ? "e.g., Established partnerships and distribution" :
-                                            "e.g., Deep understanding of local customer needs"
-                                        }
-                                        className="w-full laptop-textarea p-3 border border-green-300 rounded-lg focus:border-green-500 focus:ring-2 focus:ring-green-200 text-sm"
-                                    />
-                                    <div className="text-xs text-green-600 mt-1">
-                                        {strength.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                        {strength.trim().length >= 10 && " ✓"}
-                                    </div>
-                                </div>
-                            ))}
                         </div>
 
-                        {/* Limitations */}
-                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-                            <div className="flex items-center mb-3">
-                                <AlertTriangle className="text-orange-600 mr-2" size={20} />
-                                <h4 className="text-md font-semibold text-orange-800">Limitations for Global Markets</h4>
-                            </div>
-                            <p className="text-orange-700 text-sm mb-3">
-                                What challenges will you face expanding globally?
+                        {/* Progress indicator */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                            <p className="text-blue-700 text-sm">
+                                <strong>Progress:</strong> Complete at least 4 of 5 elements (10+ words per field) to proceed.
+                                Current: {completedElements}/5 elements complete
                             </p>
-                            
-                            {limitations.map((limitation, index) => (
-                                <div key={index} className="mb-3">
-                                    <label className="block text-orange-700 text-sm font-medium mb-1">
-                                        Limitation {index + 1}:
-                                    </label>
-                                    <textarea
-                                        value={limitation}
-                                        onChange={(e) => updateArrayItem(limitations, setLimitations, index, e.target.value)}
-                                        placeholder={
-                                            index === 0 ? "e.g., Limited international market knowledge" :
-                                            index === 1 ? "e.g., No established global partnerships" :
-                                            "e.g., Product not yet optimized for international markets"
-                                        }
-                                        className="w-full laptop-textarea p-3 border border-orange-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200 text-sm"
-                                    />
-                                    <div className="text-xs text-orange-600 mt-1">
-                                        {limitation.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                        {limitation.trim().length >= 10 && " ✓"}
-                                    </div>
-                                </div>
-                            ))}
+                        </div>
+
+                        {/* Table structure */}
+                        <div className="overflow-x-auto">
+                            <table className="w-full border-collapse">
+                                <thead>
+                                    <tr className="bg-gray-100">
+                                        <th className="border border-gray-300 p-3 text-left font-semibold text-gray-800 w-1/5">
+                                            Elements
+                                        </th>
+                                        <th className="border border-gray-300 p-3 text-left font-semibold text-green-800 w-2/5">
+                                            <div className="flex items-center">
+                                                <CheckCircle className="text-green-600 mr-2" size={18} />
+                                                Your Local Strengths
+                                            </div>
+                                        </th>
+                                        <th className="border border-gray-300 p-3 text-left font-semibold text-orange-800 w-2/5">
+                                            <div className="flex items-center">
+                                                <AlertTriangle className="text-orange-600 mr-2" size={18} />
+                                                Your Limitations for Global Markets
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {elements.map((element, index) => {
+                                        const el = currentPosition[element.key];
+                                        const strengthWords = el.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        const limitationWords = el.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        const isComplete = strengthWords >= 10 && limitationWords >= 10;
+                                        
+                                        return (
+                                            <tr key={element.key} className={index % 2 === 0 ? 'bg-gray-50' : 'bg-white'}>
+                                                <td className="border border-gray-300 p-3 font-medium text-gray-700">
+                                                    {element.name}
+                                                    {isComplete && <CheckCircle className="inline-block ml-2 text-green-500" size={16} />}
+                                                </td>
+                                                <td className="border border-gray-300 p-2">
+                                                    <textarea
+                                                        value={el.localStrength}
+                                                        onChange={(e) => updateCurrentPosition(element.key, 'localStrength', e.target.value)}
+                                                        placeholder={element.strengthPlaceholder}
+                                                        className="w-full p-2 border border-gray-200 rounded text-sm resize-vertical min-h-[80px] focus:border-green-500 focus:ring-1 focus:ring-green-200"
+                                                    />
+                                                    <div className={`text-xs mt-1 ${strengthWords >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                        {strengthWords} words {strengthWords >= 10 && '✓'}
+                                                    </div>
+                                                </td>
+                                                <td className="border border-gray-300 p-2">
+                                                    <textarea
+                                                        value={el.globalLimitation}
+                                                        onChange={(e) => updateCurrentPosition(element.key, 'globalLimitation', e.target.value)}
+                                                        placeholder={element.limitationPlaceholder}
+                                                        className="w-full p-2 border border-gray-200 rounded text-sm resize-vertical min-h-[80px] focus:border-orange-500 focus:ring-1 focus:ring-orange-200"
+                                                    />
+                                                    <div className={`text-xs mt-1 ${limitationWords >= 10 ? 'text-orange-600' : 'text-gray-500'}`}>
+                                                        {limitationWords} words {limitationWords >= 10 && '✓'}
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div className="flex justify-end">
+                            <button
+                                onClick={() => setCurrentStep(2)}
+                                disabled={!isSection1Complete()}
+                                className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+                                    isSection1Complete() 
+                                        ? 'bg-orange-500 hover:bg-orange-600' 
+                                        : 'bg-gray-300 cursor-not-allowed'
+                                }`}
+                            >
+                                Set Success Metrics →
+                            </button>
                         </div>
                     </div>
-
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-                        <p className="text-blue-700 text-sm">
-                            <strong>Tip:</strong> Complete at least 2 strengths and 2 limitations (10+ words each) to proceed.
-                            Current: {strengths.filter(s => s.trim().length >= 10).length}/2 strengths, {limitations.filter(l => l.trim().length >= 10).length}/2 limitations
-                        </p>
-                    </div>
-
-                    <div className="flex justify-end">
-                        <button
-                            onClick={() => setCurrentStep(2)}
-                            disabled={!isSection1Complete()}
-                            className={`px-6 py-2 rounded-lg text-white font-medium transition-colors ${
-                                isSection1Complete() 
-                                    ? 'bg-orange-500 hover:bg-orange-600' 
-                                    : 'bg-gray-300 cursor-not-allowed'
-                            }`}
-                        >
-                            Set Success Metrics →
-                        </button>
-                    </div>
-                </div>
-            );
+                );
+            };
 
             const renderSection2 = () => (
                 <div className="space-y-4">
@@ -599,10 +654,14 @@
                             <div>
                                 <h5 className="font-medium text-green-700 mb-1">Current Position Summary:</h5>
                                 <p className="text-sm text-gray-700 mb-2">
-                                    <strong>Strengths:</strong> {strengths.filter(s => s.trim()).length} identified
-                                </p>
-                                <p className="text-sm text-gray-700">
-                                    <strong>Limitations:</strong> {limitations.filter(l => l.trim()).length} to address
+                                    <strong>Elements Completed:</strong> {(() => {
+                                        const elements = Object.values(currentPosition);
+                                        return elements.filter(element => {
+                                            const strengthWords = element.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                            const limitationWords = element.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                            return strengthWords >= 10 && limitationWords >= 10;
+                                        }).length;
+                                    })()} of 5 required
                                 </p>
                             </div>
                             
@@ -623,12 +682,16 @@
                         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
                             <h5 className="font-medium text-blue-800 mb-2">📊 Readiness Score</h5>
                             <div className="text-2xl font-bold text-blue-700">
-                                ${(() => {
-                                    const strengthsCount = strengths.filter(s => s.trim().length >= 10).length;
-                                    const limitationsCount = limitations.filter(l => l.trim().length >= 10).length;
+                                {(() => {
+                                    const elements = Object.values(currentPosition);
+                                    const completedElements = elements.filter(element => {
+                                        const strengthWords = element.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        const limitationWords = element.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        return strengthWords >= 10 && limitationWords >= 10;
+                                    }).length;
                                     const metricsCount = [...sixMonthMetrics, ...twelveMonthMetrics].filter(m => m.trim().length >= 5).length;
-                                    const completed = strengthsCount + limitationsCount + metricsCount;
-                                    const percentage = Math.round((completed / 12) * 100);
+                                    const completed = completedElements + metricsCount;
+                                    const percentage = Math.round((completed / 11) * 100);
                                     return percentage + '%';
                                 })()}
                             </div>
@@ -639,12 +702,15 @@
                             <h5 className="font-medium text-green-800 mb-2">✅ Progress Summary</h5>
                             <div className="space-y-1 text-sm">
                                 <div className="flex justify-between">
-                                    <span>Strengths:</span>
-                                    <span className="font-medium">{strengths.filter(s => s.trim()).length}/3</span>
-                                </div>
-                                <div className="flex justify-between">
-                                    <span>Limitations:</span>
-                                    <span className="font-medium">{limitations.filter(l => l.trim()).length}/3</span>
+                                    <span>Position Elements:</span>
+                                    <span className="font-medium">{(() => {
+                                        const elements = Object.values(currentPosition);
+                                        return elements.filter(element => {
+                                            const strengthWords = element.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                            const limitationWords = element.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                            return strengthWords >= 10 && limitationWords >= 10;
+                                        }).length;
+                                    })()}/5</span>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Success Metrics:</span>
@@ -684,10 +750,15 @@
                             readOnly
                             className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize mb-3"
                             value={(() => {
-                                const strengthsCompleted = strengths.filter(s => s.trim().length >= 10).length;
-                                const limitationsCompleted = limitations.filter(l => l.trim().length >= 10).length;
+                                try {
+                                    const elements = Object.values(currentPosition);
+                                    const completedElements = elements.filter(element => {
+                                        const strengthWords = element.localStrength.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        const limitationWords = element.globalLimitation.trim().split(/\s+/).filter(w => w.length > 0).length;
+                                        return strengthWords >= 10 && limitationWords >= 10;
+                                    }).length;
                                 const metricsCount = [...sixMonthMetrics, ...twelveMonthMetrics].filter(m => m.trim().length >= 5).length;
-                                const percentage = Math.round(((strengthsCompleted + limitationsCompleted + metricsCount) / 12) * 100);
+                                const percentage = Math.round(((completedElements + metricsCount) / 11) * 100);
                                 const readinessStatus = percentage >= 80 ? percentage + '% - Strong 🟢' : 
                                                       percentage >= 60 ? percentage + '% - Moderate 🟡' : 
                                                       percentage + '% - Developing 🟠';
@@ -699,17 +770,25 @@
 **Market Entry Readiness Score: ${readinessStatus}**
 
 **Assessment Completion:**
-- Strengths Identified: ${strengthsCompleted}/3
-- Limitations Mapped: ${limitationsCompleted}/3  
+- Position Elements: ${completedElements}/5 completed
 - Success Metrics Defined: ${metricsCount}/6
 
 ---
 
-### ✅ Strengths
-${strengths.filter(s => s.trim()).map((s, i) => `${i+1}. ${s}`).join('\n')}
+### 🏢 Current Position Analysis
 
-### ⚠️ Limitations  
-${limitations.filter(l => l.trim()).map((l, i) => `${i+1}. ${l}`).join('\n')}
+| Element | Local Strength | Global Limitation |
+|---------|----------------|-------------------|
+${Object.entries(currentPosition).filter(([key, value]) => value.localStrength.trim() || value.globalLimitation.trim()).map(([key, value]) => {
+  const elementNames = {
+    uniqueAttributes: 'Unique Attributes',
+    marketKnowledge: 'Market Knowledge',
+    resources: 'Resources',
+    networkRelationships: 'Network/Relationships',
+    infrastructure: 'Infrastructure'
+  };
+  return `| ${elementNames[key]} | ${value.localStrength || '[Not provided]'} | ${value.globalLimitation || '[Not provided]'} |`;
+}).join('\n')}
 
 ### 📊 Success Metrics & Targets
 
@@ -746,6 +825,10 @@ ${(() => {
 **Next Steps:** Continue to Activity 2 - Market Reality Check
 
 *This assessment provides foundational insights for market entry planning. Results should be reviewed with strategic advisors and updated as market conditions evolve.*`;
+                                } catch (error) {
+                                    console.error('Error generating markdown:', error);
+                                    return 'Error generating summary. Please try again.';
+                                }
                             })()}
                         />
                         
@@ -949,7 +1032,9 @@ ${(() => {
             );
         };
 
-        ReactDOM.render(<MarketEntryActivity1 />, document.getElementById('root'));
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<MarketEntryActivity1 />);
     </script>
 </body>
 </html>
