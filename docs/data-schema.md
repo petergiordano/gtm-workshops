@@ -125,14 +125,38 @@
     "completedAt": "2025-06-25T11:00:00Z",
     // Market Entry Readiness workshop
     "activity1": {
-      "readinessScores": {
-        "productMarketFit": 1-5,
-        "teamCapability": 1-5,
-        "marketUnderstanding": 1-5,
-        "resourceAvailability": 1-5,
-        "regulatoryCompliance": 1-5
+      "currentPosition": {
+        "uniqueAttributes": {
+          "localStrength": "string (min 10 words)",
+          "globalLimitation": "string (min 10 words)"
+        },
+        "marketKnowledge": {
+          "localStrength": "string (min 10 words)",
+          "globalLimitation": "string (min 10 words)"
+        },
+        "resources": {
+          "localStrength": "string (min 10 words)",
+          "globalLimitation": "string (min 10 words)"
+        },
+        "networkRelationships": {
+          "localStrength": "string (min 10 words)",
+          "globalLimitation": "string (min 10 words)"
+        },
+        "infrastructure": {
+          "localStrength": "string (min 10 words)",
+          "globalLimitation": "string (min 10 words)"
+        }
       },
-      "totalReadinessScore": 5-25,
+      "successMetrics": {
+        "sixMonth": {
+          "metrics": ["string", "string", "string"],
+          "targets": ["string", "string", "string"]
+        },
+        "twelveMonth": {
+          "metrics": ["string", "string", "string"],
+          "targets": ["string", "string", "string"]
+        }
+      },
       "completedAt": "timestamp"
     },
     "activity2": {
@@ -287,9 +311,16 @@ Activity 2 produces:       Activity 3 uses all:
 
 ### Day 3 Fields (Market Entry Readiness)
 
-#### Activity 1: Readiness Assessment
-- **readinessScores**: 1-5 ratings across five dimensions
-- **totalReadinessScore**: Sum indicating overall readiness
+#### Activity 1: Current Position & Success Metrics
+- **currentPosition**: Assessment of current state across 5 elements
+  - **uniqueAttributes**: Local strengths and global limitations for product/technology
+  - **marketKnowledge**: Local strengths and global limitations for market understanding
+  - **resources**: Local strengths and global limitations for financial/human resources
+  - **networkRelationships**: Local strengths and global limitations for partnerships/connections
+  - **infrastructure**: Local strengths and global limitations for operational capabilities
+- **successMetrics**: Target metrics and goals for market entry
+  - **sixMonth**: Arrays of metrics and corresponding targets for 6-month timeframe
+  - **twelveMonth**: Arrays of metrics and corresponding targets for 12-month timeframe
 
 #### Activity 2: Entry Strategy
 - **selectedStrategy**: Chosen go-to-market approach

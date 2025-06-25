@@ -149,8 +149,23 @@ For each of 5 criteria (Urgency, Importance, Value, Market Gap, Accessibility):
 ## Activity 1 - **market-entry-activity-1.html**
 
 **Step 1 - Current Position Assessment**
-* **Local Strengths:** List up to three advantages you have in your current market. [3 text entry boxes (requires at least 2 strengths with 10+ words each)]
-* **Limitations for Global Markets:** List up to three challenges you will face expanding globally. [3 text entry boxes (requires at least 2 limitations with 10+ words each)]
+* Table with 5 predefined elements, each requiring two responses:
+  * **Unique Attributes**
+    - Your Local Strengths [Text entry box (10+ words required)]
+    - Your Limitations for Global Markets [Text entry box (10+ words required)]
+  * **Market Knowledge**
+    - Your Local Strengths [Text entry box (10+ words required)]
+    - Your Limitations for Global Markets [Text entry box (10+ words required)]
+  * **Resources**
+    - Your Local Strengths [Text entry box (10+ words required)]
+    - Your Limitations for Global Markets [Text entry box (10+ words required)]
+  * **Network/Relationships**
+    - Your Local Strengths [Text entry box (10+ words required)]
+    - Your Limitations for Global Markets [Text entry box (10+ words required)]
+  * **Infrastructure**
+    - Your Local Strengths [Text entry box (10+ words required)]
+    - Your Limitations for Global Markets [Text entry box (10+ words required)]
+* Requirement: User must complete at least 4 of the 5 elements (both strength and limitation) to proceed
 
 **Step 2 - Success Metrics Builder**
 * **6-Month Metrics:** Define up to three key metrics for the first six months. [3 text entry boxes (requires at least 2 metrics with 5+ words each)]

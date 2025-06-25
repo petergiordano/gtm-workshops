@@ -418,6 +418,26 @@ const adjustForViewport = () => {
 - **Categories**: Tabbed interface for different areas
 - **Summary**: Sticky summary bar at bottom
 
+### Table Design Patterns
+
+#### 5-Element Assessment Table (Market Entry Activity 1)
+- **Structure**: 3-column table with predefined row headers
+- **Columns**: 
+  - Element name (fixed, left-aligned)
+  - Local Strengths (editable textarea)
+  - Global Limitations (editable textarea)
+- **Elements**: 5 predefined elements
+  - Unique Attributes
+  - Market Knowledge
+  - Resources
+  - Network/Relationships
+  - Infrastructure
+- **Styling**: 
+  - Alternating row colors for better readability
+  - Clear column headers with distinct background
+  - Responsive design for laptop screens
+- **Validation**: Minimum 10 words per field, at least 4 of 5 elements must be completed
+
 ---
 
 ## Migration Guidelines
