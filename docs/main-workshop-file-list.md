@@ -1,25 +1,55 @@
 /gtm-workshops
 ├── index.html
-├── Workshop-1-problems_worth_solving
+├── problems_worth_solving/
 │   ├── index.html
-│   ├── problems-activity-1.html
-│   ├── problems-activity-2.html
-│   └── problems-activity-3.html
-├── Workshop-2-finding_your_early_customers
-│   ├── ecp-activity-1.html
-│   ├── ecp-activity-2.html
-│   ├── ecp-activity-3.html
-│   └── index.html
-├── Workshop-3-positioning_basics
+│   ├── problems-activity-1A.html
+│   ├── problems-activity-2A.html
+│   └── problems-activity-3A.html
+├── finding_your_early_customers/
 │   ├── index.html
-│   ├── positioning-activity-1.html
-│   ├── positioning-activity-2.html
-│   └── positioning-activity-3.html
-├── Workshop-4-market_entry_readiness
+│   ├── ecp-activity-1A.html
+│   ├── ecp-activity-2A.html
+│   └── ecp-activity-3A.html
+├── positioning_basics/
 │   ├── index.html
-│   ├── market-entry-activity-1.html
-│   ├── market-entry-activity-2.html
-│   └── market-entry-activity-3.html
+│   ├── positioning-activity-1A.html
+│   ├── positioning-activity-2A.html
+│   └── positioning-activity-3A.html
+├── market_entry_readiness/
+│   ├── index.html
+│   ├── market-entry-activity-1A.html
+│   ├── market-entry-activity-2A.html
+│   └── market-entry-activity-3A.html
+├── week-4-customer-value-mapping/
+│   ├── index.html
+│   ├── customer-value-activity-1A.html
+│   ├── customer-value-activity-2A.html
+│   └── customer-value-activity-3A.html
+├── week-5-pricing-monetization/
+│   ├── index.html
+│   ├── pricing-activity-1A.html
+│   ├── pricing-activity-2A.html
+│   └── pricing-activity-3A.html
+├── week-6-messaging-storytelling/
+│   ├── index.html
+│   ├── messaging-activity-1A.html
+│   ├── messaging-activity-2A.html
+│   └── messaging-activity-3A.html
+├── week-7-gtm-channels-buyer-journey/
+│   ├── index.html
+│   ├── channels-activity-1A.html
+│   ├── channels-activity-2A.html
+│   └── channels-activity-3A.html
+├── week-8-strategic-partnerships/
+│   ├── index.html
+│   ├── partnerships-activity-1A.html
+│   ├── partnerships-activity-2A.html
+│   └── partnerships-activity-3A.html
+├── week-9-competitive-strategy/
+│   ├── index.html
+│   ├── competitive-activity-1A.html
+│   ├── competitive-activity-2A.html
+│   └── competitive-activity-3A.html
 ├── docs/
 │   ├── docs_fictional_product/
 │   │   └── Posh_Pricing_Strategy_Example.md
