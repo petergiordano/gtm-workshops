@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Content Creation Activity</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const ComingSoonActivity = () => {
+            return (
+                <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+                    <div className="max-w-3xl mx-auto">
+                        <div className="bg-white rounded-lg shadow-lg p-8">
+                            <div className="text-center">
+                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-purple-100 mb-4">
+                                    <svg className="h-6 w-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"></path>
+                                    </svg>
+                                </div>
+                                <h1 className="text-3xl font-bold text-gray-900 mb-4">
+                                    Content Creation Activity
+                                </h1>
+                                <div className="bg-purple-50 border border-purple-200 rounded-lg p-6 mb-8">
+                                    <h2 className="text-lg font-semibold text-purple-900 mb-2">Coming Soon</h2>
+                                    <p className="text-purple-700">
+                                        This activity will help you create compelling content assets, develop messaging hierarchies, 
+                                        and build presentation materials. Check back soon for the full interactive experience!
+                                    </p>
+                                </div>
+                                <div className="space-y-4">
+                                    <a 
+                                        href="index.html" 
+                                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
+                                    >
+                                        ← Back to Messaging & Storytelling Workshop
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            );
+        };
+
+        ReactDOM.render(<ComingSoonActivity />, document.getElementById('root'));
+    </script>
+</body>
+</html>
