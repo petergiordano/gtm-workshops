@@ -20,6 +20,11 @@
 │   ├── market-entry-activity-1.html
 │   ├── market-entry-activity-2.html
 │   └── market-entry-activity-3.html
+├── docs/
+│   ├── docs_fictional_product/
+│   │   └── Posh_Pricing_Strategy_Example.md
+│   └── docs_methodology/
+│       └── Decision-Trees-for-Designing-Hybrid-Pricing-Models-for-B2B-SaaS-Products.md
 
 
 
