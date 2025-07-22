@@ -1,0 +1,34 @@
+{
+  "step1_customer_value": {
+    "customerPains": "API failures cost $100K+/hour in downtime, causing customer churn and emergency firefighting. Current reactive monitoring tools alert after problems occur, leaving no time for proactive intervention.",
+    "desiredOutcomes": "Prevent API failures before customer impact, reduce mean time to detection from 15 minutes to under 2 minutes, automate incident response to eliminate manual intervention for common issues",
+    "jobsToBeDone": "Preventing API failures before customer impact, automating incident response, providing predictive insights for infrastructure planning"
+  },
+  "step2_segmentation": {
+    "customerSegments": ["High-growth SaaS", "Large Enterprises", "Midsize Tech"],
+    "costOfProblem": "150000",
+    "currentSolution": "Enterprise tools"
+  },
+  "step3_metric_exploration": {
+    "selectedCategories": ["Usage-Based", "Outcome-Based"],
+    "exploredMetrics": ["API calls monitored", "Incidents prevented", "Automated resolutions", "Mean time to detection improvement"]
+  },
+  "step4_hybrid_model": {
+    "baseComponent": "API calls monitored (predictable infrastructure costs)",
+    "outcomeComponent": "Incidents prevented + automated resolutions (value delivered)",
+    "hybridJustification": "Hybrid model provides predictable revenue base while aligning pricing with actual value delivered. Customers pay for monitoring scale (API calls) plus outcomes (incidents prevented), ensuring both infrastructure coverage and ROI alignment."
+  },
+  "step5_primary_metric": {
+    "primaryValueMetric": "Incident Prevention Rate",
+    "measurementApproach": "Track predicted incidents vs actual incidents, measure MTTD improvement, count automated resolutions vs manual interventions",
+    "businessJustification": "Incident prevention directly correlates with customer value - every prevented incident saves $100K+ in downtime costs. This metric scales with business impact and differentiates from reactive monitoring solutions.",
+    "pricePoints": "$10 per prevented incident, $25 per automated resolution"
+  },
+  "step6_validation": {
+    "testingApproach": "pilot program",
+    "successMetrics": "Customer adoption rate, willingness to pay validation, incident prevention effectiveness measurement, customer satisfaction with pricing model",
+    "timeline": "3 months"
+  },
+  "completedAt": null,
+  "currentStep": 3
+}
