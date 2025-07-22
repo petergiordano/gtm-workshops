@@ -67,7 +67,423 @@
     </script>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useMemo } = React;
+
+        // Helper function for word count
+        const getWordCount = (text) => {
+            return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        };
+
+        // Step components defined OUTSIDE the main component to prevent focus loss
+        const Step1CustomerValue = ({ customerPains, setCustomerPains, desiredOutcomes, setDesiredOutcomes, jobsToBeDone, setJobsToBeDone }) => (
+            <div className="space-y-6">
+                <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-orange-900 mb-2">Methodology: Jobs-to-be-Done Analysis</h3>
+                    <p className="text-orange-800 text-sm">
+                        We first identify how customers measure value in their business. 
+                        This follows the Posh AMP example where API failures create 
+                        $100K+/hour downtime costs.
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Primary Customer Pain Points *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={customerPains}
+                        onChange={(e) => setCustomerPains(e.target.value)}
+                        placeholder="Example: API failures cost $100K+/hour in downtime, causing customer churn and emergency firefighting..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(customerPains) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(customerPains)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Desired Business Outcomes *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={desiredOutcomes}
+                        onChange={(e) => setDesiredOutcomes(e.target.value)}
+                        placeholder="Example: Prevent API failures before customer impact, reduce mean time to detection from 15 minutes to under 2 minutes..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(desiredOutcomes) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(desiredOutcomes)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Jobs Customers Hire Your Product To Do *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={jobsToBeDone}
+                        onChange={(e) => setJobsToBeDone(e.target.value)}
+                        placeholder="Example: Preventing API failures before customer impact, automating incident response..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(jobsToBeDone) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(jobsToBeDone)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 3 words required</span>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Step2Segmentation = ({ customerSegments, handleSegmentChange, costOfProblem, setCostOfProblem, currentSolution, setCurrentSolution }) => (
+            <div className="space-y-6">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-blue-900 mb-2">Methodology: Customer Segmentation & WTP</h3>
+                    <p className="text-blue-800 text-sm">
+                        Following Posh's 3-tier segmentation model: High-growth SaaS, Enterprise, and Mid-size Tech. 
+                        Understanding who pays most and why is critical for value metric selection.
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Target Customer Segments *
+                    </label>
+                    <div className="space-y-2">
+                        {['High-growth SaaS', 'Large Enterprises', 'Midsize Tech'].map(segment => (
+                            <label key={segment} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={customerSegments.includes(segment)}
+                                    onChange={() => handleSegmentChange(segment)}
+                                    className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                                />
+                                <span className="text-sm">{segment}</span>
+                            </label>
+                        ))}
+                    </div>
+                    <div className="mt-2 text-sm text-gray-600">
+                        Selected: {customerSegments.length} segment{customerSegments.length !== 1 ? 's' : ''}
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Hourly Cost of Problem/Downtime ($) *
+                    </label>
+                    <input
+                        type="number"
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={costOfProblem}
+                        onChange={(e) => setCostOfProblem(e.target.value)}
+                        placeholder="150000"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                        Posh example: $150,000/hour for enterprise API downtime
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Current Solution Assessment *
+                    </label>
+                    <select
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={currentSolution}
+                        onChange={(e) => setCurrentSolution(e.target.value)}
+                    >
+                        <option value="">Select current solution type</option>
+                        <option value="None">No current monitoring</option>
+                        <option value="DIY">DIY/Internal tools</option>
+                        <option value="Basic tools">Basic monitoring (AWS CloudWatch)</option>
+                        <option value="Enterprise tools">Enterprise tools (Datadog, New Relic)</option>
+                    </select>
+                </div>
+            </div>
+        );
+
+        const Step3MetricExploration = ({ selectedCategories, handleCategoryChange, exploredMetrics, handleMetricToggle }) => (
+            <div className="space-y-6">
+                <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-purple-900 mb-2">Methodology: Value Metric Categories</h3>
+                    <p className="text-purple-800 text-sm">
+                        Explore different pricing metric types. Posh uses a hybrid approach combining usage-based 
+                        (API calls) with outcome-based (incidents prevented) metrics.
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Relevant Metric Categories *
+                    </label>
+                    <div className="space-y-3">
+                        {[
+                            { category: 'Usage-Based', description: 'API calls monitored, transactions processed, data volume', example: 'Posh: API calls monitored' },
+                            { category: 'Outcome-Based', description: 'Incidents prevented, problems resolved, downtime reduced', example: 'Posh: Incidents prevented, automated resolutions' },
+                            { category: 'Value-Based', description: 'Cost savings delivered, ROI improvement, efficiency gains', example: 'Posh: $100K+ downtime prevention per incident' }
+                        ].map(({category, description, example}) => (
+                            <div key={category} className="border border-gray-200 rounded-lg p-4">
+                                <label className="flex items-start">
+                                    <input
+                                        type="checkbox"
+                                        checked={selectedCategories.includes(category)}
+                                        onChange={() => handleCategoryChange(category)}
+                                        className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded mt-0.5"
+                                    />
+                                    <div>
+                                        <span className="font-medium text-sm">{category}</span>
+                                        <p className="text-xs text-gray-600 mt-1">{description}</p>
+                                        <p className="text-xs text-orange-600 mt-1 font-medium">{example}</p>
+                                    </div>
+                                </label>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Specific Metrics to Explore *
+                    </label>
+                    <div className="grid grid-cols-2 gap-3">
+                        {[
+                            'API calls monitored',
+                            'Incidents prevented', 
+                            'Automated resolutions',
+                            'Mean time to detection improvement',
+                            'Uptime percentage',
+                            'Cost savings delivered',
+                            'User seats',
+                            'Data volume processed'
+                        ].map(metric => (
+                            <label key={metric} className="flex items-center">
+                                <input
+                                    type="checkbox"
+                                    checked={exploredMetrics.includes(metric)}
+                                    onChange={() => handleMetricToggle(metric)}
+                                    className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
+                                />
+                                <span className="text-sm">{metric}</span>
+                            </label>
+                        ))}
+                    </div>
+                    <div className="mt-2 text-sm text-gray-600">
+                        Selected: {exploredMetrics.length} metrics (minimum 2 required)
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Step4HybridModel = ({ baseComponent, setBaseComponent, outcomeComponent, setOutcomeComponent, hybridJustification, setHybridJustification }) => (
+            <div className="space-y-6">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-green-900 mb-2">Methodology: Hybrid Model Framework</h3>
+                    <p className="text-green-800 text-sm">
+                        Following Posh's hybrid approach: predictable base (subscription) + value-based scaling (outcome). 
+                        This ensures revenue predictability while aligning with customer success.
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Base Subscription Component *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={baseComponent}
+                        onChange={(e) => setBaseComponent(e.target.value)}
+                        placeholder="Example: API calls monitored (predictable infrastructure costs)"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">What stays predictable and covers your base costs?</p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Outcome-Based Component *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={outcomeComponent}
+                        onChange={(e) => setOutcomeComponent(e.target.value)}
+                        placeholder="Example: Incidents prevented + automated resolutions (value delivered)"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">What scales with the value you deliver?</p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Hybrid Model Justification *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={hybridJustification}
+                        onChange={(e) => setHybridJustification(e.target.value)}
+                        placeholder="Example: Hybrid model provides predictable revenue base while aligning pricing with actual value delivered..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(hybridJustification) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(hybridJustification)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 10 words required</span>
+                    </div>
+                </div>
+            </div>
+        );
+
+        const Step5PrimaryMetric = ({ exploredMetrics, primaryValueMetric, setPrimaryValueMetric, measurementApproach, setMeasurementApproach, businessJustification, setBusinessJustification, pricePoints, setPricePoints }) => (
+            <div className="space-y-6">
+                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-indigo-900 mb-2">Methodology: Primary Value Metric Selection</h3>
+                    <p className="text-indigo-800 text-sm">
+                        Crystallize your single most important pricing metric. Posh chose "Incident Prevention Rate" 
+                        as their primary metric because it directly correlates with customer value.
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-3">
+                        Primary Value Metric *
+                    </label>
+                    <div className="space-y-2">
+                        {exploredMetrics.length > 0 ? exploredMetrics.map(metric => (
+                            <label key={metric} className="flex items-center">
+                                <input
+                                    type="radio"
+                                    name="primaryMetric"
+                                    value={metric}
+                                    checked={primaryValueMetric === metric}
+                                    onChange={(e) => setPrimaryValueMetric(e.target.value)}
+                                    className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
+                                />
+                                <span className="text-sm">{metric}</span>
+                            </label>
+                        )) : (
+                            <p className="text-gray-500 text-sm">Complete Step 3 to see metric options</p>
+                        )}
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        How Will You Measure This Metric? *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={measurementApproach}
+                        onChange={(e) => setMeasurementApproach(e.target.value)}
+                        placeholder="Example: Track predicted incidents vs actual incidents, measure MTTD improvement, count automated resolutions..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(measurementApproach) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(measurementApproach)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Why This Metric Matters Most *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={businessJustification}
+                        onChange={(e) => setBusinessJustification(e.target.value)}
+                        placeholder="Example: Incident prevention directly correlates with customer value - every prevented incident saves $100K+ in downtime costs..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(businessJustification) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(businessJustification)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 10 words required</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Rough Price Points (Optional)
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={pricePoints}
+                        onChange={(e) => setPricePoints(e.target.value)}
+                        placeholder="Example: $10 per prevented incident, $25 per automated resolution"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">Initial pricing thoughts - will be refined in Activity 2</p>
+                </div>
+            </div>
+        );
+
+        const Step6Validation = ({ testingApproach, setTestingApproach, successMetrics, setSuccessMetrics, timeline, setTimeline }) => (
+            <div className="space-y-6">
+                <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-teal-900 mb-2">Methodology: Testing & Validation</h3>
+                    <p className="text-teal-800 text-sm">
+                        Following Posh's 3-month validation approach with pilot programs and customer interviews. 
+                        Set up framework for pricing experimentation before full rollout.
+                    </p>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Testing Approach *
+                    </label>
+                    <select
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={testingApproach}
+                        onChange={(e) => setTestingApproach(e.target.value)}
+                    >
+                        <option value="">Select testing approach</option>
+                        <option value="pilot program">Pilot program with select customers</option>
+                        <option value="A/B test">A/B test different pricing models</option>
+                        <option value="customer interviews">Customer interviews and surveys</option>
+                        <option value="beta program">Beta program with pricing feedback</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Success Metrics for Validation *
+                    </label>
+                    <textarea
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={successMetrics}
+                        onChange={(e) => setSuccessMetrics(e.target.value)}
+                        placeholder="Example: Customer adoption rate, willingness to pay validation, incident prevention effectiveness measurement..."
+                    />
+                    <div className="flex justify-between mt-1">
+                        <span className={`text-sm ${getWordCount(successMetrics) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                            {getWordCount(successMetrics)} words
+                        </span>
+                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                    </div>
+                </div>
+
+                <div>
+                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                        Timeline for Validation *
+                    </label>
+                    <select
+                        className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                        value={timeline}
+                        onChange={(e) => setTimeline(e.target.value)}
+                    >
+                        <option value="">Select timeline</option>
+                        <option value="1 month">1 month - Quick validation</option>
+                        <option value="2 months">2 months - Standard testing</option>
+                        <option value="3 months">3 months - Comprehensive pilot</option>
+                        <option value="6 months">6 months - Extended market test</option>
+                    </select>
+                </div>
+            </div>
+        );
 
         const PricingActivity1A = () => {
             // Step 1: Customer Value
@@ -100,13 +516,16 @@
             const [successMetrics, setSuccessMetrics] = useState('');
             const [timeline, setTimeline] = useState('');
 
-            // UI State
+            // Navigation
             const [currentStep, setCurrentStep] = useState(1);
-            const [devMode, setDevMode] = useState(false);
-            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            // Completion time
             const [completedAt, setCompletedAt] = useState(null);
 
-            // Dev mode functionality
+            // Dev mode
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
             const toggleDevMode = () => {
                 setDevMode(!devMode);
                 console.log(devMode ? 'Dev mode disabled' : 'Dev mode enabled');
@@ -115,39 +534,42 @@
             const devFillData = () => {
                 setDevFillLoading(true);
                 try {
-                    const testData = JSON.parse(document.getElementById('testData').textContent);
-                    
+                    const testDataScript = document.getElementById('testData');
+                    const testData = JSON.parse(testDataScript.textContent);
+
                     // Step 1
                     setCustomerPains(testData.step1_customer_value.customerPains);
                     setDesiredOutcomes(testData.step1_customer_value.desiredOutcomes);
                     setJobsToBeDone(testData.step1_customer_value.jobsToBeDone);
-                    
+
                     // Step 2
                     setCustomerSegments(testData.step2_segmentation.customerSegments);
                     setCostOfProblem(testData.step2_segmentation.costOfProblem);
                     setCurrentSolution(testData.step2_segmentation.currentSolution);
-                    
+
                     // Step 3
                     setSelectedCategories(testData.step3_metric_exploration.selectedCategories);
                     setExploredMetrics(testData.step3_metric_exploration.exploredMetrics);
-                    
+
                     // Step 4
                     setBaseComponent(testData.step4_hybrid_model.baseComponent);
                     setOutcomeComponent(testData.step4_hybrid_model.outcomeComponent);
                     setHybridJustification(testData.step4_hybrid_model.hybridJustification);
-                    
+
                     // Step 5
                     setPrimaryValueMetric(testData.step5_primary_metric.primaryValueMetric);
                     setMeasurementApproach(testData.step5_primary_metric.measurementApproach);
                     setBusinessJustification(testData.step5_primary_metric.businessJustification);
                     setPricePoints(testData.step5_primary_metric.pricePoints);
-                    
+
                     // Step 6
                     setTestingApproach(testData.step6_validation.testingApproach);
                     setSuccessMetrics(testData.step6_validation.successMetrics);
                     setTimeline(testData.step6_validation.timeline);
-                    
-                    setCurrentStep(testData.currentStep || 6);
+
+                    // Navigation
+                    setCurrentStep(testData.currentStep || 3);
+
                     console.log('Dev data loaded successfully');
                 } catch (error) {
                     console.error('Failed to load dev data:', error);
@@ -156,21 +578,41 @@
                 }
             };
 
-            // Validation helpers
-            const getWordCount = (text) => text.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isValidLength = (text, minWords) => getWordCount(text) >= minWords;
+            const handleSegmentChange = (segment) => {
+                if (customerSegments.includes(segment)) {
+                    setCustomerSegments(customerSegments.filter(s => s !== segment));
+                } else {
+                    setCustomerSegments([...customerSegments, segment]);
+                }
+            };
 
-            // Step validation
+            const handleCategoryChange = (category) => {
+                if (selectedCategories.includes(category)) {
+                    setSelectedCategories(selectedCategories.filter(c => c !== category));
+                } else {
+                    setSelectedCategories([...selectedCategories, category]);
+                }
+            };
+
+            const handleMetricToggle = (metric) => {
+                if (exploredMetrics.includes(metric)) {
+                    setExploredMetrics(exploredMetrics.filter(m => m !== metric));
+                } else {
+                    setExploredMetrics([...exploredMetrics, metric]);
+                }
+            };
+
+            // Validation functions
             const isStep1Valid = () => {
-                return isValidLength(customerPains, 5) && 
-                       isValidLength(desiredOutcomes, 5) && 
-                       isValidLength(jobsToBeDone, 3);
+                return getWordCount(customerPains) >= 5 && 
+                       getWordCount(desiredOutcomes) >= 5 && 
+                       getWordCount(jobsToBeDone) >= 3;
             };
 
             const isStep2Valid = () => {
                 return customerSegments.length > 0 && 
-                       costOfProblem.length > 0 && 
-                       currentSolution.length > 0;
+                       costOfProblem.trim() !== '' && 
+                       currentSolution !== '';
             };
 
             const isStep3Valid = () => {
@@ -178,30 +620,31 @@
             };
 
             const isStep4Valid = () => {
-                return baseComponent.length > 0 && 
-                       outcomeComponent.length > 0 && 
-                       isValidLength(hybridJustification, 10);
+                return baseComponent.trim().length >= 10 && 
+                       outcomeComponent.trim().length >= 10 && 
+                       getWordCount(hybridJustification) >= 10;
             };
 
             const isStep5Valid = () => {
-                return primaryValueMetric.length > 0 && 
-                       isValidLength(measurementApproach, 5) && 
-                       isValidLength(businessJustification, 10);
+                return primaryValueMetric !== '' && 
+                       getWordCount(measurementApproach) >= 5 && 
+                       getWordCount(businessJustification) >= 10;
             };
 
             const isStep6Valid = () => {
-                return testingApproach.length > 0 && 
-                       isValidLength(successMetrics, 5) && 
-                       timeline.length > 0;
+                return testingApproach !== '' && 
+                       getWordCount(successMetrics) >= 5 && 
+                       timeline !== '';
             };
 
-            // Navigation
             const nextStep = () => {
                 if (currentStep < 6) {
                     setCurrentStep(currentStep + 1);
                 } else if (currentStep === 6 && isStep6Valid()) {
-                    setCompletedAt(new Date().toISOString());
-                    setCurrentStep(7); // Summary view
+                    setCurrentStep(7);
+                    if (!completedAt) {
+                        setCompletedAt(new Date().toISOString());
+                    }
                 }
             };
 
@@ -211,69 +654,90 @@
                 }
             };
 
-            // Checkbox handlers
-            const handleSegmentChange = (segment) => {
-                setCustomerSegments(prev => 
-                    prev.includes(segment) 
-                        ? prev.filter(s => s !== segment)
-                        : [...prev, segment]
-                );
-            };
+            const stepTitles = ['Value', 'Segments', 'Metrics', 'Hybrid', 'Primary', 'Validate'];
 
-            const handleCategoryChange = (category) => {
-                setSelectedCategories(prev => 
-                    prev.includes(category) 
-                        ? prev.filter(c => c !== category)
-                        : [...prev, category]
-                );
-            };
-
-            const handleMetricToggle = (metric) => {
-                setExploredMetrics(prev => 
-                    prev.includes(metric) 
-                        ? prev.filter(m => m !== metric)
-                        : [...prev, metric]
-                );
-            };
-
-            // Markdown export
             const generateMarkdownSummary = () => {
-                return `# Pricing & Monetization: Primary Value Metric Assessment
+                return `# Pricing Strategy: Find Your Primary Value Metric
 
-## Primary Value Metric
-- **Selected Metric**: ${primaryValueMetric || 'Not yet selected'}
-- **Measurement**: ${measurementApproach || 'Not yet defined'}
-- **Business Impact**: ${businessJustification || 'Not yet justified'}
-${pricePoints ? `- **Price Points**: ${pricePoints}` : ''}
+## 📋 Executive Summary
+**Primary Value Metric:** ${primaryValueMetric || '[Not selected]'}
+**Hybrid Model:** ${baseComponent ? 'Base + Outcome-based pricing' : '[Not defined]'}
+**Testing Timeline:** ${timeline || '[Not set]'}
+**Workshop Completed:** ${completedAt ? new Date(completedAt).toLocaleString() : 'In Progress'}
 
-## Hybrid Model Framework
-- **Base Component**: ${baseComponent || 'Not yet defined'}
-- **Value Component**: ${outcomeComponent || 'Not yet defined'}
-${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
+## 🎯 Step 1: Customer Value Analysis
 
-## Customer Context
-- **Target Segments**: ${customerSegments.length > 0 ? customerSegments.join(', ') : 'Not yet selected'}
-- **Problem Cost**: ${costOfProblem ? `$${parseInt(costOfProblem).toLocaleString()}/hour` : 'Not yet quantified'}
-- **Current Solution**: ${currentSolution || 'Not yet assessed'}
+### Primary Customer Pain Points
+${customerPains || '[Not provided]'}
 
-## Value Analysis
-- **Customer Pains**: ${customerPains || 'Not yet identified'}
-- **Desired Outcomes**: ${desiredOutcomes || 'Not yet defined'}
-- **Jobs-to-be-Done**: ${jobsToBeDone || 'Not yet articulated'}
+### Desired Business Outcomes
+${desiredOutcomes || '[Not provided]'}
 
-## Testing Plan
-- **Approach**: ${testingApproach || 'Not yet selected'}
-- **Success Metrics**: ${successMetrics || 'Not yet defined'}
-- **Timeline**: ${timeline || 'Not yet scheduled'}
+### Jobs-to-be-Done
+${jobsToBeDone || '[Not provided]'}
 
-## Next Steps
-- Validate metric with customer interviews
-- Implement measurement tracking system
-- Continue to Activity 2: Monetization Models
-- Begin pilot testing with selected approach
+## 👥 Step 2: Customer Segmentation & Willingness to Pay
+
+### Target Segments
+${customerSegments.length > 0 ? customerSegments.map(s => `- ${s}`).join('\n') : '- No segments selected'}
+
+### Problem Economics
+- **Hourly Cost of Problem:** $${costOfProblem || '0'}
+- **Current Solution:** ${currentSolution || 'Not specified'}
+
+## 📊 Step 3: Value Metric Exploration
+
+### Selected Metric Categories
+${selectedCategories.length > 0 ? selectedCategories.map(c => `- ${c}`).join('\n') : '- No categories selected'}
+
+### Explored Metrics
+${exploredMetrics.length > 0 ? exploredMetrics.map(m => `- ${m}`).join('\n') : '- No metrics explored'}
+
+## 🔄 Step 4: Hybrid Pricing Model
+
+### Base Component (Subscription)
+${baseComponent || '[Not defined]'}
+
+### Outcome Component (Value-based)
+${outcomeComponent || '[Not defined]'}
+
+### Hybrid Model Justification
+${hybridJustification || '[Not provided]'}
+
+## 🎪 Step 5: Primary Value Metric
+
+### Selected Primary Metric
+**${primaryValueMetric || '[Not selected]'}**
+
+### Measurement Approach
+${measurementApproach || '[Not defined]'}
+
+### Business Justification
+${businessJustification || '[Not provided]'}
+
+### Initial Price Points
+${pricePoints || '[Not specified]'}
+
+## ✅ Step 6: Validation Plan
+
+### Testing Approach
+${testingApproach || '[Not selected]'}
+
+### Success Metrics
+${successMetrics || '[Not defined]'}
+
+### Timeline
+${timeline || '[Not set]'}
+
+## 📅 Next Steps
+1. Refine pricing model based on validation insights
+2. Develop pricing calculator and sales tools
+3. Create customer communication materials
+4. Launch ${testingApproach || 'pilot program'} within ${timeline || 'timeline'}
 
 ---
-*Generated on ${new Date().toLocaleDateString()} using the 6-step Posh AMP methodology for B2B SaaS pricing strategy development.*`;
+*Activity completed: ${completedAt ? new Date(completedAt).toLocaleString() : 'In Progress'}*
+*Pricing Strategy Workshop - Find Your Primary Value Metric*`;
             };
 
             const handleCopyToClipboard = () => {
@@ -283,6 +747,7 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                             await navigator.clipboard.writeText(text);
                             return true;
                         } else {
+                            // Fallback for older browsers
                             const textArea = document.createElement('textarea');
                             textArea.value = text;
                             textArea.style.position = 'fixed';
@@ -294,6 +759,7 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                             return successful;
                         }
                     } catch (err) {
+                        console.error('Failed to copy:', err);
                         return false;
                     }
                 };
@@ -303,16 +769,18 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                 
                 copyToClipboard(el.value).then((success) => {
                     if (success) {
+                        // Show success status
                         statusDiv.innerHTML = `
                             <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
-                                <p class="font-medium">Copied to Clipboard!</p>
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
                                 <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
                             </div>
                         `;
                         
+                        // Floating notification
                         const notification = document.createElement('div');
-                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; z-index: 9999;';
-                        notification.textContent = 'Value metric assessment copied!';
+                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; font-weight: 500;';
+                        notification.textContent = '✅ Activity summary copied!';
                         document.body.appendChild(notification);
                         
                         setTimeout(() => {
@@ -324,466 +792,74 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                 });
             };
 
-            // Step components
-            const Step1CustomerValue = () => (
-                <div className="space-y-6">
-                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-semibold text-orange-900 mb-2">Methodology: Jobs-to-be-Done Analysis</h3>
-                        <p className="text-orange-800 text-sm">
-                            We first identify how customers measure value in their business. 
-                            This follows the Posh AMP example where API failures create 
-                            $100K+/hour downtime costs.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Primary Customer Pain Points *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={customerPains}
-                            onChange={(e) => setCustomerPains(e.target.value)}
-                            placeholder="Example: API failures cost $100K+/hour in downtime, causing customer churn and emergency firefighting..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(customerPains) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(customerPains)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 5 words required</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Desired Business Outcomes *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={desiredOutcomes}
-                            onChange={(e) => setDesiredOutcomes(e.target.value)}
-                            placeholder="Example: Prevent API failures before customer impact, reduce mean time to detection from 15 minutes to under 2 minutes..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(desiredOutcomes) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(desiredOutcomes)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 5 words required</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Jobs Customers Hire Your Product To Do *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={jobsToBeDone}
-                            onChange={(e) => setJobsToBeDone(e.target.value)}
-                            placeholder="Example: Preventing API failures before customer impact, automating incident response..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(jobsToBeDone) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(jobsToBeDone)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 3 words required</span>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const Step2Segmentation = () => (
-                <div className="space-y-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-semibold text-blue-900 mb-2">Methodology: Customer Segmentation & WTP</h3>
-                        <p className="text-blue-800 text-sm">
-                            Following Posh's 3-tier segmentation model: High-growth SaaS, Enterprise, and Mid-size Tech. 
-                            Understanding who pays most and why is critical for value metric selection.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            Target Customer Segments *
-                        </label>
-                        <div className="space-y-2">
-                            {['High-growth SaaS', 'Large Enterprises', 'Midsize Tech'].map(segment => (
-                                <label key={segment} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={customerSegments.includes(segment)}
-                                        onChange={() => handleSegmentChange(segment)}
-                                        className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm">{segment}</span>
-                                </label>
-                            ))}
-                        </div>
-                        <div className="mt-2 text-sm text-gray-600">
-                            Selected: {customerSegments.length} segment{customerSegments.length !== 1 ? 's' : ''}
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Hourly Cost of Problem/Downtime ($) *
-                        </label>
-                        <input
-                            type="number"
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={costOfProblem}
-                            onChange={(e) => setCostOfProblem(e.target.value)}
-                            placeholder="150000"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">
-                            Posh example: $150,000/hour for enterprise API downtime
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Current Solution Assessment *
-                        </label>
-                        <select
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={currentSolution}
-                            onChange={(e) => setCurrentSolution(e.target.value)}
-                        >
-                            <option value="">Select current solution type</option>
-                            <option value="None">No current monitoring</option>
-                            <option value="DIY">DIY/Internal tools</option>
-                            <option value="Basic tools">Basic monitoring (AWS CloudWatch)</option>
-                            <option value="Enterprise tools">Enterprise tools (Datadog, New Relic)</option>
-                        </select>
-                    </div>
-                </div>
-            );
-
-            const Step3MetricExploration = () => (
-                <div className="space-y-6">
-                    <div className="bg-purple-50 border border-purple-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-semibold text-purple-900 mb-2">Methodology: Value Metric Categories</h3>
-                        <p className="text-purple-800 text-sm">
-                            Explore different pricing metric types. Posh uses a hybrid approach combining usage-based 
-                            (API calls) with outcome-based (incidents prevented) metrics.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            Relevant Metric Categories *
-                        </label>
-                        <div className="space-y-3">
-                            {[
-                                { category: 'Usage-Based', description: 'API calls monitored, transactions processed, data volume', example: 'Posh: API calls monitored' },
-                                { category: 'Outcome-Based', description: 'Incidents prevented, problems resolved, downtime reduced', example: 'Posh: Incidents prevented, automated resolutions' },
-                                { category: 'Value-Based', description: 'Cost savings delivered, ROI improvement, efficiency gains', example: 'Posh: $100K+ downtime prevention per incident' }
-                            ].map(({category, description, example}) => (
-                                <div key={category} className="border border-gray-200 rounded-lg p-4">
-                                    <label className="flex items-start">
-                                        <input
-                                            type="checkbox"
-                                            checked={selectedCategories.includes(category)}
-                                            onChange={() => handleCategoryChange(category)}
-                                            className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded mt-0.5"
-                                        />
-                                        <div>
-                                            <span className="font-medium text-sm">{category}</span>
-                                            <p className="text-xs text-gray-600 mt-1">{description}</p>
-                                            <p className="text-xs text-orange-600 mt-1 font-medium">{example}</p>
-                                        </div>
-                                    </label>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            Specific Metrics to Explore *
-                        </label>
-                        <div className="grid grid-cols-2 gap-3">
-                            {[
-                                'API calls monitored',
-                                'Incidents prevented', 
-                                'Automated resolutions',
-                                'Mean time to detection improvement',
-                                'Uptime percentage',
-                                'Cost savings delivered',
-                                'User seats',
-                                'Data volume processed'
-                            ].map(metric => (
-                                <label key={metric} className="flex items-center">
-                                    <input
-                                        type="checkbox"
-                                        checked={exploredMetrics.includes(metric)}
-                                        onChange={() => handleMetricToggle(metric)}
-                                        className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300 rounded"
-                                    />
-                                    <span className="text-sm">{metric}</span>
-                                </label>
-                            ))}
-                        </div>
-                        <div className="mt-2 text-sm text-gray-600">
-                            Selected: {exploredMetrics.length} metrics (minimum 2 required)
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const Step4HybridModel = () => (
-                <div className="space-y-6">
-                    <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-semibold text-green-900 mb-2">Methodology: Hybrid Model Framework</h3>
-                        <p className="text-green-800 text-sm">
-                            Following Posh's hybrid approach: predictable base (subscription) + value-based scaling (outcome). 
-                            This ensures revenue predictability while aligning with customer success.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Base Subscription Component *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={baseComponent}
-                            onChange={(e) => setBaseComponent(e.target.value)}
-                            placeholder="Example: API calls monitored (predictable infrastructure costs)"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">What stays predictable and covers your base costs?</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Outcome-Based Component *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={outcomeComponent}
-                            onChange={(e) => setOutcomeComponent(e.target.value)}
-                            placeholder="Example: Incidents prevented + automated resolutions (value delivered)"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">What scales with the value you deliver?</p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Hybrid Model Justification *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={hybridJustification}
-                            onChange={(e) => setHybridJustification(e.target.value)}
-                            placeholder="Example: Hybrid model provides predictable revenue base while aligning pricing with actual value delivered..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(hybridJustification) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(hybridJustification)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 10 words required</span>
-                        </div>
-                    </div>
-                </div>
-            );
-
-            const Step5PrimaryMetric = () => (
-                <div className="space-y-6">
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-semibold text-indigo-900 mb-2">Methodology: Primary Value Metric Selection</h3>
-                        <p className="text-indigo-800 text-sm">
-                            Crystallize your single most important pricing metric. Posh chose "Incident Prevention Rate" 
-                            as their primary metric because it directly correlates with customer value.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-3">
-                            Primary Value Metric *
-                        </label>
-                        <div className="space-y-2">
-                            {exploredMetrics.length > 0 ? exploredMetrics.map(metric => (
-                                <label key={metric} className="flex items-center">
-                                    <input
-                                        type="radio"
-                                        name="primaryMetric"
-                                        value={metric}
-                                        checked={primaryValueMetric === metric}
-                                        onChange={(e) => setPrimaryValueMetric(e.target.value)}
-                                        className="mr-3 h-4 w-4 text-orange-600 focus:ring-orange-500 border-gray-300"
-                                    />
-                                    <span className="text-sm">{metric}</span>
-                                </label>
-                            )) : (
-                                <p className="text-gray-500 text-sm">Complete Step 3 to see metric options</p>
-                            )}
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            How Will You Measure This Metric? *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={measurementApproach}
-                            onChange={(e) => setMeasurementApproach(e.target.value)}
-                            placeholder="Example: Track predicted incidents vs actual incidents, measure MTTD improvement, count automated resolutions..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(measurementApproach) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(measurementApproach)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 5 words required</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Why This Metric Matters Most *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={businessJustification}
-                            onChange={(e) => setBusinessJustification(e.target.value)}
-                            placeholder="Example: Incident prevention directly correlates with customer value - every prevented incident saves $100K+ in downtime costs..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(businessJustification) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(businessJustification)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 10 words required</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Rough Price Points (Optional)
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={pricePoints}
-                            onChange={(e) => setPricePoints(e.target.value)}
-                            placeholder="Example: $10 per prevented incident, $25 per automated resolution"
-                        />
-                        <p className="text-xs text-gray-500 mt-1">Initial pricing thoughts - will be refined in Activity 2</p>
-                    </div>
-                </div>
-            );
-
-            const Step6Validation = () => (
-                <div className="space-y-6">
-                    <div className="bg-teal-50 border border-teal-200 rounded-lg p-4 mb-6">
-                        <h3 className="font-semibold text-teal-900 mb-2">Methodology: Testing & Validation</h3>
-                        <p className="text-teal-800 text-sm">
-                            Following Posh's 3-month validation approach with pilot programs and customer interviews. 
-                            Set up framework for pricing experimentation before full rollout.
-                        </p>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Testing Approach *
-                        </label>
-                        <select
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={testingApproach}
-                            onChange={(e) => setTestingApproach(e.target.value)}
-                        >
-                            <option value="">Select testing approach</option>
-                            <option value="pilot program">Pilot program with select customers</option>
-                            <option value="A/B test">A/B test different pricing models</option>
-                            <option value="customer interviews">Customer interviews and surveys</option>
-                            <option value="beta program">Beta program with pricing feedback</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Success Metrics for Validation *
-                        </label>
-                        <textarea
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={successMetrics}
-                            onChange={(e) => setSuccessMetrics(e.target.value)}
-                            placeholder="Example: Customer adoption rate, willingness to pay validation, incident prevention effectiveness measurement..."
-                        />
-                        <div className="flex justify-between mt-1">
-                            <span className={`text-sm ${getWordCount(successMetrics) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                {getWordCount(successMetrics)} words
-                            </span>
-                            <span className="text-xs text-gray-400">Minimum 5 words required</span>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label className="block text-sm font-semibold text-gray-700 mb-2">
-                            Timeline for Validation *
-                        </label>
-                        <select
-                            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                            value={timeline}
-                            onChange={(e) => setTimeline(e.target.value)}
-                        >
-                            <option value="">Select timeline</option>
-                            <option value="1 month">1 month - Quick validation</option>
-                            <option value="3 months">3 months - Thorough testing</option>
-                            <option value="6 months">6 months - Comprehensive validation</option>
-                        </select>
-                    </div>
-                </div>
-            );
-
-            const StepSummary = () => (
-                <div className="space-y-6">
-                    <div className="bg-green-100 border border-green-300 rounded-lg p-6 text-center">
-                        <div className="text-green-600 text-5xl mb-4">✅</div>
-                        <h2 className="text-2xl font-bold text-green-900 mb-2">
-                            Primary Value Metric Identified!
-                        </h2>
-                        <p className="text-green-800">
-                            You've successfully completed the 6-step Posh AMP methodology for finding your primary value metric.
-                        </p>
-                    </div>
-
-                    <div className="bg-white border border-gray-200 rounded-lg p-4">
-                        <h3 className="font-bold text-lg text-gray-800 mb-4">Export Your Assessment</h3>
-                        <textarea
-                            id="markdownSummary"
-                            readOnly
-                            className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
-                            value={generateMarkdownSummary()}
-                        />
-                        <button
-                            onClick={handleCopyToClipboard}
-                            className="w-full bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors font-medium"
-                        >
-                            Copy to Clipboard
-                        </button>
-                        <div id="copyStatus"></div>
-                    </div>
-
-                    <div className="flex justify-center">
-                        <button
-                            onClick={() => window.location.href = 'pricing-activity-2A.html'}
-                            className="bg-green-600 text-white px-6 py-3 rounded-lg hover:bg-green-700 transition-colors font-medium"
-                        >
-                            Continue to Activity 2: Monetization Models
-                        </button>
-                    </div>
-                </div>
-            );
-
             const renderCurrentStep = () => {
+                const props = {
+                    // Step 1 props
+                    customerPains, setCustomerPains,
+                    desiredOutcomes, setDesiredOutcomes,
+                    jobsToBeDone, setJobsToBeDone,
+                    // Step 2 props
+                    customerSegments, handleSegmentChange,
+                    costOfProblem, setCostOfProblem,
+                    currentSolution, setCurrentSolution,
+                    // Step 3 props
+                    selectedCategories, handleCategoryChange,
+                    exploredMetrics, handleMetricToggle,
+                    // Step 4 props
+                    baseComponent, setBaseComponent,
+                    outcomeComponent, setOutcomeComponent,
+                    hybridJustification, setHybridJustification,
+                    // Step 5 props
+                    primaryValueMetric, setPrimaryValueMetric,
+                    measurementApproach, setMeasurementApproach,
+                    businessJustification, setBusinessJustification,
+                    pricePoints, setPricePoints,
+                    // Step 6 props
+                    testingApproach, setTestingApproach,
+                    successMetrics, setSuccessMetrics,
+                    timeline, setTimeline
+                };
+
                 switch(currentStep) {
-                    case 1: return <Step1CustomerValue />;
-                    case 2: return <Step2Segmentation />;
-                    case 3: return <Step3MetricExploration />;
-                    case 4: return <Step4HybridModel />;
-                    case 5: return <Step5PrimaryMetric />;
-                    case 6: return <Step6Validation />;
-                    case 7: return <StepSummary />;
-                    default: return <Step1CustomerValue />;
+                    case 1: return <Step1CustomerValue {...props} />;
+                    case 2: return <Step2Segmentation {...props} />;
+                    case 3: return <Step3MetricExploration {...props} />;
+                    case 4: return <Step4HybridModel {...props} />;
+                    case 5: return <Step5PrimaryMetric {...props} />;
+                    case 6: return <Step6Validation {...props} />;
+                    case 7: return (
+                        <div className="space-y-6">
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                                <h3 className="text-lg font-semibold text-green-900 mb-2">
+                                    ✅ Pricing Strategy Defined!
+                                </h3>
+                                <p className="text-green-800">
+                                    You've successfully identified your primary value metric: <strong>{primaryValueMetric}</strong>
+                                </p>
+                                <p className="text-green-700 text-sm mt-2">
+                                    Completed at: {completedAt ? new Date(completedAt).toLocaleString() : 'Just now'}
+                                </p>
+                            </div>
+
+                            <div className="border border-gray-200 rounded-lg p-4">
+                                <h4 className="font-semibold text-gray-800 mb-3">Activity Summary</h4>
+                                <textarea
+                                    id="markdownSummary"
+                                    readOnly
+                                    className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                    value={generateMarkdownSummary()}
+                                />
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium"
+                                >
+                                    Copy Summary to Clipboard
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    );
+                    default: return <Step1CustomerValue {...props} />;
                 }
             };
 
@@ -799,29 +875,19 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                 }
             };
 
-            const canProceed = () => {
-                return getStepValidation(currentStep);
-            };
-
-            const stepTitles = [
-                'Customer Value',
-                'Segmentation', 
-                'Metrics',
-                'Hybrid Model',
-                'Primary Metric',
-                'Validation'
-            ];
-
             return (
-                <div className="min-h-screen bg-gray-50 py-8 px-4">
-                    <div className="max-w-[900px] mx-auto">
-                        {/* Header */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            <div className="flex justify-between items-center w-full mb-2">
-                                <a href="index.html" className="text-blue-600 hover:text-blue-800 text-sm">← Back to Workshop</a>
-                                <a href="../index.html" className="text-blue-600 hover:text-blue-800 text-sm">All GTM Workshops ↑</a>
-                            </div>
-                            
+                <div className="max-w-[900px] mx-auto p-4">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                ← Back to Workshop
+                            </a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                All GTM Workshops ↑
+                            </a>
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-3 pt-4">
                             <h1 
                                 className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
                                 onDoubleClick={toggleDevMode}
@@ -840,7 +906,7 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                                         <button
                                             onClick={devFillData}
                                             disabled={devFillLoading}
-                                            className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
+                                            className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50"
                                         >
                                             {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
                                         </button>
@@ -848,80 +914,73 @@ ${hybridJustification ? `- **Model Rationale**: ${hybridJustification}` : ''}
                                 </div>
                             )}
                         </div>
-
-                        {/* Progress Bar */}
-                        {currentStep <= 6 && (
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
-                                <div className="flex items-center justify-between mb-2">
-                                    <span className="text-sm font-medium text-gray-700">Progress</span>
-                                    <span className="text-sm text-gray-600">{currentStep}/6</span>
-                                </div>
-                                <div className="w-full bg-gray-200 rounded-full h-2">
-                                    <div 
-                                        className="bg-orange-500 h-2 rounded-full transition-all duration-300"
-                                        style={{width: `${(currentStep / 6) * 100}%`}}
-                                    ></div>
-                                </div>
-                                <div className="flex justify-between text-xs text-gray-500 mt-2">
-                                    {stepTitles.map(title => (
-                                        <span key={title}>{title}</span>
-                                    ))}
-                                </div>
-                            </div>
-                        )}
-
-                        {/* Main Content */}
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            {currentStep <= 6 && (
-                                <h2 className="text-lg font-semibold text-gray-800 mb-4">
-                                    Step {currentStep}: {
-                                        currentStep === 1 ? 'Identify Core Customer Value' :
-                                        currentStep === 2 ? 'Assess Customer Segments & WTP' :
-                                        currentStep === 3 ? 'Explore Value Metric Categories' :
-                                        currentStep === 4 ? 'Choose Hybrid Model Components' :
-                                        currentStep === 5 ? 'Define Primary Value Metric' :
-                                        'Validate & Plan Testing'
-                                    }
-                                </h2>
-                            )}
-
-                            {renderCurrentStep()}
-                        </div>
-
-                        {/* Navigation */}
-                        {currentStep <= 6 && (
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
-                                <div className="flex justify-between items-center">
-                                    <button
-                                        onClick={prevStep}
-                                        disabled={currentStep === 1}
-                                        className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        ← Previous
-                                    </button>
-                                    
-                                    <div className="flex items-center gap-2">
-                                        <div className={`w-4 h-4 rounded-full ${getStepValidation(currentStep) ? 'bg-green-500' : 'border border-gray-300'}`}></div>
-                                        <span className="text-sm text-gray-600">
-                                            Step {currentStep} {getStepValidation(currentStep) ? 'Complete' : 'Incomplete'}
-                                        </span>
-                                    </div>
-
-                                    <button
-                                        onClick={nextStep}
-                                        disabled={!canProceed()}
-                                        className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
-                                    >
-                                        {currentStep === 6 ? 'Complete Assessment' : 'Next'} →
-                                    </button>
-                                </div>
-                            </div>
-                        )}
                     </div>
+
+                    {/* Progress Bar */}
+                    {currentStep <= 6 && (
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                            <div className="flex items-center justify-between mb-2">
+                                <span className="text-sm font-medium text-gray-700">Progress</span>
+                                <span className="text-sm text-gray-600">{currentStep}/6</span>
+                            </div>
+                            <div className="w-full bg-gray-200 rounded-full h-2">
+                                <div 
+                                    className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                                    style={{width: `${(currentStep / 6) * 100}%`}}
+                                ></div>
+                            </div>
+                            <div className="flex justify-between text-xs text-gray-500 mt-2">
+                                {stepTitles.map(title => (
+                                    <span key={title}>{title}</span>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Main Content */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        {currentStep <= 6 && (
+                            <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                                Step {currentStep}: {
+                                    currentStep === 1 ? 'Identify Core Customer Value' :
+                                    currentStep === 2 ? 'Assess Customer Segments & WTP' :
+                                    currentStep === 3 ? 'Explore Value Metric Categories' :
+                                    currentStep === 4 ? 'Choose Hybrid Model Components' :
+                                    currentStep === 5 ? 'Define Primary Value Metric' :
+                                    'Validate & Plan Testing'
+                                }
+                            </h2>
+                        )}
+
+                        {renderCurrentStep()}
+                    </div>
+
+                    {/* Navigation */}
+                    {currentStep <= 6 && (
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4">
+                            <div className="flex justify-between items-center">
+                                <button
+                                    onClick={prevStep}
+                                    disabled={currentStep === 1}
+                                    className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    onClick={nextStep}
+                                    disabled={!getStepValidation(currentStep)}
+                                    className="px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                                >
+                                    {currentStep === 6 ? 'Complete Activity' : 'Next Step'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
 
+        // Render the app
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
         root.render(<PricingActivity1A />);
