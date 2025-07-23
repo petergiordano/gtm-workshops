@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activity 3: Build Guardrails - Pricing Strategy</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Test Data from test_data/pricing-activity-3A.json -->
+    <script type="application/json" id="testData">
+    {
+      "valueMetric": "AI-powered sales calls monitored and coached per month",
+      "hybridModel": "Base subscription for core platform access plus per-user scaling for team features and advanced AI coaching capabilities",
+      "baseComponent": "Core AI sales coaching platform with basic analytics and call monitoring",
+      "scalingComponent": "Per-user seats with advanced coaching, team management, and custom AI model training",
+      "basePrice": "99",
+      "scalingRate": "5",
+      "scalingUnit": "user",
+      "priceRationale": "Base price covers platform costs while per-user scaling aligns with value delivery and team expansion needs",
+      "selectedGuardrails": ["Usage Caps/Limits", "Usage Monitoring Dashboard", "Fair Use Policies"],
+      "guardrailDetails": {
+        "Usage Caps/Limits": {
+          "implementation": "500 AI-coached calls per user per month on standard tier, 1000 on premium tier with automatic throttling",
+          "rationale": "Prevents unexpected AI processing costs while maintaining predictable service levels for customers"
+        },
+        "Usage Monitoring Dashboard": {
+          "implementation": "Real-time dashboard showing current usage, limits, and projected monthly costs with email alerts at 75% and 90%",
+          "rationale": "Provides transparency to customers and early warning system to prevent bill shock or service interruptions"
+        },
+        "Fair Use Policies": {
+          "implementation": "Define reasonable use as normal sales team activities, prohibit resale or bulk processing for external parties",
+          "rationale": "Protects against abuse while allowing legitimate business use cases to scale naturally"
+        }
+      },
+      "testingMethod": "A/B Price Testing",
+      "testingTimeline": "60",
+      "successMetrics": "Customer acquisition rate, churn rate, revenue per customer, and customer satisfaction scores compared between pricing models",
+      "decisionCriteria": "New model must show 15% improvement in customer lifetime value while maintaining sub-5% churn rate to proceed with full rollout",
+      "currentStep": 4
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        function PricingActivity3A() {
+            const [currentStep, setCurrentStep] = useState(1);
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            const [valueMetric, setValueMetric] = useState('');
+            const [hybridModel, setHybridModel] = useState('');
+            const [baseComponent, setBaseComponent] = useState('');
+            const [scalingComponent, setScalingComponent] = useState('');
+
+            const [basePrice, setBasePrice] = useState('');
+            const [scalingRate, setScalingRate] = useState('');
+            const [scalingUnit, setScalingUnit] = useState('user');
+            const [priceRationale, setPriceRationale] = useState('');
+
+            const guardrailTypes = [
+                "Usage Caps/Limits",
+                "Overage Fees", 
+                "Fair Use Policies",
+                "Usage Monitoring Dashboard",
+                "Minimum Commitments"
+            ];
+            const [selectedGuardrails, setSelectedGuardrails] = useState([]);
+            const [guardrailDetails, setGuardrailDetails] = useState({});
+
+            const testingMethods = [
+                "A/B Price Testing",
+                "Pilot Program", 
+                "Customer Interviews",
+                "Usage Analytics",
+                "Cohort Analysis"
+            ];
+            const [testingMethod, setTestingMethod] = useState('');
+            const [testingTimeline, setTestingTimeline] = useState('60');
+            const [successMetrics, setSuccessMetrics] = useState('');
+            const [decisionCriteria, setDecisionCriteria] = useState('');
+
+            const getWordCount = (text) => {
+                if (!text || typeof text !== 'string') return 0;
+                const trimmed = text.trim();
+                if (trimmed.length === 0) return 0;
+                return trimmed.split(/\s+/).filter(w => w.length > 0).length;
+            };
+
+            const isValidText = (text, minWords = 5) => {
+                if (!text || typeof text !== 'string') return false;
+                return getWordCount(text) >= minWords;
+            };
+
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    
+                    setValueMetric(testData.valueMetric);
+                    setHybridModel(testData.hybridModel);
+                    setBaseComponent(testData.baseComponent);
+                    setScalingComponent(testData.scalingComponent);
+                    setBasePrice(testData.basePrice);
+                    setScalingRate(testData.scalingRate);
+                    setScalingUnit(testData.scalingUnit);
+                    setPriceRationale(testData.priceRationale);
+                    setSelectedGuardrails(testData.selectedGuardrails);
+                    setGuardrailDetails(testData.guardrailDetails);
+                    setTestingMethod(testData.testingMethod);
+                    setTestingTimeline(testData.testingTimeline);
+                    setSuccessMetrics(testData.successMetrics);
+                    setDecisionCriteria(testData.decisionCriteria);
+                    setCurrentStep(testData.currentStep || 4);
+                    
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            const isStep1Valid = () => {
+                const v1 = isValidText(valueMetric);
+                const v2 = isValidText(hybridModel);
+                const v3 = isValidText(baseComponent);
+                const v4 = isValidText(scalingComponent);
+                const valid = v1 && v2 && v3 && v4;
+                
+                console.log('Step 1 validation details:', {
+                    valueMetric: { text: valueMetric, words: getWordCount(valueMetric), valid: v1 },
+                    hybridModel: { text: hybridModel, words: getWordCount(hybridModel), valid: v2 },
+                    baseComponent: { text: baseComponent, words: getWordCount(baseComponent), valid: v3 },
+                    scalingComponent: { text: scalingComponent, words: getWordCount(scalingComponent), valid: v4 },
+                    overall: valid
+                });
+                
+                return valid;
+            };
+
+            const isStep2Valid = () => {
+                return basePrice && basePrice.trim() && 
+                       scalingRate && scalingRate.trim() && 
+                       isValidText(priceRationale);
+            };
+
+            const isStep3Valid = () => {
+                return selectedGuardrails.length > 0 && 
+                       selectedGuardrails.every(guardrail => 
+                           guardrailDetails[guardrail]?.implementation?.trim() &&
+                           guardrailDetails[guardrail]?.rationale?.trim()
+                       );
+            };
+
+            const isStep4Valid = () => {
+                return testingMethod && isValidText(successMetrics) && 
+                       isValidText(decisionCriteria);
+            };
+
+            const handleGuardrailToggle = (guardrail) => {
+                const newSelected = selectedGuardrails.includes(guardrail)
+                    ? selectedGuardrails.filter(g => g !== guardrail)
+                    : [...selectedGuardrails, guardrail];
+                
+                setSelectedGuardrails(newSelected);
+
+                if (!newSelected.includes(guardrail)) {
+                    const newDetails = { ...guardrailDetails };
+                    delete newDetails[guardrail];
+                    setGuardrailDetails(newDetails);
+                }
+            };
+
+            const updateGuardrailDetail = (guardrail, field, value) => {
+                setGuardrailDetails(prev => ({
+                    ...prev,
+                    [guardrail]: {
+                        ...prev[guardrail],
+                        [field]: value
+                    }
+                }));
+            };
+
+            const nextStep = () => {
+                if (currentStep < 4) setCurrentStep(currentStep + 1);
+            };
+
+            const prevStep = () => {
+                if (currentStep > 1) setCurrentStep(currentStep - 1);
+            };
+
+            const generateMarkdownSummary = () => {
+                const exampleCalc = basePrice && scalingRate ? 
+                    `Example: $${basePrice}/month + (10 ${scalingUnit}s × $${scalingRate}) = $${parseInt(basePrice) + (10 * parseInt(scalingRate))}/month` : 
+                    'Example calculation will appear when prices are set';
+
+                const guardrailsText = selectedGuardrails.map(guardrail => {
+                    const details = guardrailDetails[guardrail];
+                    return `### ${guardrail}
+**Implementation:** ${details?.implementation || 'Not specified'}
+**Rationale:** ${details?.rationale || 'Not specified'}`;
+                }).join('\n\n');
+
+                return `# Workshop Series: Pricing Strategy Implementation Plan
+
+## Pricing Model Summary
+**Value Metric:** ${valueMetric || 'Not specified'}
+
+**Hybrid Model:** ${hybridModel || 'Not specified'}
+
+**Base Component:** ${baseComponent || 'Not specified'}
+
+**Scaling Component:** ${scalingComponent || 'Not specified'}
+
+## Price Points
+**Base Price:** $${basePrice}/month
+**Scaling Rate:** $${scalingRate} per ${scalingUnit}
+${exampleCalc}
+
+**Pricing Rationale:** ${priceRationale || 'Not specified'}
+
+## Guardrails & Protection
+${guardrailsText || 'No guardrails selected'}
+
+## Testing & Validation Plan
+**Method:** ${testingMethod || 'Not selected'}
+**Timeline:** ${testingTimeline} days
+**Success Metrics:** ${successMetrics || 'Not specified'}
+**Decision Criteria:** ${decisionCriteria || 'Not specified'}
+
+## Next Steps
+1. Finalize guardrail implementation details
+2. Set up testing infrastructure
+3. Launch ${testingMethod.toLowerCase()} with defined metrics
+4. Monitor results over ${testingTimeline}-day period
+5. Make go/no-go decision based on success criteria
+
+---
+*Generated from GTM Workshop Series - Activity 3: Build Guardrails*`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            const successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            return successful;
+                        }
+                    } catch (err) {
+                        return false;
+                    }
+                };
+
+                const el = document.getElementById('markdownSummary');
+                const statusDiv = document.getElementById('copyStatus');
+                
+                copyToClipboard(el.value).then((success) => {
+                    if (success) {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        const notification = document.createElement('div');
+                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; z-index: 9999;';
+                        notification.textContent = '✅ Activity summary copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 2500);
+                    }
+                });
+            };
+
+            return (
+                <div className="max-w-[900px] mx-auto p-4 font-sans">
+                    <div className="flex justify-between items-center w-full mb-2">
+                        <a href="index.html" className="text-blue-600 hover:text-blue-800 text-sm">← Back to Workshop</a>
+                        <a href="../index.html" className="text-blue-600 hover:text-blue-800 text-sm">All GTM Workshops ↑</a>
+                    </div>
+
+                    <h1 
+                        className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                        onDoubleClick={toggleDevMode}
+                        title="Double-click to toggle dev mode"
+                    >
+                        Activity 3: Build Guardrails {devMode && '🔧'}
+                    </h1>
+
+                    {devMode && (
+                        <div className="mt-3 pt-3 border-t border-orange-200">
+                            <div className="flex items-center justify-between">
+                                <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                <button
+                                    onClick={devFillData}
+                                    disabled={devFillLoading}
+                                    className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
+                                >
+                                    {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                </button>
+                            </div>
+                        </div>
+                    )}
+
+                    <div className="bg-orange-50 border-l-4 border-orange-400 p-3 mb-6 mt-4">
+                        <p className="text-sm text-orange-800">
+                            <strong>Rule 3: Build guardrails that protect without limiting.</strong> Set usage caps, monitoring, and policies that prevent cost surprises while allowing growth.
+                        </p>
+                    </div>
+
+                    <div className="mb-6">
+                        <div className="flex items-center justify-between text-xs text-gray-500 mb-2">
+                            <span>Import Context</span>
+                            <span>Set Prices</span>
+                            <span>Define Guardrails</span>
+                            <span>Plan Testing</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-orange-500 h-2 rounded-full transition-all duration-300"
+                                style={{ width: `${(currentStep / 4) * 100}%` }}
+                            ></div>
+                        </div>
+                        <div className="text-center mt-2 text-sm text-gray-600">
+                            Step {currentStep} of 4
+                        </div>
+                    </div>
+
+                    {currentStep === 1 && (
+                        <div className="space-y-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Step 1: Import Your Activity 2 Results</h2>
+                            <p className="text-sm text-gray-600">Enter the hybrid pricing model you developed in Activity 2.</p>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Primary Value Metric *
+                                    </label>
+                                    <textarea
+                                        value={valueMetric}
+                                        onChange={(e) => setValueMetric(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                        style={{ height: '80px' }}
+                                        placeholder="E.g. API calls monitored per month"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(valueMetric) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(valueMetric)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Hybrid Model Description *
+                                    </label>
+                                    <textarea
+                                        value={hybridModel}
+                                        onChange={(e) => setHybridModel(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                        style={{ height: '80px' }}
+                                        placeholder="E.g. Base subscription for platform access plus per-user scaling for advanced features"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(hybridModel) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(hybridModel)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Base Component *
+                                    </label>
+                                    <textarea
+                                        value={baseComponent}
+                                        onChange={(e) => setBaseComponent(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                        style={{ height: '80px' }}
+                                        placeholder="What does the base subscription include?"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(baseComponent) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(baseComponent)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Scaling Component *
+                                    </label>
+                                    <textarea
+                                        value={scalingComponent}
+                                        onChange={(e) => setScalingComponent(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                        style={{ height: '80px' }}
+                                        placeholder="What scales with usage or growth?"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(scalingComponent) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(scalingComponent)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {currentStep === 2 && (
+                        <div className="space-y-4">
+                            <h2 className="text-lg font-semibold text-gray-800">Step 2: Set Specific Price Points</h2>
+                            <p className="text-sm text-gray-600">Convert your hybrid model into specific dollar amounts.</p>
+
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Base Price ($/month)</label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-2 text-gray-500">$</span>
+                                        <input
+                                            type="number"
+                                            value={basePrice}
+                                            onChange={(e) => setBasePrice(e.target.value)}
+                                            className="w-full pl-6 pr-3 py-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            placeholder="99"
+                                        />
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Scaling Rate</label>
+                                    <div className="flex">
+                                        <div className="relative flex-1">
+                                            <span className="absolute left-3 top-2 text-gray-500">$</span>
+                                            <input
+                                                type="number"
+                                                value={scalingRate}
+                                                onChange={(e) => setScalingRate(e.target.value)}
+                                                className="w-full pl-6 pr-3 py-2 text-sm border border-gray-300 rounded-l-lg focus:ring-2 focus:ring-orange-500"
+                                                placeholder="5"
+                                            />
+                                        </div>
+                                        <select
+                                            value={scalingUnit}
+                                            onChange={(e) => setScalingUnit(e.target.value)}
+                                            className="px-3 py-2 text-sm border border-l-0 border-gray-300 rounded-r-lg focus:ring-2 focus:ring-orange-500"
+                                        >
+                                            <option value="user">per user</option>
+                                            <option value="seat">per seat</option>
+                                            <option value="API call">per API call</option>
+                                            <option value="GB">per GB</option>
+                                            <option value="transaction">per transaction</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {basePrice && scalingRate && (
+                                <div className="bg-blue-50 p-3 rounded-lg">
+                                    <h3 className="text-sm font-medium text-blue-800 mb-1">Example Calculation</h3>
+                                    <p className="text-sm text-blue-700">
+                                        Base: ${basePrice}/month + (10 {scalingUnit}s × ${scalingRate}) = <strong>${parseInt(basePrice) + (10 * parseInt(scalingRate))}/month</strong>
+                                    </p>
+                                </div>
+                            )}
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">
+                                    Pricing Rationale *
+                                </label>
+                                <textarea
+                                    value={priceRationale}
+                                    onChange={(e) => setPriceRationale(e.target.value)}
+                                    className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                    style={{ height: '80px' }}
+                                    placeholder="Explain the reasoning behind these price points..."
+                                />
+                                <div className="flex justify-between mt-1">
+                                    <span className={`text-sm ${getWordCount(priceRationale) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {getWordCount(priceRationale)} words
+                                    </span>
+                                    <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {currentStep === 3 && (
+                        <div className="space-y-6">
+                            <h2 className="text-lg font-semibold text-gray-800">Step 3: Define Guardrails</h2>
+                            <p className="text-sm text-gray-600">Select and configure guardrails to protect your margins and customer experience.</p>
+
+                            <div className="space-y-4">
+                                {guardrailTypes.map((guardrail) => (
+                                    <div key={guardrail} className="border border-gray-200 rounded-lg p-4">
+                                        <label className="flex items-center space-x-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedGuardrails.includes(guardrail)}
+                                                onChange={() => handleGuardrailToggle(guardrail)}
+                                                className="w-4 h-4 text-orange-600 border-gray-300 rounded focus:ring-orange-500"
+                                            />
+                                            <span className="font-medium text-gray-800">{guardrail}</span>
+                                        </label>
+
+                                        {selectedGuardrails.includes(guardrail) && (
+                                            <div className="mt-3 space-y-3 pl-7">
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Implementation Details
+                                                    </label>
+                                                    <textarea
+                                                        value={guardrailDetails[guardrail]?.implementation || ''}
+                                                        onChange={(e) => updateGuardrailDetail(guardrail, 'implementation', e.target.value)}
+                                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                                        style={{ height: '60px' }}
+                                                        placeholder="How will you implement this guardrail?"
+                                                    />
+                                                </div>
+                                                <div>
+                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                        Rationale
+                                                    </label>
+                                                    <textarea
+                                                        value={guardrailDetails[guardrail]?.rationale || ''}
+                                                        onChange={(e) => updateGuardrailDetail(guardrail, 'rationale', e.target.value)}
+                                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                                        style={{ height: '60px' }}
+                                                        placeholder="Why is this guardrail important for your product?"
+                                                    />
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                ))}
+                            </div>
+
+                            {selectedGuardrails.length === 0 && (
+                                <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-3">
+                                    <p className="text-sm text-yellow-800">Select at least one guardrail to protect your pricing model.</p>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {currentStep === 4 && (
+                        <div className="space-y-6">
+                            <h2 className="text-lg font-semibold text-gray-800">Step 4: Plan Your Testing Strategy</h2>
+                            <p className="text-sm text-gray-600">Define how you'll validate your pricing model before full rollout.</p>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">Testing Method</label>
+                                    <div className="space-y-2">
+                                        {testingMethods.map((method) => (
+                                            <label key={method} className="flex items-center space-x-3 cursor-pointer">
+                                                <input
+                                                    type="radio"
+                                                    name="testingMethod"
+                                                    value={method}
+                                                    checked={testingMethod === method}
+                                                    onChange={(e) => setTestingMethod(e.target.value)}
+                                                    className="w-4 h-4 text-orange-600 border-gray-300 focus:ring-orange-500"
+                                                />
+                                                <span className="text-sm text-gray-800">{method}</span>
+                                            </label>
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Testing Timeline</label>
+                                    <select
+                                        value={testingTimeline}
+                                        onChange={(e) => setTestingTimeline(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                    >
+                                        <option value="30">30 days</option>
+                                        <option value="60">60 days</option>
+                                        <option value="90">90 days</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Success Metrics *
+                                    </label>
+                                    <textarea
+                                        value={successMetrics}
+                                        onChange={(e) => setSuccessMetrics(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                        style={{ height: '80px' }}
+                                        placeholder="What metrics will you track to measure success?"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(successMetrics) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(successMetrics)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                                        Decision Criteria *
+                                    </label>
+                                    <textarea
+                                        value={decisionCriteria}
+                                        onChange={(e) => setDecisionCriteria(e.target.value)}
+                                        className="w-full p-2 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 laptop-textarea"
+                                        style={{ height: '80px' }}
+                                        placeholder="What results would make you proceed with this pricing model?"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(decisionCriteria) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(decisionCriteria)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {isStep4Valid() && (
+                                <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                    <div className="flex items-center space-x-2 mb-3">
+                                        <span className="text-green-600 text-xl">✅</span>
+                                        <h3 className="font-semibold text-green-800">Pricing Strategy Complete!</h3>
+                                    </div>
+                                    
+                                    <div className="space-y-3">
+                                        <p className="text-sm text-green-700">
+                                            Your pricing implementation plan is ready. Copy the summary below to save your work.
+                                        </p>
+                                        
+                                        <textarea
+                                            id="markdownSummary"
+                                            readOnly
+                                            className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                            value={generateMarkdownSummary()}
+                                        />
+                                        
+                                        <button
+                                            onClick={handleCopyToClipboard}
+                                            className="w-full bg-green-600 text-white px-4 py-2 rounded-lg hover:bg-green-700 flex items-center justify-center space-x-2"
+                                        >
+                                            <span>📋</span>
+                                            <span>Copy Implementation Plan</span>
+                                        </button>
+                                        
+                                        <div id="copyStatus"></div>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-center mt-8 pt-6 border-t border-gray-200">
+                        <button
+                            onClick={prevStep}
+                            disabled={currentStep === 1}
+                            className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
+                                currentStep === 1 
+                                    ? 'bg-gray-100 text-gray-400 cursor-not-allowed' 
+                                    : 'bg-gray-500 text-white hover:bg-gray-600'
+                            }`}
+                        >
+                            <span>←</span>
+                            <span>Previous</span>
+                        </button>
+
+                        <div className="text-center">
+                            <div className="text-sm text-gray-500">
+                                Activity 3 of 3 - Pricing Series Complete
+                            </div>
+                            {currentStep === 1 && devMode && (
+                                <div className="text-xs text-orange-600 mt-1">
+                                    Valid: {isStep1Valid() ? 'YES' : 'NO'} | 
+                                    VM: {getWordCount(valueMetric)} | 
+                                    HM: {getWordCount(hybridModel)} | 
+                                    BC: {getWordCount(baseComponent)} | 
+                                    SC: {getWordCount(scalingComponent)}
+                                </div>
+                            )}
+                        </div>
+
+                        {currentStep < 4 ? (
+                            <button
+                                onClick={nextStep}
+                                disabled={
+                                    (currentStep === 1 && (!valueMetric || !hybridModel || !baseComponent || !scalingComponent || 
+                                        getWordCount(valueMetric) < 5 || getWordCount(hybridModel) < 5 || 
+                                        getWordCount(baseComponent) < 5 || getWordCount(scalingComponent) < 5)) ||
+                                    (currentStep === 2 && (!basePrice || !scalingRate || !priceRationale || 
+                                        getWordCount(priceRationale) < 5)) ||
+                                    (currentStep === 3 && (!selectedGuardrails.length || 
+                                        !selectedGuardrails.every(g => guardrailDetails[g]?.implementation && guardrailDetails[g]?.rationale)))
+                                }
+                                className={`px-4 py-2 rounded-lg flex items-center space-x-2 ${
+                                    (currentStep === 1 && (!valueMetric || !hybridModel || !baseComponent || !scalingComponent || 
+                                        getWordCount(valueMetric) < 5 || getWordCount(hybridModel) < 5 || 
+                                        getWordCount(baseComponent) < 5 || getWordCount(scalingComponent) < 5)) ||
+                                    (currentStep === 2 && (!basePrice || !scalingRate || !priceRationale || 
+                                        getWordCount(priceRationale) < 5)) ||
+                                    (currentStep === 3 && (!selectedGuardrails.length || 
+                                        !selectedGuardrails.every(g => guardrailDetails[g]?.implementation && guardrailDetails[g]?.rationale)))
+                                        ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                                        : 'bg-orange-500 text-white hover:bg-orange-600'
+                                }`}
+                            >
+                                <span>Next</span>
+                                <span>→</span>
+                            </button>
+                        ) : (
+                            <button
+                                onClick={() => window.location.href = 'index.html'}
+                                className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 flex items-center space-x-2"
+                            >
+                                <span>Back to Workshop</span>
+                                <span>→</span>
+                            </button>
+                        )}
+                    </div>
+                </div>
+            );
+        }
+
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<PricingActivity3A />);
+    </script>
+</body>
+</html>

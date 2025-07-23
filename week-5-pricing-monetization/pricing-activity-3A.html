@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Revenue Optimization Activity</title>
+    <title>Set Price Points & Build Guardrails - Pricing & Monetization</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -14,51 +14,939 @@
             margin: 0;
             padding: 0;
         }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
+    <!-- Test Data for Sequential Deep-Dive Activity -->
+    <script type="application/json" id="testData">
+    {
+      "step1_context": {
+        "baseComponent": "Platform fee of $2,000/month for monitoring infrastructure and dashboard access",
+        "valueScaling": "$0.02 per API call monitored + $10 per incident prevented through automated response",
+        "primaryValueMetric": "API calls monitored + incident prevention rate + automated response time",
+        "targetCustomer": "High-growth B2B SaaS companies with 1M+ API calls/month experiencing scaling challenges"
+      },
+      "step2_price_points": {
+        "competitorPricing": "DataDog APM: $15/host/month, New Relic: $0.25/100K transactions, PagerDuty: $29/user/month for incident response",
+        "substituteCosts": "In-house monitoring team: $150K/year engineer cost, Manual incident response: 40 hours/week ops time, Downtime cost: $10K/hour revenue impact",
+        "tooExpensive": "8000",
+        "gettingExpensive": "4000", 
+        "goodValue": "2200",
+        "bargainPrice": "800",
+        "starterPricing": "$2,000/month base + $0.015/API call (up to 5M calls included)",
+        "growthPricing": "$5,000/month base + $0.01/API call + $25 per prevented incident bonus",
+        "pricingJustification": "Based on customer interviews and competitive analysis, this pricing captures significant value while remaining accessible to growth-stage companies. The hybrid model ensures predictable base costs with value-aligned scaling."
+      },
+      "step3_guardrails": {
+        "selectedGuardrails": ["usage_caps", "overage_fees", "monitoring_dashboard"],
+        "guardrail1": "Usage caps: Starter tier includes 5M API calls, Growth tier includes 20M calls. Soft limits with email warnings at 80% and dashboard alerts.",
+        "guardrail2": "Overage fees: $0.02 per API call above tier limit (25% premium) with automatic billing alerts and monthly caps to prevent bill shock.",
+        "guardrail3": "Usage monitoring dashboard: Real-time tracking with predictive alerts, customer spending controls, and transparent usage analytics for cost management.",
+        "customerCommunication": "We've designed these protections to give you predictable costs while ensuring fair usage across all customers. You'll always know your usage levels and have control over spending limits."
+      },
+      "currentStep": 3
+    }
+    </script>
+
     <script type="text/babel">
         const { useState } = React;
 
-        const ComingSoonActivity = () => {
-            return (
-                <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="bg-white rounded-lg shadow-lg p-8">
-                            <div className="text-center">
-                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-green-100 mb-4">
-                                    <svg className="h-6 w-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
-                                    </svg>
+        // Helper function for word count
+        const getWordCount = (text) => {
+            return text.trim().split(/\s+/).filter(word => word.length > 0).length;
+        };
+
+        const PricingActivity3A = () => {
+            // Step 1: Context Import
+            const [baseComponent, setBaseComponent] = useState('');
+            const [valueScaling, setValueScaling] = useState('');
+            const [primaryValueMetric, setPrimaryValueMetric] = useState('');
+            const [targetCustomer, setTargetCustomer] = useState('');
+
+            // Step 2: Price Points
+            const [competitorPricing, setCompetitorPricing] = useState('');
+            const [substituteCosts, setSubstituteCosts] = useState('');
+            const [tooExpensive, setTooExpensive] = useState('');
+            const [gettingExpensive, setGettingExpensive] = useState('');
+            const [goodValue, setGoodValue] = useState('');
+            const [bargainPrice, setBargainPrice] = useState('');
+            const [starterPricing, setStarterPricing] = useState('');
+            const [growthPricing, setGrowthPricing] = useState('');
+            const [pricingJustification, setPricingJustification] = useState('');
+
+            // Step 3: Guardrails
+            const [selectedGuardrails, setSelectedGuardrails] = useState([]);
+            const [guardrail1, setGuardrail1] = useState('');
+            const [guardrail2, setGuardrail2] = useState('');
+            const [guardrail3, setGuardrail3] = useState('');
+            const [customerCommunication, setCustomerCommunication] = useState('');
+
+            // Activity Management
+            const [currentStep, setCurrentStep] = useState(1);
+            const [completedAt, setCompletedAt] = useState(null);
+
+            // Dev mode
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testDataScript = document.getElementById('testData');
+                    const testData = JSON.parse(testDataScript.textContent);
+
+                    // Step 1 data
+                    setBaseComponent(testData.step1_context.baseComponent);
+                    setValueScaling(testData.step1_context.valueScaling);
+                    setPrimaryValueMetric(testData.step1_context.primaryValueMetric);
+                    setTargetCustomer(testData.step1_context.targetCustomer);
+
+                    // Step 2 data
+                    setCompetitorPricing(testData.step2_price_points.competitorPricing);
+                    setSubstituteCosts(testData.step2_price_points.substituteCosts);
+                    setTooExpensive(testData.step2_price_points.tooExpensive);
+                    setGettingExpensive(testData.step2_price_points.gettingExpensive);
+                    setGoodValue(testData.step2_price_points.goodValue);
+                    setBargainPrice(testData.step2_price_points.bargainPrice);
+                    setStarterPricing(testData.step2_price_points.starterPricing);
+                    setGrowthPricing(testData.step2_price_points.growthPricing);
+                    setPricingJustification(testData.step2_price_points.pricingJustification);
+
+                    // Step 3 data
+                    setSelectedGuardrails(testData.step3_guardrails.selectedGuardrails);
+                    setGuardrail1(testData.step3_guardrails.guardrail1);
+                    setGuardrail2(testData.step3_guardrails.guardrail2);
+                    setGuardrail3(testData.step3_guardrails.guardrail3);
+                    setCustomerCommunication(testData.step3_guardrails.customerCommunication);
+
+                    setCurrentStep(testData.currentStep || 3);
+
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // Guardrail options
+            const guardrailOptions = [
+                {
+                    id: 'usage_caps',
+                    name: 'Usage Caps per Tier',
+                    example: 'Starter tier limited to 5M API calls/month'
+                },
+                {
+                    id: 'overage_fees',
+                    name: 'Overage Fee Structure',
+                    example: '25% premium for usage above tier limits'
+                },
+                {
+                    id: 'fair_use',
+                    name: 'Fair Use Policies',
+                    example: 'No more than 10x average usage in single day'
+                },
+                {
+                    id: 'monitoring_dashboard',
+                    name: 'Usage Monitoring Dashboard',
+                    example: 'Real-time usage tracking with 80% warnings'
+                },
+                {
+                    id: 'spending_caps',
+                    name: 'Spending Caps & Alerts',
+                    example: 'Customer-set monthly spending limits'
+                },
+                {
+                    id: 'minimum_commitments',
+                    name: 'Minimum Commitments',
+                    example: 'Annual contracts for enterprise pricing'
+                }
+            ];
+
+            // Validation functions
+            const isStep1Complete = () => {
+                return getWordCount(baseComponent) >= 10 &&
+                       getWordCount(valueScaling) >= 10 &&
+                       getWordCount(primaryValueMetric) >= 5 &&
+                       getWordCount(targetCustomer) >= 8;
+            };
+
+            const isStep2Complete = () => {
+                return getWordCount(competitorPricing) >= 15 &&
+                       getWordCount(substituteCosts) >= 12 &&
+                       tooExpensive && gettingExpensive && goodValue && bargainPrice &&
+                       getWordCount(starterPricing) >= 8 &&
+                       getWordCount(growthPricing) >= 8 &&
+                       getWordCount(pricingJustification) >= 20;
+            };
+
+            const isStep3Complete = () => {
+                const completedGuardrails = [guardrail1, guardrail2, guardrail3]
+                    .filter(g => getWordCount(g) >= 15).length;
+                return selectedGuardrails.length >= 2 &&
+                       completedGuardrails >= 2 &&
+                       getWordCount(customerCommunication) >= 15;
+            };
+
+            const nextStep = () => {
+                if ((currentStep === 1 && isStep1Complete()) ||
+                    (currentStep === 2 && isStep2Complete()) ||
+                    (currentStep === 3 && isStep3Complete())) {
+                    setCurrentStep(prev => Math.min(prev + 1, 3));
+                }
+            };
+
+            const prevStep = () => {
+                setCurrentStep(prev => Math.max(prev - 1, 1));
+            };
+
+            const handleComplete = () => {
+                if (isStep3Complete() && !completedAt) {
+                    setCompletedAt(new Date().toISOString());
+                }
+            };
+
+            const handleGuardrailToggle = (guardrailId) => {
+                setSelectedGuardrails(prev => 
+                    prev.includes(guardrailId)
+                        ? prev.filter(id => id !== guardrailId)
+                        : [...prev, guardrailId]
+                );
+            };
+
+            // Generate markdown summary
+            const generateMarkdownSummary = () => {
+                const selectedGuardNames = selectedGuardrails.map(id => 
+                    guardrailOptions.find(g => g.id === id)?.name || id
+                );
+
+                return `# Workshop Series: Pricing & Monetization - Price Points & Guardrails
+
+## 🎯 Executive Summary
+Complete pricing strategy with specific price points and protective guardrails for sustainable B2B AI product monetization.
+
+## 📊 Hybrid Model Context (Activity 2 Import)
+**Base Component**: ${baseComponent}
+**Value Scaling**: ${valueScaling}  
+**Primary Value Metric**: ${primaryValueMetric}
+**Target Customer**: ${targetCustomer}
+
+## 💰 Price Point Research & Analysis
+
+### Competitive Landscape
+**Direct Competitors**: ${competitorPricing}
+**Substitute Solutions**: ${substituteCosts}
+
+### WTP Analysis Results
+- **Too Expensive**: $${tooExpensive}
+- **Getting Expensive**: $${gettingExpensive}  
+- **Good Value Sweet Spot**: $${goodValue}
+- **Bargain/Quality Concerns**: $${bargainPrice}
+
+### Recommended Pricing Structure
+**Starter Tier**: ${starterPricing}
+**Growth Tier**: ${growthPricing}
+
+**Strategic Justification**: ${pricingJustification}
+
+## ⚡ Implementation Guardrails
+
+### Selected Protections
+${selectedGuardNames.map(name => `- ${name.toUpperCase()}`).join('\n')}
+
+### Implementation Details
+${guardrail1 ? `1. **${selectedGuardNames[0]?.toUpperCase() || 'GUARDRAIL 1'}**: ${guardrail1}` : ''}
+${guardrail2 ? `2. **${selectedGuardNames[1]?.toUpperCase() || 'GUARDRAIL 2'}**: ${guardrail2}` : ''}
+${guardrail3 ? `3. **${selectedGuardNames[2]?.toUpperCase() || 'GUARDRAIL 3'}**: ${guardrail3}` : ''}
+
+### Customer Communication Strategy
+${customerCommunication}
+
+## 📋 Next Steps
+1. Validate pricing with 5-10 target customers using Direct WTP questions
+2. Implement usage monitoring and billing guardrails
+3. Create customer-facing pricing page with transparent guardrails
+4. Launch pilot program with Growth tier pricing
+5. Monitor usage patterns and adjust guardrails based on data
+
+---
+*Pricing strategy completed: ${new Date().toLocaleDateString()}*`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            const successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            return successful;
+                        }
+                    } catch (err) {
+                        console.error('Failed to copy:', err);
+                        return false;
+                    }
+                };
+
+                const el = document.getElementById('markdownSummary');
+                const statusDiv = document.getElementById('copyStatus');
+                
+                copyToClipboard(el.value).then((success) => {
+                    if (success) {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        const notification = document.createElement('div');
+                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; font-weight: 500;';
+                        notification.textContent = '✅ Price points & guardrails copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 2500);
+                        
+                        setTimeout(() => {
+                            statusDiv.innerHTML = '';
+                        }, 3000);
+                    }
+                });
+            };
+
+            // Render Step 1: Import Hybrid Model Context
+            const renderStep1 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            📋 Import Your Hybrid Model
+                        </h3>
+                        <p className="text-gray-600">
+                            Since this is a standalone activity, please enter your hybrid model from Activity 2:
+                        </p>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Base Component *
+                            </label>
+                            <textarea
+                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                value={baseComponent}
+                                onChange={(e) => setBaseComponent(e.target.value)}
+                                placeholder="E.g., Platform fee of $2,000/month for monitoring infrastructure"
+                            />
+                            <div className="flex justify-between mt-1">
+                                <span className={`text-sm ${getWordCount(baseComponent) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {getWordCount(baseComponent)} words
+                                </span>
+                                <span className="text-xs text-gray-400">Minimum 10 words required</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Value Scaling Component *
+                            </label>
+                            <textarea
+                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                value={valueScaling}
+                                onChange={(e) => setValueScaling(e.target.value)}
+                                placeholder="E.g., $0.02 per API call + $10 per prevented incident"
+                            />
+                            <div className="flex justify-between mt-1">
+                                <span className={`text-sm ${getWordCount(valueScaling) >= 10 ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {getWordCount(valueScaling)} words
+                                </span>
+                                <span className="text-xs text-gray-400">Minimum 10 words required</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Primary Value Metric *
+                            </label>
+                            <textarea
+                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                value={primaryValueMetric}
+                                onChange={(e) => setPrimaryValueMetric(e.target.value)}
+                                placeholder="E.g., API calls monitored + incident prevention rate"
+                            />
+                            <div className="flex justify-between mt-1">
+                                <span className={`text-sm ${getWordCount(primaryValueMetric) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {getWordCount(primaryValueMetric)} words
+                                </span>
+                                <span className="text-xs text-gray-400">Minimum 5 words required</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Target Customer Context *
+                            </label>
+                            <textarea
+                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                value={targetCustomer}
+                                onChange={(e) => setTargetCustomer(e.target.value)}
+                                placeholder="E.g., High-growth SaaS companies with 1M+ API calls/month"
+                            />
+                            <div className="flex justify-between mt-1">
+                                <span className={`text-sm ${getWordCount(targetCustomer) >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
+                                    {getWordCount(targetCustomer)} words
+                                </span>
+                                <span className="text-xs text-gray-400">Minimum 8 words required</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end">
+                        <button
+                            onClick={nextStep}
+                            disabled={!isStep1Complete()}
+                            className={`px-6 py-3 rounded-lg text-white font-medium text-lg transition-colors ${
+                                isStep1Complete() 
+                                    ? 'bg-orange-500 hover:bg-orange-600' 
+                                    : 'bg-gray-300 cursor-not-allowed'
+                            }`}
+                        >
+                            Determine Price Points →
+                        </button>
+                    </div>
+                </div>
+            );
+
+            // Render Step 2: Price Point Research & Estimation
+            const renderStep2 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            🔍 Determine Your Price Points
+                        </h3>
+                        <p className="text-gray-600">
+                            Following the "Direct WTP" methodology, research and estimate:
+                        </p>
+                    </div>
+
+                    <div className="space-y-6">
+                        {/* Competitive Landscape Analysis */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 className="text-lg font-semibold text-blue-800 mb-4">📊 Competitive Landscape Analysis</h4>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Direct Competitors & Their Pricing *
+                                    </label>
+                                    <textarea
+                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                        value={competitorPricing}
+                                        onChange={(e) => setCompetitorPricing(e.target.value)}
+                                        placeholder="E.g., DataDog: $15/host/month, New Relic: $0.25/100K transactions"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(competitorPricing) >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(competitorPricing)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 15 words required</span>
+                                    </div>
                                 </div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                    Revenue Optimization Activity
-                                </h1>
-                                <div className="bg-green-50 border border-green-200 rounded-lg p-6 mb-8">
-                                    <h2 className="text-lg font-semibold text-green-900 mb-2">Coming Soon</h2>
-                                    <p className="text-green-700">
-                                        This activity will teach you revenue optimization techniques, pricing experiments, 
-                                        and performance metrics. Check back soon for the full interactive experience!
-                                    </p>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Substitute Solutions & Costs *
+                                    </label>
+                                    <textarea
+                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                        value={substituteCosts}
+                                        onChange={(e) => setSubstituteCosts(e.target.value)}
+                                        placeholder="E.g., In-house monitoring team: $150K/year, Manual processes: 40hrs/week"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(substituteCosts) >= 12 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(substituteCosts)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 12 words required</span>
+                                    </div>
                                 </div>
-                                <div className="space-y-4">
-                                    <a 
-                                        href="index.html" 
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
-                                    >
-                                        ← Back to Pricing & Monetization Workshop
-                                    </a>
+                            </div>
+                        </div>
+
+                        {/* WTP Price Range Estimation */}
+                        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h4 className="text-lg font-semibold text-green-800 mb-4">💰 WTP Price Range Estimation</h4>
+                            <p className="text-sm text-green-700 mb-4">Based on customer research, what price points would customers consider:</p>
+                            
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Too Expensive (Won't Buy) *
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-3 text-gray-500">$</span>
+                                        <input
+                                            type="number"
+                                            className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={tooExpensive}
+                                            onChange={(e) => setTooExpensive(e.target.value)}
+                                            placeholder="10000"
+                                        />
+                                        <span className="absolute right-3 top-3 text-gray-500">/month</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Starting to Get Expensive (Need Justification) *
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-3 text-gray-500">$</span>
+                                        <input
+                                            type="number"
+                                            className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={gettingExpensive}
+                                            onChange={(e) => setGettingExpensive(e.target.value)}
+                                            placeholder="5000"
+                                        />
+                                        <span className="absolute right-3 top-3 text-gray-500">/month</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Good Value (Sweet Spot) *
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-3 text-gray-500">$</span>
+                                        <input
+                                            type="number"
+                                            className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={goodValue}
+                                            onChange={(e) => setGoodValue(e.target.value)}
+                                            placeholder="2500"
+                                        />
+                                        <span className="absolute right-3 top-3 text-gray-500">/month</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Bargain Price (Quality Concerns) *
+                                    </label>
+                                    <div className="relative">
+                                        <span className="absolute left-3 top-3 text-gray-500">$</span>
+                                        <input
+                                            type="number"
+                                            className="w-full pl-8 pr-3 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={bargainPrice}
+                                            onChange={(e) => setBargainPrice(e.target.value)}
+                                            placeholder="500"
+                                        />
+                                        <span className="absolute right-3 top-3 text-gray-500">/month</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Recommended Price Points */}
+                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <h4 className="text-lg font-semibold text-orange-800 mb-4">✅ Your Recommended Price Points</h4>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Starter Tier Pricing *
+                                    </label>
+                                    <textarea
+                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                        value={starterPricing}
+                                        onChange={(e) => setStarterPricing(e.target.value)}
+                                        placeholder="E.g., $2,000/month + $0.01/API call (up to 5M calls)"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(starterPricing) >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(starterPricing)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 8 words required</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Growth Tier Pricing *
+                                    </label>
+                                    <textarea
+                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                        value={growthPricing}
+                                        onChange={(e) => setGrowthPricing(e.target.value)}
+                                        placeholder="E.g., $5,000/month + $0.008/API call + outcome bonuses"
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(growthPricing) >= 8 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(growthPricing)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 8 words required</span>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                        Pricing Justification *
+                                    </label>
+                                    <textarea
+                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                        value={pricingJustification}
+                                        onChange={(e) => setPricingJustification(e.target.value)}
+                                        placeholder="Based on competitive analysis and customer interviews, this pricing captures value while remaining accessible to growth-stage companies..."
+                                    />
+                                    <div className="flex justify-between mt-1">
+                                        <span className={`text-sm ${getWordCount(pricingJustification) >= 20 ? 'text-green-600' : 'text-gray-500'}`}>
+                                            {getWordCount(pricingJustification)} words
+                                        </span>
+                                        <span className="text-xs text-gray-400">Minimum 20 words required</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Back
+                        </button>
+                        <button
+                            onClick={nextStep}
+                            disabled={!isStep2Complete()}
+                            className={`px-6 py-3 rounded-lg text-white font-medium text-lg transition-colors ${
+                                isStep2Complete() 
+                                    ? 'bg-orange-500 hover:bg-orange-600' 
+                                    : 'bg-gray-300 cursor-not-allowed'
+                            }`}
+                        >
+                            Build Guardrails →
+                        </button>
+                    </div>
+                </div>
+            );
+
+            // Render Step 3: Guardrails Selection & Implementation
+            const renderStep3 = () => (
+                <div className="space-y-6">
+                    <div className="text-center mb-6">
+                        <h3 className="text-xl font-bold text-gray-800 mb-2">
+                            ⚡ Build Your Guardrails
+                        </h3>
+                        <p className="text-gray-600">
+                            Select 2-3 most critical guardrails for your pricing model:
+                        </p>
+                    </div>
+
+                    <div className="space-y-6">
+                        {/* Essential Guardrails Selection */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h4 className="text-lg font-semibold text-blue-800 mb-4">🛡️ Essential Guardrails (Check all that apply)</h4>
+                            
+                            <div className="space-y-3">
+                                {guardrailOptions.map((option) => (
+                                    <div key={option.id} className="border border-gray-200 rounded-lg p-3 bg-white">
+                                        <label className="flex items-start space-x-3 cursor-pointer">
+                                            <input
+                                                type="checkbox"
+                                                checked={selectedGuardrails.includes(option.id)}
+                                                onChange={() => handleGuardrailToggle(option.id)}
+                                                className="w-4 h-4 text-orange-600 focus:ring-orange-500 mt-1"
+                                            />
+                                            <div className="flex-1">
+                                                <div className="font-medium text-gray-800">{option.name}</div>
+                                                <div className="text-sm text-gray-600">Example: "{option.example}"</div>
+                                            </div>
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {/* Implementation Details */}
+                        {selectedGuardrails.length > 0 && (
+                            <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                                <h4 className="text-lg font-semibold text-green-800 mb-4">📋 Implementation Details</h4>
+                                <p className="text-sm text-green-700 mb-4">For each selected guardrail, specify:</p>
+                                
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Guardrail 1: Implementation *
+                                        </label>
+                                        <textarea
+                                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={guardrail1}
+                                            onChange={(e) => setGuardrail1(e.target.value)}
+                                            placeholder="Usage caps: Starter tier includes 5M API calls, Growth tier includes 20M calls. Soft limits with email warnings at 80%."
+                                        />
+                                        <div className="flex justify-between mt-1">
+                                            <span className={`text-sm ${getWordCount(guardrail1) >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                {getWordCount(guardrail1)} words
+                                            </span>
+                                            <span className="text-xs text-gray-400">Minimum 15 words required</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Guardrail 2: Implementation *
+                                        </label>
+                                        <textarea
+                                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={guardrail2}
+                                            onChange={(e) => setGuardrail2(e.target.value)}
+                                            placeholder="Overage fees: $0.015 per API call above tier limit (50% premium) with automatic billing alerts."
+                                        />
+                                        <div className="flex justify-between mt-1">
+                                            <span className={`text-sm ${getWordCount(guardrail2) >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                {getWordCount(guardrail2)} words
+                                            </span>
+                                            <span className="text-xs text-gray-400">Minimum 15 words required</span>
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                            Guardrail 3: Implementation
+                                        </label>
+                                        <textarea
+                                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                            value={guardrail3}
+                                            onChange={(e) => setGuardrail3(e.target.value)}
+                                            placeholder="Fair use monitoring: Algorithm detects usage spikes >5x daily average, triggers account review and customer contact."
+                                        />
+                                        <div className="flex justify-between mt-1">
+                                            <span className={`text-sm ${getWordCount(guardrail3) >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                {getWordCount(guardrail3)} words
+                                            </span>
+                                            <span className="text-xs text-gray-400">Minimum 15 words (optional)</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {/* Customer Communication Strategy */}
+                        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
+                            <h4 className="text-lg font-semibold text-orange-800 mb-4">💡 Customer Communication Strategy</h4>
+                            
+                            <div>
+                                <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                    How You'll Explain Guardrails to Customers *
+                                </label>
+                                <textarea
+                                    className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                    value={customerCommunication}
+                                    onChange={(e) => setCustomerCommunication(e.target.value)}
+                                    placeholder="We've designed these protections to give you predictable costs while ensuring fair usage across all customers..."
+                                />
+                                <div className="flex justify-between mt-1">
+                                    <span className={`text-sm ${getWordCount(customerCommunication) >= 15 ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {getWordCount(customerCommunication)} words
+                                    </span>
+                                    <span className="text-xs text-gray-400">Minimum 15 words required</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-between">
+                        <button
+                            onClick={prevStep}
+                            className="px-4 py-2 border border-gray-300 rounded-lg text-gray-600 hover:bg-gray-50 transition-colors"
+                        >
+                            ← Back to Edit
+                        </button>
+                        
+                        {!completedAt ? (
+                            <button
+                                onClick={handleComplete}
+                                disabled={!isStep3Complete()}
+                                className={`px-6 py-3 rounded-lg text-white font-medium text-lg transition-colors ${
+                                    isStep3Complete() 
+                                        ? 'bg-orange-500 hover:bg-orange-600' 
+                                        : 'bg-gray-300 cursor-not-allowed'
+                                }`}
+                            >
+                                Complete Activity
+                            </button>
+                        ) : null}
+                    </div>
+                </div>
+            );
+
+            return (
+                <div className="max-w-[900px] mx-auto p-4">
+                    {/* Header */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                ← Back to Workshop
+                            </a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                All GTM Workshops ↑
+                            </a>
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 
+                                className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 3: Set Price Points & Build Guardrails {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">
+                                Transform hybrid pricing model into specific price points with protective guardrails (10 minutes)
+                            </p>
+
+                            {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button
+                                            onClick={devFillData}
+                                            disabled={devFillLoading}
+                                            className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50"
+                                        >
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">
+                                Step {currentStep} of 3 {completedAt && '(Completed)'}
+                            </span>
+                        </div>
+                        <div className="flex items-center space-x-2">
+                            {[1, 2, 3].map((step) => (
+                                <React.Fragment key={step}>
+                                    <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold ${
+                                        currentStep >= step ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'
+                                    }`}>
+                                        {step}
+                                    </div>
+                                    {step < 3 && <div className={`flex-1 h-1 rounded ${
+                                        currentStep > step ? 'bg-orange-500' : 'bg-gray-200'
+                                    }`}></div>}
+                                </React.Fragment>
+                            ))}
+                        </div>
+                        <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
+                            <span>Import Context</span>
+                            <span>Price Points</span>
+                            <span>Guardrails</span>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        {currentStep === 1 && renderStep1()}
+                        {currentStep === 2 && renderStep2()}
+                        {currentStep === 3 && renderStep3()}
+                    </div>
+
+                    {/* Completion Section */}
+                    {completedAt && (
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                            <div className="space-y-6">
+                                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
+                                    <h3 className="text-lg font-semibold text-green-900 mb-2">
+                                        ✅ Price Points & Guardrails Complete!
+                                    </h3>
+                                    <p className="text-green-800">
+                                        You've successfully transformed your hybrid pricing model into specific price points with protective guardrails.
+                                    </p>
+                                    <p className="text-green-700 text-sm mt-2">
+                                        Completed at: {new Date(completedAt).toLocaleString()}
+                                    </p>
+                                </div>
+
+                                <div className="border border-gray-200 rounded-lg p-4">
+                                    <h4 className="font-semibold text-gray-800 mb-3">Implementation Strategy Summary</h4>
+                                    <textarea
+                                        id="markdownSummary"
+                                        readOnly
+                                        className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                        value={generateMarkdownSummary()}
+                                    />
+                                    <button
+                                        onClick={handleCopyToClipboard}
+                                        className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium mb-3"
+                                    >
+                                        Copy Implementation Strategy to Clipboard
+                                    </button>
+                                    <div id="copyStatus"></div>
+                                </div>
+
+                                <div className="text-center">
+                                    <button
+                                        onClick={() => window.location.href = 'index.html'}
+                                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium text-lg"
+                                    >
+                                        Back to Workshop Overview
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
 
-        ReactDOM.render(<ComingSoonActivity />, document.getElementById('root'));
+        // Render the app
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<PricingActivity3A />);
     </script>
 </body>
 </html>

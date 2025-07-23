@@ -1,0 +1,30 @@
+{
+  "valueMetric": "AI-powered sales calls monitored and coached per month",
+  "hybridModel": "Base subscription for core platform access plus per-user scaling for team features and advanced AI coaching capabilities",
+  "baseComponent": "Core AI sales coaching platform with basic analytics and call monitoring",
+  "scalingComponent": "Per-user seats with advanced coaching, team management, and custom AI model training",
+  "basePrice": "99",
+  "scalingRate": "5",
+  "scalingUnit": "user",
+  "priceRationale": "Base price covers platform costs while per-user scaling aligns with value delivery and team expansion needs",
+  "selectedGuardrails": ["Usage Caps/Limits", "Usage Monitoring Dashboard", "Fair Use Policies"],
+  "guardrailDetails": {
+    "Usage Caps/Limits": {
+      "implementation": "500 AI-coached calls per user per month on standard tier, 1000 on premium tier with automatic throttling",
+      "rationale": "Prevents unexpected AI processing costs while maintaining predictable service levels for customers"
+    },
+    "Usage Monitoring Dashboard": {
+      "implementation": "Real-time dashboard showing current usage, limits, and projected monthly costs with email alerts at 75% and 90%",
+      "rationale": "Provides transparency to customers and early warning system to prevent bill shock or service interruptions"
+    },
+    "Fair Use Policies": {
+      "implementation": "Define reasonable use as normal sales team activities, prohibit resale or bulk processing for external parties",
+      "rationale": "Protects against abuse while allowing legitimate business use cases to scale naturally"
+    }
+  },
+  "testingMethod": "A/B Price Testing",
+  "testingTimeline": "60",
+  "successMetrics": "Customer acquisition rate, churn rate, revenue per customer, and customer satisfaction scores compared between pricing models",
+  "decisionCriteria": "New model must show 15% improvement in customer lifetime value while maintaining sub-5% churn rate to proceed with full rollout",
+  "currentStep": 4
+}
