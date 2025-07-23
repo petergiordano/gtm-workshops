@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Comprehensive Pricing Strategy - Pricing & Monetization</title>
+    <title>Design Your Hybrid Pricing Model - Pricing Strategy</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -23,23 +23,6 @@
         .laptop-textarea:focus {
             max-height: 200px;
         }
-        .value-card {
-            border: 2px solid #e5e7eb;
-            border-radius: 12px;
-            padding: 20px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            background: white;
-        }
-        .value-card:hover {
-            border-color: #FF9000;
-            box-shadow: 0 4px 12px rgba(255, 144, 0, 0.15);
-        }
-        .value-card.selected {
-            border-color: #FF9000;
-            background: #FFF7ED;
-            box-shadow: 0 4px 12px rgba(255, 144, 0, 0.2);
-        }
         .hybrid-box {
             border: 2px solid #e5e7eb;
             border-radius: 12px;
@@ -51,10 +34,6 @@
             border-color: #FF9000;
             background: #FFF7ED;
             box-shadow: 0 4px 12px rgba(255, 144, 0, 0.15);
-        }
-        .metric-icon {
-            font-size: 2.5rem;
-            margin-bottom: 12px;
         }
         .animate-fadeIn {
             animation: fadeIn 0.3s ease-in;
@@ -68,18 +47,22 @@
 <body>
     <div id="root"></div>
 
-    <!-- Consolidated Test Data for comprehensive pricing activity -->
+    <!-- Test Data for hybrid pricing model activity -->
     <script type="application/json" id="testData">
     {
-      "selectedMetric": "B",
-      "rationale": "Our customers process millions of API calls daily and their usage directly correlates with the business value they get from our predictive monitoring platform.",
-      "problemSolved": "Eliminates the need for complex infrastructure scaling decisions and prevents costly downtime incidents before they occur.",
-      "pricePerUnit": "0.001",
-      "baseComponent": "subscription",
-      "valueScaling": "usage",
-      "customerJustification": "Monthly subscription covers our infrastructure and platform costs while usage-based scaling ensures customers only pay more when they're getting more value from monitoring additional API calls.",
-      "customerExplanation": "Pay a monthly base fee for access to our monitoring platform, plus a small per-API-call fee that scales with your usage and the value you receive.",
-      "potentialChallenge": "Usage spikes during peak traffic could cause unexpected bill increases - we'd address this with usage alerts, spending caps, and graduated pricing tiers to prevent bill shock.",
+      "step1_context": {
+        "primaryValueMetric": "B",
+        "valueMetricReason": "Our customers process millions of API calls daily and their usage directly correlates with the business value they get from our predictive monitoring platform."
+      },
+      "step2_hybrid_model": {
+        "baseComponent": "subscription",
+        "valueScaling": "usage",
+        "customerJustification": "Monthly subscription covers our infrastructure and platform costs while usage-based scaling ensures customers only pay more when they're getting more value from monitoring additional API calls.",
+        "customerExplanation": "Pay a monthly base fee for access to our monitoring platform, plus a small per-API-call fee that scales with your usage and the value you receive."
+      },
+      "step3_validation": {
+        "potentialChallenge": "Usage spikes during peak traffic could cause unexpected bill increases - we'd address this with usage alerts, spending caps, and graduated pricing tiers to prevent bill shock."
+      },
       "completedAt": null,
       "currentStep": 3
     }
@@ -93,28 +76,23 @@
             return text.trim().split(/\s+/).filter(word => word.length > 0).length;
         };
 
-        const ComprehensivePricingActivity = () => {
-            // Step 1: Value Metric Selection (from Activity 1A)
-            const [selectedMetric, setSelectedMetric] = useState('');
-            const [rationale, setRationale] = useState('');
-            const [problemSolved, setProblemSolved] = useState('');
-            const [pricePerUnit, setPricePerUnit] = useState('');
+        const PricingActivity2A = () => {
+            // Step 1: Context from Activity 1
+            const [primaryValueMetric, setPrimaryValueMetric] = useState('');
+            const [valueMetricReason, setValueMetricReason] = useState('');
 
-            // Step 2: Hybrid Model Design (from Activity 2A)
+            // Step 2: Hybrid Model Design
             const [baseComponent, setBaseComponent] = useState('');
             const [valueScaling, setValueScaling] = useState('');
             const [customerJustification, setCustomerJustification] = useState('');
             const [customerExplanation, setCustomerExplanation] = useState('');
 
-            // Step 3: Model Validation (from Activity 2A)
+            // Step 3: Validation
             const [potentialChallenge, setPotentialChallenge] = useState('');
 
             // Activity state
             const [currentStep, setCurrentStep] = useState(1);
             const [completedAt, setCompletedAt] = useState(null);
-
-            // Guidance section state
-            const [showGuidance, setShowGuidance] = useState(false);
 
             // Dev mode
             const [devMode, setDevMode] = useState(false);
@@ -131,16 +109,20 @@
                     const testDataScript = document.getElementById('testData');
                     const testData = JSON.parse(testDataScript.textContent);
 
-                    // Load all data from consolidated test data
-                    setSelectedMetric(testData.selectedMetric);
-                    setRationale(testData.rationale);
-                    setProblemSolved(testData.problemSolved);
-                    setPricePerUnit(testData.pricePerUnit);
-                    setBaseComponent(testData.baseComponent);
-                    setValueScaling(testData.valueScaling);
-                    setCustomerJustification(testData.customerJustification);
-                    setCustomerExplanation(testData.customerExplanation);
-                    setPotentialChallenge(testData.potentialChallenge);
+                    // Step 1 data
+                    setPrimaryValueMetric(testData.step1_context.primaryValueMetric);
+                    setValueMetricReason(testData.step1_context.valueMetricReason);
+
+                    // Step 2 data
+                    setBaseComponent(testData.step2_hybrid_model.baseComponent);
+                    setValueScaling(testData.step2_hybrid_model.valueScaling);
+                    setCustomerJustification(testData.step2_hybrid_model.customerJustification);
+                    setCustomerExplanation(testData.step2_hybrid_model.customerExplanation);
+
+                    // Step 3 data
+                    setPotentialChallenge(testData.step3_validation.potentialChallenge);
+
+                    // Set to final step
                     setCurrentStep(testData.currentStep || 3);
 
                     console.log('✅ Dev data loaded successfully');
@@ -151,29 +133,11 @@
                 }
             };
 
-            // Value metric options
-            const valueMetrics = [
-                {
-                    id: 'A',
-                    name: 'People/User Enablement',
-                    icon: '👥',
-                    example: 'E.g. Notion AI per-member add-on',
-                    description: 'Value from enabling individuals/teams'
-                },
-                {
-                    id: 'B',
-                    name: 'Volume/Throughput',
-                    icon: '📈',
-                    example: 'E.g. OpenAI API per token',
-                    description: 'Value from activity volume/data processed'
-                },
-                {
-                    id: 'C',
-                    name: 'Outcome/Business Result',
-                    icon: '🎯',
-                    example: 'E.g. 11x.ai per meeting booked',
-                    description: 'Value from measurable business results'
-                }
+            // Value metric options (from Activity 1)
+            const valueMetricOptions = [
+                { id: 'A', name: 'People/User Enablement', description: 'Value from enabling individuals/teams' },
+                { id: 'B', name: 'Volume/Throughput', description: 'Value from activity volume/data processed' },
+                { id: 'C', name: 'Outcome/Business Result', description: 'Value from measurable business results' }
             ];
 
             // Base component options
@@ -228,7 +192,7 @@
 
             // Update value scaling when primary metric changes
             const handleMetricChange = (metricId) => {
-                setSelectedMetric(metricId);
+                setPrimaryValueMetric(metricId);
                 if (!valueScaling) {
                     setValueScaling(getDefaultValueScaling(metricId));
                 }
@@ -236,9 +200,7 @@
 
             // Validation functions
             const isStep1Complete = () => {
-                return selectedMetric !== '' && 
-                       getWordCount(rationale) >= 5 && 
-                       getWordCount(problemSolved) >= 5;
+                return primaryValueMetric !== '';
             };
 
             const isStep2Complete = () => {
@@ -270,48 +232,54 @@
                 }
             };
 
-            // Generate comprehensive markdown summary
+            // Generate markdown summary
             const generateMarkdownSummary = () => {
-                const selectedOption = valueMetrics.find(m => m.id === selectedMetric);
+                const selectedMetric = valueMetricOptions.find(m => m.id === primaryValueMetric);
                 const selectedBase = baseComponentOptions.find(b => b.id === baseComponent);
                 const selectedScaling = valueScalingOptions.find(s => s.id === valueScaling);
 
-                return `# Pricing & Monetization: Comprehensive Pricing Strategy
+                return `# Pricing & Monetization: Complete Pricing Strategy
 
-### 🎯 Primary Value Metric Selection
-**Selected**: ${selectedMetric ? `${selectedMetric} - ${selectedOption?.name}` : '[Not selected]'}
-${selectedOption ? `**${selectedOption.description}**` : ''}
+### 🎯 Primary Value Metric (Activity 1)
+**Selected**: ${selectedMetric ? `${selectedMetric.id} - ${selectedMetric.name}` : '[Not selected]'}
+**Description**: ${selectedMetric ? selectedMetric.description : '[Not available]'}
+**Reasoning**: ${valueMetricReason || '[Not provided]'}
 
-**Rationale**: ${rationale || '[Not provided]'}
-
-**Customer Problem Solved**: ${problemSolved || '[Not provided]'}
-
-### 🏗️ Hybrid Pricing Model Design
+### 🏗️ Hybrid Pricing Model (Activity 2)
 **Base Component**: ${selectedBase ? selectedBase.name : '[Not selected]'}
 ${selectedBase ? `*${selectedBase.useCase}*` : ''}
 
 **Value Scaling**: ${selectedScaling ? selectedScaling.name : '[Not selected]'}
 ${selectedScaling ? `*${selectedScaling.example}*` : ''}
 
-**Customer Benefit Justification**: ${customerJustification || '[Not provided]'}
+**Customer Benefit**: ${customerJustification || '[Not provided]'}
 
-**Simple Customer Explanation**: ${customerExplanation || '[Not provided]'}
+**Simple Explanation**: ${customerExplanation || '[Not provided]'}
 
 ### ⚠️ Implementation Considerations
-**Potential Challenge & Solution**: ${potentialChallenge || '[Not provided]'}
+**Potential Challenge**: ${potentialChallenge || '[Not provided]'}
 
-### 💰 Pricing Consideration
-${pricePerUnit ? `Initial price point: $${pricePerUnit} per unit` : '[Not specified]'}
-
-### 📊 Complete Hybrid Model Structure
+### 📊 Hybrid Model Structure
 \`\`\`
 ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? selectedScaling.name : '[Value Scaling]'} = Complete Pricing Model
 \`\`\`
 
----
-*Activity completed: ${completedAt ? new Date(completedAt).toLocaleString() : 'In Progress'}*
-*Workshop: Comprehensive Pricing Strategy (Consolidated Activities 1+2)*
-*Next Step: Define specific price points in Activity 3*`;
+### 📅 Assessment Details
+**Report Generated**: ${new Date().toLocaleDateString('en-US', { 
+  weekday: 'long', 
+  year: 'numeric', 
+  month: 'long', 
+  day: 'numeric',
+  hour: '2-digit',
+  minute: '2-digit',
+  timeZoneName: 'short'
+})}
+
+**Activity**: Design Your Hybrid Pricing Model (Activity 2 of 3)
+**Workshop Series**: Pricing & Monetization - GTM Program
+**Next Step**: Define specific price points in Activity 3
+
+*Ready for Activity 3: Price Points & Testing Strategy*`;
             };
 
             const handleCopyToClipboard = () => {
@@ -321,7 +289,6 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                             await navigator.clipboard.writeText(text);
                             return true;
                         } else {
-                            // Fallback for older browsers
                             const textArea = document.createElement('textarea');
                             textArea.value = text;
                             textArea.style.position = 'fixed';
@@ -343,7 +310,6 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                 
                 copyToClipboard(el.value).then((success) => {
                     if (success) {
-                        // Show success status
                         statusDiv.innerHTML = `
                             <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
                                 <p class="font-medium">✅ Copied to Clipboard!</p>
@@ -351,10 +317,9 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                             </div>
                         `;
                         
-                        // Floating notification
                         const notification = document.createElement('div');
                         notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 9999; font-weight: 500;';
-                        notification.textContent = '✅ Complete pricing strategy copied!';
+                        notification.textContent = '✅ Hybrid pricing model copied!';
                         document.body.appendChild(notification);
                         
                         setTimeout(() => {
@@ -370,144 +335,84 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                 });
             };
 
-            // Render Step 1: Value Metric Selection
+            // Render Step 1: Connect to Activity 1
             const renderStep1 = () => (
                 <div className="space-y-6">
                     <div className="text-center mb-6">
                         <h3 className="text-xl font-bold text-gray-800 mb-2">
-                            Find Your Primary Value Metric
+                            Connect to Your Activity 1 Results
                         </h3>
                         <p className="text-gray-600">
-                            When customers achieve significant ROI with your product, what has primarily increased or improved?
+                            What was your primary value metric from Activity 1?
                         </p>
                     </div>
 
-                    {/* Workshop Slide Guidance */}
-                    <div className="mb-6">
-                        <div 
-                            className="bg-orange-50 border border-orange-200 rounded-lg p-4 cursor-pointer transition-all duration-300 hover:border-orange-300"
-                            onClick={() => setShowGuidance(!showGuidance)}
-                        >
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center">
-                                    <span className="text-lg mr-2">💡</span>
-                                    <h3 className="text-sm font-semibold text-orange-800">Quick Decision Framework</h3>
-                                </div>
-                                <div className={`transform transition-transform duration-300 ${showGuidance ? 'rotate-180' : ''}`}>
-                                    <svg className="w-4 h-4 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                </div>
+                    {/* Hybrid Model Framework */}
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
+                        <h4 className="text-lg font-semibold text-blue-800 mb-4 text-center">Hybrid Pricing Framework</h4>
+                        <div className="flex items-center justify-center space-x-4">
+                            <div className="hybrid-box bg-orange-100 border-orange-200">
+                                <div className="text-2xl mb-2">🏢</div>
+                                <h5 className="font-semibold text-gray-800">Base Component</h5>
+                                <p className="text-xs text-gray-600 mt-1">Platform access or subscription</p>
                             </div>
-                            <p className="text-xs text-orange-700 mt-1">
-                                Click to see three key questions to guide your decision
-                            </p>
+                            <div className="text-2xl font-bold text-blue-600">+</div>
+                            <div className="hybrid-box bg-green-100 border-green-200">
+                                <div className="text-2xl mb-2">📈</div>
+                                <h5 className="font-semibold text-gray-800">Value Scaling</h5>
+                                <p className="text-xs text-gray-600 mt-1">Your value metric from Activity 1</p>
+                            </div>
+                            <div className="text-2xl font-bold text-blue-600">=</div>
+                            <div className="hybrid-box bg-blue-100 border-blue-200">
+                                <div className="text-2xl mb-2">🎯</div>
+                                <h5 className="font-semibold text-gray-800">Complete Model</h5>
+                                <p className="text-xs text-gray-600 mt-1">Predictable + scalable pricing</p>
+                            </div>
                         </div>
-                        
-                        {showGuidance && (
-                            <div className="mt-4 space-y-3 animate-fadeIn">
-                                <div className="grid md:grid-cols-3 gap-4">
-                                    <div className="bg-white border border-orange-200 rounded-lg p-4">
-                                        <div className="text-center">
-                                            <div className="text-2xl mb-2">🧩</div>
-                                            <h4 className="font-semibold text-gray-800 text-sm mb-2">Problem Focus</h4>
-                                            <p className="text-xs text-gray-600">What specific problem does your AI solve?</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white border border-orange-200 rounded-lg p-4">
-                                        <div className="text-center">
-                                            <div className="text-2xl mb-2">📊</div>
-                                            <h4 className="font-semibold text-gray-800 text-sm mb-2">Success Measurement</h4>
-                                            <p className="text-xs text-gray-600">How do customers measure success with your product?</p>
-                                        </div>
-                                    </div>
-                                    <div className="bg-white border border-orange-200 rounded-lg p-4">
-                                        <div className="text-center">
-                                            <div className="text-2xl mb-2">📈</div>
-                                            <h4 className="font-semibold text-gray-800 text-sm mb-2">Value Scaling</h4>
-                                            <p className="text-xs text-gray-600">What unit naturally scales with that value?</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
                     </div>
 
-                    {/* Value Metric Cards */}
-                    <div className="grid md:grid-cols-3 gap-4 mb-6">
-                        {valueMetrics.map((metric) => (
-                            <div
-                                key={metric.id}
-                                className={`value-card ${selectedMetric === metric.id ? 'selected' : ''}`}
-                                onClick={() => handleMetricChange(metric.id)}
-                            >
-                                <div className="text-center">
-                                    <div className="metric-icon">{metric.icon}</div>
-                                    <h3 className="font-semibold text-gray-800 mb-2">{metric.name}</h3>
-                                    <p className="text-sm text-gray-600 mb-3">{metric.description}</p>
-                                    <p className="text-xs text-orange-600 font-medium">{metric.example}</p>
-                                </div>
+                    {/* Value Metric Selection */}
+                    <div className="space-y-4">
+                        <h4 className="font-semibold text-gray-800">Select your primary value metric:</h4>
+                        {valueMetricOptions.map((option) => (
+                            <div key={option.id} className="flex items-center space-x-3">
+                                <input
+                                    type="radio"
+                                    id={`metric-${option.id}`}
+                                    name="valueMetric"
+                                    value={option.id}
+                                    checked={primaryValueMetric === option.id}
+                                    onChange={(e) => handleMetricChange(e.target.value)}
+                                    className="w-4 h-4 text-orange-600 focus:ring-orange-500"
+                                />
+                                <label htmlFor={`metric-${option.id}`} className="flex-1 cursor-pointer">
+                                    <div className="font-medium text-gray-800">{option.id}) {option.name}</div>
+                                    <div className="text-sm text-gray-600">{option.description}</div>
+                                </label>
                             </div>
                         ))}
                     </div>
 
-                    {/* Input Fields */}
-                    {selectedMetric && (
-                        <div className="space-y-6 pt-6 border-t border-gray-200 animate-fadeIn">
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    Why did you choose this option? *
-                                </label>
-                                <textarea
-                                    className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                                    value={rationale}
-                                    onChange={(e) => setRationale(e.target.value)}
-                                    placeholder="Explain why this value metric best represents how your customers benefit..."
-                                />
+                    {/* Optional reason */}
+                    {primaryValueMetric && (
+                        <div className="pt-4 border-t border-gray-200">
+                            <label className="block text-sm font-semibold text-gray-700 mb-2">
+                                Brief reminder: Why did you choose this? (Optional)
+                            </label>
+                            <textarea
+                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
+                                value={valueMetricReason}
+                                onChange={(e) => setValueMetricReason(e.target.value)}
+                                placeholder="E.g., Our customers measure success by the number of API calls they can reliably monitor..."
+                            />
+                            {valueMetricReason && (
                                 <div className="flex justify-between mt-1">
-                                    <span className={`text-sm ${getWordCount(rationale) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                        {getWordCount(rationale)} words
+                                    <span className="text-xs text-gray-500">Optional context for your decision</span>
+                                    <span className="text-sm text-gray-500">
+                                        {getWordCount(valueMetricReason)} words
                                     </span>
-                                    <span className="text-xs text-gray-400">Minimum 5 words required</span>
                                 </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    What specific problem does this solve for customers? *
-                                </label>
-                                <textarea
-                                    className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                                    value={problemSolved}
-                                    onChange={(e) => setProblemSolved(e.target.value)}
-                                    placeholder="Describe the customer problem that drives this value creation..."
-                                />
-                                <div className="flex justify-between mt-1">
-                                    <span className={`text-sm ${getWordCount(problemSolved) >= 5 ? 'text-green-600' : 'text-gray-500'}`}>
-                                        {getWordCount(problemSolved)} words
-                                    </span>
-                                    <span className="text-xs text-gray-400">Minimum 5 words required</span>
-                                </div>
-                            </div>
-
-                            <div>
-                                <label className="block text-sm font-semibold text-gray-700 mb-2">
-                                    What would you charge per unit? (Optional)
-                                </label>
-                                <div className="flex items-center">
-                                    <span className="text-gray-500 mr-2">$</span>
-                                    <input
-                                        type="number"
-                                        step="0.001"
-                                        className="w-32 p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-sm"
-                                        value={pricePerUnit}
-                                        onChange={(e) => setPricePerUnit(e.target.value)}
-                                        placeholder="0.01"
-                                    />
-                                    <span className="text-gray-500 ml-2">per unit</span>
-                                </div>
-                                <p className="text-xs text-gray-500 mt-1">Initial pricing thoughts - will be refined in Step 2</p>
-                            </div>
+                            )}
                         </div>
                     )}
 
@@ -540,30 +445,6 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                         </p>
                     </div>
 
-                    {/* Hybrid Model Framework */}
-                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mb-6">
-                        <h4 className="text-lg font-semibold text-blue-800 mb-4 text-center">Hybrid Pricing Framework</h4>
-                        <div className="flex items-center justify-center space-x-4">
-                            <div className="hybrid-box bg-orange-100 border-orange-200">
-                                <div className="text-2xl mb-2">🏢</div>
-                                <h5 className="font-semibold text-gray-800">Base Component</h5>
-                                <p className="text-xs text-gray-600 mt-1">Platform access or subscription</p>
-                            </div>
-                            <div className="text-2xl font-bold text-blue-600">+</div>
-                            <div className="hybrid-box bg-green-100 border-green-200">
-                                <div className="text-2xl mb-2">📈</div>
-                                <h5 className="font-semibold text-gray-800">Value Scaling</h5>
-                                <p className="text-xs text-gray-600 mt-1">Your value metric from Step 1</p>
-                            </div>
-                            <div className="text-2xl font-bold text-blue-600">=</div>
-                            <div className="hybrid-box bg-blue-100 border-blue-200">
-                                <div className="text-2xl mb-2">🎯</div>
-                                <h5 className="font-semibold text-gray-800">Complete Model</h5>
-                                <p className="text-xs text-gray-600 mt-1">Predictable + scalable pricing</p>
-                            </div>
-                        </div>
-                    </div>
-
                     {/* Base Component Selection */}
                     <div className="space-y-4">
                         <h4 className="font-semibold text-gray-800">1. Choose Your Base Component:</h4>
@@ -586,11 +467,11 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                     {/* Value Scaling Selection */}
                     <div className="space-y-4">
                         <h4 className="font-semibold text-gray-800">2. Choose Your Value Scaling:</h4>
-                        {selectedMetric && (
+                        {primaryValueMetric && (
                             <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
                                 <p className="text-green-800 text-sm">
-                                    <strong>Smart suggestion:</strong> Based on your "{valueMetrics.find(m => m.id === selectedMetric)?.name}" selection, 
-                                    we recommend "{valueScalingOptions.find(s => s.id === getDefaultValueScaling(selectedMetric))?.name}"
+                                    <strong>Smart suggestion:</strong> Based on your "{valueMetricOptions.find(m => m.id === primaryValueMetric)?.name}" selection, 
+                                    we recommend "{valueScalingOptions.find(s => s.id === getDefaultValueScaling(primaryValueMetric))?.name}"
                                 </p>
                             </div>
                         )}
@@ -689,10 +570,10 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                 <div className="space-y-6">
                     <div className="text-center mb-6">
                         <h3 className="text-xl font-bold text-gray-800 mb-2">
-                            Your Complete Pricing Strategy
+                            Your Hybrid Pricing Model
                         </h3>
                         <p className="text-gray-600">
-                            Review your comprehensive pricing strategy and identify potential challenges
+                            Review your complete pricing strategy and identify potential challenges
                         </p>
                     </div>
 
@@ -701,11 +582,10 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                         <h4 className="text-lg font-semibold text-green-800 mb-4">✅ Your Complete Pricing Strategy</h4>
                         <div className="space-y-4">
                             <div className="bg-white border border-green-200 rounded-lg p-4">
-                                <h5 className="font-medium text-green-800 mb-2">🎯 Primary Value Metric</h5>
+                                <h5 className="font-medium text-green-800 mb-2">🎯 Primary Value Metric (Activity 1)</h5>
                                 <p className="text-gray-800">
-                                    {valueMetrics.find(m => m.id === selectedMetric)?.name} - {valueMetrics.find(m => m.id === selectedMetric)?.description}
+                                    {valueMetricOptions.find(m => m.id === primaryValueMetric)?.name} - {valueMetricOptions.find(m => m.id === primaryValueMetric)?.description}
                                 </p>
-                                <p className="text-sm text-gray-600 mt-2 italic">"{rationale}"</p>
                             </div>
                             <div className="grid md:grid-cols-2 gap-4">
                                 <div className="bg-white border border-green-200 rounded-lg p-4">
@@ -723,7 +603,7 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                                         {valueScalingOptions.find(s => s.id === valueScaling)?.name}
                                     </p>
                                     <p className="text-sm text-gray-600 mt-1">
-                                        Scales with your customer's {valueMetrics.find(m => m.id === selectedMetric)?.description.toLowerCase()}
+                                        Scales with your customer's {valueMetricOptions.find(m => m.id === primaryValueMetric)?.description.toLowerCase()}
                                     </p>
                                 </div>
                             </div>
@@ -753,6 +633,49 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                         </div>
                     </div>
 
+                    {/* Export Section */}
+                    {isStep3Complete() && (
+                        <div className="bg-white border border-gray-300 rounded-lg p-4 animate-fadeIn">
+                            <div className="flex items-center mb-3">
+                                <svg className="text-blue-600 mr-2 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                </svg>
+                                <h4 className="font-semibold text-gray-800">📄 Export Complete Strategy</h4>
+                            </div>
+                            
+                            <p className="text-sm text-gray-600 mb-3">
+                                Your complete pricing strategy (Activities 1+2) has been formatted for easy sharing and documentation.
+                            </p>
+
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Strategy Summary" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your complete strategy will appear with proper formatting!</li>
+                                </ol>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                                >
+                                    📋 Copy Strategy Summary
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    )}
+
                     {/* Navigation */}
                     <div className="flex justify-between">
                         <button
@@ -774,7 +697,14 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                             >
                                 Complete Activity
                             </button>
-                        ) : null}
+                        ) : (
+                            <button
+                                onClick={() => window.location.href = 'pricing-activity-3A.html'}
+                                className="bg-blue-500 text-white px-6 py-3 rounded-lg hover:bg-blue-600 font-medium text-lg"
+                            >
+                                Continue to Activity 3: Build Guardrails
+                            </button>
+                        )}
                     </div>
                 </div>
             );
@@ -798,10 +728,10 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                                 onDoubleClick={toggleDevMode}
                                 title="Double-click to toggle dev mode"
                             >
-                                Activity 1: Comprehensive Pricing Strategy {devMode && '🔧'}
+                                Activity 2: Design Your Hybrid Pricing Model {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">
-                                Complete pricing strategy from value metric to hybrid model design (15-20 minutes)
+                                Match your pricing model to how value is delivered (5-10 minutes)
                             </p>
 
                             {devMode && (
@@ -844,9 +774,9 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                             ))}
                         </div>
                         <div className="flex items-center justify-between text-xs text-gray-500 mt-2">
-                            <span>Value Metric</span>
-                            <span>Hybrid Model</span>
-                            <span>Validation</span>
+                            <span>Connect to Activity 1</span>
+                            <span>Design Model</span>
+                            <span>Validate & Export</span>
                         </div>
                     </div>
 
@@ -856,51 +786,6 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
                         {currentStep === 2 && renderStep2()}
                         {currentStep === 3 && renderStep3()}
                     </div>
-
-                    {/* Completion Section */}
-                    {completedAt && (
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            <div className="space-y-6">
-                                <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                                    <h3 className="text-lg font-semibold text-green-900 mb-2">
-                                        ✅ Complete Pricing Strategy Defined!
-                                    </h3>
-                                    <p className="text-green-800">
-                                        You've created a comprehensive pricing strategy from value metric identification through hybrid model design.
-                                    </p>
-                                    <p className="text-green-700 text-sm mt-2">
-                                        Completed at: {new Date(completedAt).toLocaleString()}
-                                    </p>
-                                </div>
-
-                                <div className="border border-gray-200 rounded-lg p-4">
-                                    <h4 className="font-semibold text-gray-800 mb-3">Complete Strategy Summary</h4>
-                                    <textarea
-                                        id="markdownSummary"
-                                        readOnly
-                                        className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
-                                        value={generateMarkdownSummary()}
-                                    />
-                                    <button
-                                        onClick={handleCopyToClipboard}
-                                        className="w-full px-4 py-2 bg-orange-500 text-white rounded-lg hover:bg-orange-600 font-medium mb-3"
-                                    >
-                                        Copy Complete Strategy to Clipboard
-                                    </button>
-                                    <div id="copyStatus"></div>
-                                </div>
-
-                                <div className="text-center">
-                                    <button
-                                        onClick={() => window.location.href = 'pricing-activity-3A.html'}
-                                        className="px-6 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 font-medium text-lg"
-                                    >
-                                        Continue to Activity 3: Build Guardrails
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    )}
                 </div>
             );
         };
@@ -908,7 +793,7 @@ ${selectedBase ? selectedBase.name : '[Base Component]'} + ${selectedScaling ? s
         // Render the app
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
-        root.render(<ComprehensivePricingActivity />);
+        root.render(<PricingActivity2A />);
     </script>
 </body>
 </html>
