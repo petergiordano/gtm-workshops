@@ -3,63 +3,515 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Partnership Implementation Activity</title>
+    <title>Ideal Partner Profile & Outreach Framework - Strategic Partnerships</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
             margin: 0;
             padding: 0;
+            background-color: #fafafa;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #55BFFA;
+            box-shadow: 0 0 0 3px rgba(85, 191, 250, 0.1);
+        }
+        .profile-section {
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            transition: all 0.3s ease;
+        }
+        .profile-section:hover {
+            border-color: #55BFFA;
+            box-shadow: 0 4px 12px rgba(85, 191, 250, 0.1);
+        }
+        .section-header {
+            color: #55BFFA;
+            font-weight: 600;
+            font-size: 1.125rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .framework-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border-left: 4px solid #FF9000;
+            border-radius: 12px;
+            padding: 24px;
+            margin-top: 24px;
         }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
+    <!-- Test Data for Dev Mode -->
+    <script type="application/json" id="testData">
+    {
+        "techPartnerProfile": {
+            "coreNeed": "A platform that serves a similar Ideal Customer Profile (ICP) as ours (high-growth tech companies and cloud-native enterprises) and solves a complementary problem.",
+            "strategicFit": "The partner's product is a standard tool in a modern microservices architecture. The integration would solve a key friction point for customers, such as a manual workflow or lack of unified visibility. The partner has a well-documented API, and their engineering team is responsive and willing to co-develop.",
+            "mutualBenefit": "The partnership provides a clear benefit for both parties, such as increased product adoption or a stronger go-to-market story."
+        },
+        "channelPartnerProfile": {
+            "coreNeed": "A firm with deep relationships and an existing sales motion with our target enterprise customers.",
+            "strategicFit": "The partner is actively consulting on or managing cloud infrastructure, DevOps, or digital transformation projects where API reliability is a key concern.",
+            "mutualBenefit": "The partnership helps the SI/MSP offer a more complete and valuable solution to their clients, while providing us with a scalable way to acquire enterprise customers and shorten our sales cycle."
+        },
+        "outreachFramework": "Our outreach will be a strategic, value-driven process, not a mass-email campaign. \n1. Research & Identify: Use the IPP to build a target list of 10-15 partners. Find the relevant contact, such as a Head of Partnerships or a Product Manager responsible for integrations. \n2. Personalize & Propose Value: Craft a custom outreach message. The message will not be about 'what we want' but about the mutual value the partnership could create. \n3. Validate: The first conversation is to validate the opportunity. We will ask questions to understand their customers' pains and current workflows. \n4. Launch a Pilot: If there is a mutual fit, we will propose a small, defined project (e.g., a simple API integration, a joint webinar, or a case study)."
+    }
+    </script>
+
     <script type="text/babel">
         const { useState } = React;
 
-        const ComingSoonActivity = () => {
+        // Icon components
+        const TechPartnerIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                <polyline points="22,6 12,13 2,6"></polyline>
+            </svg>
+        );
+
+        const ChannelPartnerIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"></path>
+                <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+            </svg>
+        );
+
+        const OutreachIcon = () => (
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path>
+            </svg>
+        );
+
+        const IdealPartnerProfileActivity = () => {
+            // State for IPP sections
+            const [techPartnerProfile, setTechPartnerProfile] = useState({
+                coreNeed: '',
+                strategicFit: '',
+                mutualBenefit: ''
+            });
+            const [channelPartnerProfile, setChannelPartnerProfile] = useState({
+                coreNeed: '',
+                strategicFit: '',
+                mutualBenefit: ''
+            });
+            const [outreachFramework, setOutreachFramework] = useState('');
+
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            // Toggle dev mode
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            // Load test data
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setTechPartnerProfile(testData.techPartnerProfile);
+                    setChannelPartnerProfile(testData.channelPartnerProfile);
+                    setOutreachFramework(testData.outreachFramework);
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // Update profile data
+            const updateProfile = (type, field, value) => {
+                if (type === 'tech') {
+                    setTechPartnerProfile(prev => ({ ...prev, [field]: value }));
+                } else if (type === 'channel') {
+                    setChannelPartnerProfile(prev => ({ ...prev, [field]: value }));
+                }
+            };
+
+            // Generate markdown summary
+            const generateMarkdownSummary = () => {
+                const timestamp = new Date().toLocaleString();
+                
+                return `# Strategic Partnerships - Ideal Partner Profile & Outreach Framework
+Generated: ${timestamp}
+
+## Ideal Partner Profiles (IPP)
+
+### 🔧 Technology Partner Profile
+**Core Need**: ${techPartnerProfile.coreNeed || '[Not provided]'}
+
+**Strategic Fit**: ${techPartnerProfile.strategicFit || '[Not provided]'}
+
+**Mutual Benefit**: ${techPartnerProfile.mutualBenefit || '[Not provided]'}
+
+---
+
+### 📋 Channel Partner Profile
+**Core Need**: ${channelPartnerProfile.coreNeed || '[Not provided]'}
+
+**Strategic Fit**: ${channelPartnerProfile.strategicFit || '[Not provided]'}
+
+**Mutual Benefit**: ${channelPartnerProfile.mutualBenefit || '[Not provided]'}
+
+---
+
+## Partnership Outreach Framework
+${outreachFramework || '[Not provided]'}
+
+## Next Steps: Partner Identification & Outreach
+
+### Technology Partners
+1. **Research Phase**: Identify partners matching the tech IPP
+2. **Contact Mapping**: Find integration/partnership decision makers
+3. **Value Proposition**: Prepare mutual benefit messaging
+4. **Pilot Planning**: Design initial integration project
+
+### Channel Partners
+1. **Market Research**: Identify SIs/MSPs serving target customers
+2. **Relationship Building**: Connect with partnership development teams
+3. **Qualification**: Assess existing customer base alignment
+4. **Program Design**: Develop channel partner enablement plan
+
+### Success Metrics
+- **Technology Partnerships**: Integration completions, feature adoption, customer retention
+- **Channel Partnerships**: Partner-sourced pipeline, deal size, customer acquisition cost
+- **Overall**: Partnership ROI, time to value, strategic goal achievement
+`;
+            };
+
+            // Handle copy to clipboard
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            const successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            return successful;
+                        }
+                    } catch (err) {
+                        console.error('Failed to copy:', err);
+                        return false;
+                    }
+                };
+
+                const markdown = generateMarkdownSummary();
+                const statusDiv = document.getElementById('copyStatus');
+                
+                copyToClipboard(markdown).then((success) => {
+                    if (success) {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg animate-fadeIn">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        // Create floating notification
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                        notification.textContent = '✅ Partner profiles copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 3000);
+                    } else {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">❌ Copy failed</p>
+                                <p class="text-sm mt-1">Please try selecting and copying the text manually.</p>
+                            </div>
+                        `;
+                    }
+                });
+            };
+
             return (
-                <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="bg-white rounded-lg shadow-lg p-8">
-                            <div className="text-center">
-                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-indigo-100 mb-4">
-                                    <svg className="h-6 w-6 text-indigo-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
-                                    </svg>
+                <div className="max-w-[900px] mx-auto p-4">
+                    {/* Header */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                ← Back to Workshop
+                            </a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                All GTM Workshops ↑
+                            </a>
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 
+                                className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 3: Ideal Partner Profile (IPP) & Outreach Framework {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">
+                                Create a detailed profile of your ideal partner and draft a repeatable outreach framework
+                            </p>
+
+                            {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button
+                                            onClick={devFillData}
+                                            disabled={devFillLoading}
+                                            className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50"
+                                        >
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
                                 </div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                    Partnership Implementation Activity
-                                </h1>
-                                <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-6 mb-8">
-                                    <h2 className="text-lg font-semibold text-indigo-900 mb-2">Coming Soon</h2>
-                                    <p className="text-indigo-700">
-                                        This activity will teach you partnership execution, governance frameworks, 
-                                        and success measurement strategies. Check back soon for the full interactive experience!
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">In Progress</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="bg-orange-500 h-2 rounded-full transition-all duration-300" style={{width: '100%'}}></div>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                            Define Your Ideal Partner Profiles
+                        </h2>
+                        <p className="text-gray-600 mb-6 text-sm">
+                            Create detailed profiles for your most promising partnership types, then develop a systematic outreach approach.
+                        </p>
+
+                        {/* Technology Partner Profile */}
+                        <div className="profile-section">
+                            <h3 className="section-header">
+                                <TechPartnerIcon />
+                                Technology Partner Profile
+                            </h3>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Core Need
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        What fundamental requirement must this partner fulfill?
                                     </p>
+                                    <textarea
+                                        value={techPartnerProfile.coreNeed}
+                                        onChange={(e) => updateProfile('tech', 'coreNeed', e.target.value)}
+                                        placeholder="e.g., A platform that serves a similar ICP and solves a complementary problem..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                        rows="3"
+                                    />
                                 </div>
-                                <div className="space-y-4">
-                                    <a 
-                                        href="index.html" 
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
-                                    >
-                                        ← Back to Strategic Partnerships Workshop
-                                    </a>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Strategic Fit
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        What makes this an ideal strategic partnership?
+                                    </p>
+                                    <textarea
+                                        value={techPartnerProfile.strategicFit}
+                                        onChange={(e) => updateProfile('tech', 'strategicFit', e.target.value)}
+                                        placeholder="e.g., Well-documented API, responsive engineering team, standard tool in microservices..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                        rows="3"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mutual Benefit
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        What value does each party gain from this partnership?
+                                    </p>
+                                    <textarea
+                                        value={techPartnerProfile.mutualBenefit}
+                                        onChange={(e) => updateProfile('tech', 'mutualBenefit', e.target.value)}
+                                        placeholder="e.g., Increased product adoption, stronger go-to-market story, customer value..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                        rows="3"
+                                    />
                                 </div>
                             </div>
                         </div>
+
+                        {/* Channel Partner Profile */}
+                        <div className="profile-section">
+                            <h3 className="section-header">
+                                <ChannelPartnerIcon />
+                                Channel Partner Profile
+                            </h3>
+                            
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Core Need
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        What fundamental requirement must this partner fulfill?
+                                    </p>
+                                    <textarea
+                                        value={channelPartnerProfile.coreNeed}
+                                        onChange={(e) => updateProfile('channel', 'coreNeed', e.target.value)}
+                                        placeholder="e.g., A firm with deep relationships and existing sales motion with target customers..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                        rows="3"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Strategic Fit
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        What makes this an ideal strategic partnership?
+                                    </p>
+                                    <textarea
+                                        value={channelPartnerProfile.strategicFit}
+                                        onChange={(e) => updateProfile('channel', 'strategicFit', e.target.value)}
+                                        placeholder="e.g., Actively consulting on cloud infrastructure, DevOps projects..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                        rows="3"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                        Mutual Benefit
+                                    </label>
+                                    <p className="text-xs text-gray-500 mb-2">
+                                        What value does each party gain from this partnership?
+                                    </p>
+                                    <textarea
+                                        value={channelPartnerProfile.mutualBenefit}
+                                        onChange={(e) => updateProfile('channel', 'mutualBenefit', e.target.value)}
+                                        placeholder="e.g., More complete solution for clients, scalable customer acquisition..."
+                                        className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                        rows="3"
+                                    />
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Outreach Framework */}
+                        <div className="framework-section">
+                            <h3 className="section-header text-gray-800">
+                                <OutreachIcon />
+                                Partnership Outreach Framework
+                            </h3>
+                            
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Systematic Outreach Process
+                                </label>
+                                <p className="text-xs text-gray-500 mb-2">
+                                    Describe your step-by-step approach to identifying, contacting, and engaging potential partners
+                                </p>
+                                <textarea
+                                    value={outreachFramework}
+                                    onChange={(e) => setOutreachFramework(e.target.value)}
+                                    placeholder="e.g., 1. Research & Identify: Build target list of 10-15 partners...
+2. Personalize & Propose Value: Craft custom messages about mutual value...
+3. Validate: First conversation to understand their needs...
+4. Launch a Pilot: Propose small, defined project..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                    rows="8"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Export Section */}
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Partner Profiles & Framework</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Copy your ideal partner profiles and outreach framework as formatted text for partnership execution.
+                        </p>
+                        
+                        <button
+                            onClick={handleCopyToClipboard}
+                            className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                        >
+                            📋 Copy Activity Summary
+                        </button>
+                        
+                        <div id="copyStatus" className="mt-3"></div>
+                        
+                        {/* Hidden textarea for debugging */}
+                        <textarea
+                            id="markdownSummary"
+                            readOnly
+                            className="hidden"
+                            value={generateMarkdownSummary()}
+                        />
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            onClick={() => window.location.href = '../index.html'}
+                            className="bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                        >
+                            Back to All Workshops
+                        </button>
                     </div>
                 </div>
             );
         };
 
-        ReactDOM.render(<ComingSoonActivity />, document.getElementById('root'));
+        // Render the app
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<IdealPartnerProfileActivity />);
     </script>
 </body>
 </html>
