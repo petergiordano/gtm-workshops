@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ecosystem Map & Gap Analysis - Strategic Partnerships</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #55BFFA;
+            box-shadow: 0 0 0 3px rgba(85, 191, 250, 0.1);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Test Data for Dev Mode -->
+    <script type="application/json" id="testData">
+    {
+        "currentState": "Our company, Posh AMP, provides a B2B SaaS for predictive API monitoring. We aim to serve high-growth B2B SaaS companies and large enterprises that rely on modern cloud infrastructure and microservices architecture. Our core value lies in using predictive analytics to preemptively identify and resolve API issues, reducing costly downtime and freeing up engineering teams from manual troubleshooting.",
+        "marketAccessGaps": "We need to penetrate the enterprise market and build credibility with larger, more risk-averse customers. Our current go-to-market (GTM) strategy is direct sales, but our plan requires \"1-2 system integrator partners\" to effectively scale.",
+        "productFunctionalityGaps": "Our product's value proposition is \"Cross-Platform Integration\". To deliver a complete solution, we must integrate with the platforms and tools our customers already use, such as major cloud providers and DevOps platforms.",
+        "competitiveGaps": "The market is highly competitive with established players like Datadog and New Relic. Our \"wedge tactic\" is to position Posh AMP as a complementary solution that integrates with and enhances these existing tools, rather than directly replacing them. This requires a partnership-first approach to integration."
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const EcosystemMapActivity = () => {
+            // State for form fields
+            const [currentState, setCurrentState] = useState('');
+            const [marketAccessGaps, setMarketAccessGaps] = useState('');
+            const [productFunctionalityGaps, setProductFunctionalityGaps] = useState('');
+            const [competitiveGaps, setCompetitiveGaps] = useState('');
+
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            // Toggle dev mode
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            // Load test data
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setCurrentState(testData.currentState);
+                    setMarketAccessGaps(testData.marketAccessGaps);
+                    setProductFunctionalityGaps(testData.productFunctionalityGaps);
+                    setCompetitiveGaps(testData.competitiveGaps);
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // Generate markdown summary
+            const generateMarkdownSummary = () => {
+                const timestamp = new Date().toLocaleString();
+                
+                return `# Strategic Partnerships - Ecosystem Map & Gap Analysis
+Generated: ${timestamp}
+
+## Our Company's Current State
+${currentState || '[Not provided]'}
+
+## Key Business Gaps Identified
+
+### 1. Market Access Gaps
+${marketAccessGaps || '[Not provided]'}
+
+### 2. Product Functionality Gaps
+${productFunctionalityGaps || '[Not provided]'}
+
+### 3. Competitive Gaps
+${competitiveGaps || '[Not provided]'}
+
+## Partnership Strategy Implications
+
+Based on this gap analysis, strategic partnerships should focus on:
+1. **Market Access**: ${marketAccessGaps ? 'Addressing enterprise penetration through system integrator partnerships' : '[Analysis needed]'}
+2. **Product Integration**: ${productFunctionalityGaps ? 'Building cross-platform integrations with major cloud and DevOps tools' : '[Analysis needed]'}
+3. **Competitive Positioning**: ${competitiveGaps ? 'Leveraging partnerships to complement rather than compete with established players' : '[Analysis needed]'}
+`;
+            };
+
+            // Handle copy to clipboard
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            const successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            return successful;
+                        }
+                    } catch (err) {
+                        console.error('Failed to copy:', err);
+                        return false;
+                    }
+                };
+
+                const markdown = generateMarkdownSummary();
+                const statusDiv = document.getElementById('copyStatus');
+                
+                copyToClipboard(markdown).then((success) => {
+                    if (success) {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg animate-fadeIn">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        // Create floating notification
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                        notification.textContent = '✅ Gap analysis copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 3000);
+                    } else {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">❌ Copy failed</p>
+                                <p class="text-sm mt-1">Please try selecting and copying the text manually.</p>
+                            </div>
+                        `;
+                    }
+                });
+            };
+
+            return (
+                <div className="max-w-[900px] mx-auto p-4">
+                    {/* Header */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                ← Back to Workshop
+                            </a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+                                All GTM Workshops ↑
+                            </a>
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 
+                                className={`text-xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 1: Ecosystem Map & Gap Analysis {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">
+                                Map your existing market ecosystem and identify key business gaps that partnerships can solve
+                            </p>
+
+                            {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button
+                                            onClick={devFillData}
+                                            disabled={devFillLoading}
+                                            className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50"
+                                        >
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">In Progress</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="bg-orange-500 h-2 rounded-full transition-all duration-300" style={{width: '100%'}}></div>
+                        </div>
+                    </div>
+
+                    {/* Main Content */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-4">
+                            Map Your Ecosystem & Identify Partnership Opportunities
+                        </h2>
+                        <p className="text-gray-600 mb-6 text-sm">
+                            First, describe your company's current state. Then identify the key gaps that strategic partnerships could help address.
+                        </p>
+
+                        <div className="space-y-6">
+                            {/* Current State */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Our Company's Current State
+                                </label>
+                                <p className="text-xs text-gray-500 mb-2">
+                                    Describe your product, target customers, and current GTM motion
+                                </p>
+                                <textarea
+                                    value={currentState}
+                                    onChange={(e) => setCurrentState(e.target.value)}
+                                    placeholder="e.g., We provide B2B SaaS for predictive API monitoring, targeting high-growth tech companies with direct sales motion..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                    rows="4"
+                                />
+                            </div>
+
+                            {/* Market Access Gaps */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Market Access Gaps
+                                </label>
+                                <p className="text-xs text-gray-500 mb-2">
+                                    What markets or customer segments are you struggling to reach?
+                                </p>
+                                <textarea
+                                    value={marketAccessGaps}
+                                    onChange={(e) => setMarketAccessGaps(e.target.value)}
+                                    placeholder="e.g., We need to penetrate the enterprise market but lack credibility with larger customers..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                    rows="3"
+                                />
+                            </div>
+
+                            {/* Product Functionality Gaps */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Product Functionality Gaps
+                                </label>
+                                <p className="text-xs text-gray-500 mb-2">
+                                    What features or integrations would make your product more complete?
+                                </p>
+                                <textarea
+                                    value={productFunctionalityGaps}
+                                    onChange={(e) => setProductFunctionalityGaps(e.target.value)}
+                                    placeholder="e.g., Our product needs to integrate with major cloud providers and DevOps platforms..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                    rows="3"
+                                />
+                            </div>
+
+                            {/* Competitive Gaps */}
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-2">
+                                    Competitive Gaps
+                                </label>
+                                <p className="text-xs text-gray-500 mb-2">
+                                    Where do competitors have advantages that partnerships could help address?
+                                </p>
+                                <textarea
+                                    value={competitiveGaps}
+                                    onChange={(e) => setCompetitiveGaps(e.target.value)}
+                                    placeholder="e.g., Competitors have established ecosystems and integrations we lack..."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-sm transition-all"
+                                    rows="3"
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Export Section */}
+                    <div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Gap Analysis</h3>
+                        <p className="text-sm text-gray-600 mb-4">
+                            Copy your ecosystem map and gap analysis as formatted text for strategic planning.
+                        </p>
+                        
+                        <button
+                            onClick={handleCopyToClipboard}
+                            className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                        >
+                            📋 Copy Activity Summary
+                        </button>
+                        
+                        <div id="copyStatus" className="mt-3"></div>
+                        
+                        {/* Hidden textarea for debugging */}
+                        <textarea
+                            id="markdownSummary"
+                            readOnly
+                            className="hidden"
+                            value={generateMarkdownSummary()}
+                        />
+                    </div>
+
+                    {/* Navigation */}
+                    <div className="mt-6 flex justify-center">
+                        <button
+                            onClick={() => window.location.href = 'partnerships-activity-2A.html'}
+                            className="bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                        >
+                            Continue to Activity 2
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<EcosystemMapActivity />);
+    </script>
+</body>
+</html>
