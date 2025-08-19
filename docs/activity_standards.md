@@ -114,13 +114,14 @@ Each workshop index page should include a consistent Workshop Slides section fol
   - Muted Brown (Accent): #A58E6F
 
 ### Typography
-- **Primary Font**: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+- **Primary Font Stack**: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif
 - **Header Sizes**:
-  - Main Title (h1): 2.2em, font-weight: 300
-  - Section Headers (h3): 1.8em, font-weight: 300
+  - Main Title (h1): 1.25rem (text-xl), font-weight: bold
+  - Section Headers (h2): 1.125rem (text-lg), font-weight: semibold
   - Activity Titles (h4): 1.2em, font-weight: 600
-- **Body Text**: 0.95em, line-height: 1.4
+- **Body Text**: 0.875rem (text-sm), line-height: 1.4
 - **Readability**: Ensure text is legible when captured in landscape screenshots
+- **Background Color**: #fafafa (not pure white)
 
 ### Layout
 - **Container Width**: max-width: 1200px (activities), max-width: 800px (landing pages)
@@ -150,13 +151,24 @@ Each workshop index page should include a consistent Workshop Slides section fol
   4. Status Grid (optional)
 
 ### Progress Indicator
-- **Style**: Horizontal bar with numbered circles
-- **States**: 
-  - Current: bg-orange-500 text-white
-  - Completed: bg-green-500 text-white
-  - Upcoming: bg-gray-200 text-gray-400
-- **Label**: Display step name below number
-- **Placement**: Position within the top portion of the screen to remain visible in landscape screenshots
+- **Style**: Simple horizontal progress bar (not numbered circles)
+- **Container**: White background with shadow and border
+- **Progress Bar**: 
+  - Background: bg-gray-200 rounded-full h-2
+  - Fill: bg-orange-500 h-2 rounded-full with percentage width
+- **Text**: "Progress" label with status text (e.g., "In Progress", "Complete")
+- **Implementation**:
+```html
+<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+    <div className="flex items-center justify-between mb-2">
+        <span className="text-sm font-medium text-gray-700">Progress</span>
+        <span className="text-sm text-gray-600">In Progress</span>
+    </div>
+    <div className="w-full bg-gray-200 rounded-full h-2">
+        <div className="bg-orange-500 h-2 rounded-full transition-all duration-300" style={{width: '33%'}}></div>
+    </div>
+</div>
+```
 
 ### Activity Cards
 - **Layout**: grid or flex based on content needs
@@ -322,6 +334,38 @@ const WordCountFeedback = ({ text, minWords = 5 }) => {
   - In Progress: bg-orange-100 border-2 border-orange-300 text-orange-800
   - Not Started: bg-gray-100 border-2 border-gray-200 text-gray-600
 
+### Dev Mode Implementation
+- **Activation**: Double-click the main activity title (h1)
+- **Visual Indicator**: Title turns orange (#FF9000) when active, shows 🔧 emoji
+- **Dev Mode Controls**:
+  - Text: "🔧 Dev Mode Active" in orange
+  - Button: "📝 Fill Test Data" with loading state
+  - Layout: Border-top separator, flex layout with space-between
+- **Test Data Storage**: Embedded in `<script type="application/json" id="testData">` tag
+- **Implementation Pattern**:
+```javascript
+const [devMode, setDevMode] = useState(false);
+const [devFillLoading, setDevFillLoading] = useState(false);
+
+const toggleDevMode = () => {
+    setDevMode(!devMode);
+    console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+};
+
+const devFillData = () => {
+    setDevFillLoading(true);
+    try {
+        const testData = JSON.parse(document.getElementById('testData').textContent);
+        // Set state with test data
+        console.log('✅ Dev data loaded successfully');
+    } catch (error) {
+        console.error('❌ Failed to load dev data:', error);
+    } finally {
+        setDevFillLoading(false);
+    }
+};
+```
+
 ## Technical Implementation
 
 ## Technical Implementation
@@ -426,23 +470,29 @@ ReactDOM.render(<YourComponentName />, document.getElementById('root'));
 - **Structure**: Each activity page must have TWO navigation links:
   1. **Back to Workshop**: Links to the specific workshop page
   2. **All GTM Workshops**: Links to the main GTM workshops landing page
-- **Placement**: Display in a flex container with space-between
+- **Placement**: Inside the main header container above the title
+- **Separator**: Border-top between navigation and title
 - **Implementation Example**:
 
 ```html
-<div className="flex justify-between items-center w-full mb-3">
-  <a 
-    href="index.html" 
-    className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium"
-  >
-    <span className="mr-1">←</span> Back to Workshop
-  </a>
-  <a 
-    href="../" 
-    className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium"
-  >
-    All GTM Workshops <span className="ml-1">↑</span>
-  </a>
+<div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+    <div className="flex justify-between items-center w-full mb-2">
+        <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+            ← Back to Workshop
+        </a>
+        <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium">
+            All GTM Workshops ↑
+        </a>
+    </div>
+
+    <div className="border-t border-gray-200 mt-3 pt-4">
+        <h1 className="text-xl font-bold text-gray-800">
+            Activity Title
+        </h1>
+        <p className="text-gray-600 text-sm mt-1">
+            Activity description
+        </p>
+    </div>
 </div>
 ```
 
@@ -619,6 +669,112 @@ All activity completion pages MUST use this exact 4-button layout:
 - **Progress Indicators**: Check both header and individual sections
 - **Layout Optimization**: Confirm proper spacing in all sections
 - **Landscape Display**: Check that critical content is visible without scrolling in 16:9 orientation
+
+## Professional Export Section Standards
+
+### Overview
+All activities must include a professional markdown export section that appears after activity completion. This enables users to copy formatted summaries for use in documentation or presentations.
+
+### Export Section Design
+- **Container**: Light gray background (bg-gray-50) with rounded corners and border
+- **Title**: "📄 Export Professional Report" or similar with emoji
+- **Description**: Brief explanation of the export functionality
+- **Button**: Orange primary button with "📋 Copy Activity Summary" text
+
+### Implementation Pattern
+```javascript
+// Generate markdown summary
+const generateMarkdownSummary = () => {
+    const timestamp = new Date().toLocaleString();
+    return `# Activity Title
+Generated: ${timestamp}
+
+## Section 1
+${fieldValue1 || '[Not provided]'}
+
+## Section 2
+${fieldValue2 || '[Not provided]'}
+`;
+};
+
+// Copy to clipboard with dual feedback
+const handleCopyToClipboard = () => {
+    const copyToClipboard = async (text) => {
+        try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                await navigator.clipboard.writeText(text);
+                return true;
+            } else {
+                // Fallback for older browsers
+                const textArea = document.createElement('textarea');
+                textArea.value = text;
+                textArea.style.position = 'fixed';
+                textArea.style.left = '-999999px';
+                document.body.appendChild(textArea);
+                textArea.select();
+                const successful = document.execCommand('copy');
+                document.body.removeChild(textArea);
+                return successful;
+            }
+        } catch (err) {
+            return false;
+        }
+    };
+
+    const markdown = generateMarkdownSummary();
+    copyToClipboard(markdown).then((success) => {
+        if (success) {
+            // Show success feedback
+            const statusDiv = document.getElementById('copyStatus');
+            statusDiv.innerHTML = `
+                <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg animate-fadeIn">
+                    <p class="font-medium">✅ Copied to Clipboard!</p>
+                    <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                </div>
+            `;
+            
+            // Floating notification
+            const notification = document.createElement('div');
+            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+            notification.textContent = '✅ Activity summary copied!';
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.transition = 'opacity 0.5s';
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 500);
+            }, 3000);
+        }
+    });
+};
+```
+
+### Export Section HTML Structure
+```html
+<div className="bg-gray-50 rounded-xl p-6 border border-gray-200">
+    <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Analysis</h3>
+    <p className="text-sm text-gray-600 mb-4">
+        Copy your completed analysis as formatted text for easy sharing.
+    </p>
+    
+    <button
+        onClick={handleCopyToClipboard}
+        className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+    >
+        📋 Copy Activity Summary
+    </button>
+    
+    <div id="copyStatus" className="mt-3"></div>
+    
+    {/* Hidden textarea for debugging */}
+    <textarea
+        id="markdownSummary"
+        readOnly
+        className="hidden"
+        value={generateMarkdownSummary()}
+    />
+</div>
+```
 
 ## Progress Code UI Standards
 
