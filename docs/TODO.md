@@ -110,7 +110,7 @@ All project documentation has been updated to enable Claude Code to understand a
   - Design standards compliance guide
   - Common implementation pitfalls and solutions
 
-- [x] **NEW_ACTIVITY_CREATION_GUIDE.md**: Created comprehensive quick reference
+- [x] **docs/activity_standards.md**: Updated with comprehensive quick reference workflow
   - Step-by-step workflow for new activity creation
   - Code templates and patterns
   - Testing checklist

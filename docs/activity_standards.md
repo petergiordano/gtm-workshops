@@ -1,3 +1,125 @@
+# Interactive Workshop Activities Standards
+
+## Project Overview
+**Project**: GSAP 2025 GTM Curriculum Development  
+**Target Audience**: Early-stage deep tech startups entering US market (ESL participants)  
+**Duration**: Each workshop 60 minutes maximum  
+**Repository**: `gtm-workshops` (GitHub Pages deployment)  
+**Live Site**: https://petergiordano.github.io/gtm-workshops/
+
+## New Activity Creation Quick Reference
+
+This section provides step-by-step instructions for creating new GTM workshop activities following the established A-version enhanced pattern.
+
+### Prerequisites
+
+- Understand the project uses **no build process** (static HTML with embedded React)
+- Must use **React 18 createRoot API** (not deprecated ReactDOM.render)
+- Follow **laptop-optimized design standards** for workshop settings
+
+### Step-by-Step Workflow
+
+#### 1. Copy Existing Template
+```bash
+cp market_entry_readiness/market-entry-activity-1A.html week-5-pricing-monetization/pricing-activity-1A.html
+```
+
+#### 2. Create Test Data File
+Create realistic test data in `test_data/` directory:
+```bash
+# File: test_data/pricing-activity-1A.json
+{
+  "coreValueMetric": "API calls monitored + incident prevention rate",
+  "customerSegments": ["High-growth SaaS", "Large Enterprises", "Midsize Tech"],  
+  "pricingModel": "hybrid",
+  "currentStep": 3
+}
+```
+
+**Test Data Requirements:**
+- Use realistic business scenarios (not placeholder text)
+- Include all form field state variables
+- Set `currentStep` to final step (usually 3) to show completed state
+- Reference `docs/fictional_product_content_posh.md` for example content
+
+#### 3. Update HTML Structure
+
+**A. Change Title and Meta**
+```html
+<title>Pricing Strategy Activity</title>
+```
+
+**B. Embed Test Data in Script Tag**
+```html
+<!-- Test Data from test_data/pricing-activity-1A.json -->
+<script type="application/json" id="testData">
+{
+  "coreValueMetric": "API calls monitored + incident prevention rate",
+  "customerSegments": ["High-growth SaaS", "Large Enterprises"],
+  "currentStep": 3
+}
+</script>
+```
+
+**C. Update React Component Name**
+```javascript
+const PricingActivity1 = () => {
+    // Component code here
+};
+
+// At bottom of file:
+const container = document.getElementById('root');
+const root = ReactDOM.createRoot(container); // React 18 API
+root.render(<PricingActivity1 />);
+```
+
+### File Organization
+
+```
+project/
+├── week-5-pricing-monetization/
+│   ├── index.html
+│   ├── pricing-activity-1A.html  ← New activity
+│   ├── pricing-activity-2A.html
+│   └── pricing-activity-3A.html
+└── test_data/
+    ├── pricing-activity-1A.json  ← New test data
+    ├── pricing-activity-2A.json
+    └── pricing-activity-3A.json
+```
+
+### Realistic Test Data Sources
+
+- **Fictional Product**: `docs/fictional_product_content_posh.md`
+- **User Responses**: `docs/user-entry-test-responses.md`
+- **Existing Test Data**: `test_data/` directory for patterns
+
+### Common Pitfalls to Avoid
+
+❌ **Don't:**
+- Use deprecated `ReactDOM.render()` 
+- Create complex progress code systems
+- Use placeholder test data
+- Skip dev mode implementation
+- Forget to update navigation links
+
+✅ **Do:**
+- Use `ReactDOM.createRoot()` 
+- Embed realistic test data directly in HTML
+- Follow laptop-optimized design standards
+- Implement professional markdown export
+- Test dev mode functionality thoroughly
+
+## Table of Contents
+1. [Design Standards](#design-standards)
+2. [Component Patterns](#component-patterns)
+3. [Technical Implementation](#technical-implementation)
+4. [Navigation Standards](#navigation-standards)
+5. [Accessibility Guidelines](#accessibility-guidelines)
+6. [Content Guidelines](#content-guidelines)
+7. [Development Workflow](#development-workflow)
+8. [Quality Assurance](#quality-assurance)
+
 ### Workshop Content Organization
 
 #### Activities vs Resources
@@ -68,27 +190,7 @@ Each workshop index page should include a consistent Workshop Slides section fol
 - Ensure `object-fit: contain` is applied to maintain aspect ratio
 - The section should appear after all activity cards but before the closing container
 - No hyperlink wrapping unless slides are actually available
-- Maintain consistent spacing and styling across all workshop index pages# Interactive Workshop Activities Standards
-
-> **INSTRUCTIONS**: Replace this section with your specific project details before using this standards document.
-
-## Project Overview
-**Project**: [Project Name]  
-**Target Audience**: [Description of target audience]  
-**Duration**: [Time constraints, if applicable]  
-**Repository**: [`repository-name` (deployment platform)]  
-**Live Site**: [Production URL]
-
-## Example Project Information
-```
-## Project Overview
-**Project**: GSAP 2025 GTM Curriculum Development  
-**Target Audience**: Early-stage deep tech startups entering US market (ESL participants)  
-**Duration**: Each workshop 60 minutes maximum  
-**Repository**: `gtm-workshops` (GitHub Pages deployment)  
-**Live Site**: https://petergiordano.github.io/gtm-workshops/
-```
-
+- Maintain consistent spacing and styling across all workshop index pages
 ## Table of Contents
 1. [Design Standards](#design-standards)
 2. [Component Patterns](#component-patterns)
