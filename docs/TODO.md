@@ -138,7 +138,11 @@ The project is now fully prepared for Claude Code to:
 - Generate professional markdown exports
 - Follow laptop-optimized design specifications
 
-## 🚀 ACTIVE DEVELOPMENT - Week 8: Strategic Partnerships
+## 🚀 ACTIVE DEVELOPMENT - Week 8: Competitive Strategy
+
+### Strategic Reorganization (January 19, 2025)
+**COMPLETED:** Strategic Partnerships moved from Week 8 → Week X (archived but preserved)
+**NEW FOCUS:** Competitive Strategy moved from Week 9 → Week 8 (now active development)
 
 ### Current Sprint (Started: January 19, 2025)
 
@@ -153,39 +157,39 @@ The project is now fully prepared for Claude Code to:
   - [x] Updated Progress Bar (simple horizontal, not circles)
   - [x] Navigation pattern with border separator
 
-#### **Week 8 Implementation Tasks** 🔄 IN PROGRESS
-- [ ] Create partnerships-activity-1A.html - Ecosystem Map & Gap Analysis
+#### **Week X Strategic Partnerships** ✅ COMPLETE & ARCHIVED
+- [x] partnerships-activity-1A.html - Ecosystem Map & Gap Analysis (moved to week-x-strategic-partnerships/)
+- [x] partnerships-activity-2A.html - Partnership Prioritization Matrix (moved to week-x-strategic-partnerships/)
+- [x] partnerships-activity-3A.html - Ideal Partner Profile & Outreach Framework (moved to week-x-strategic-partnerships/)
+- [x] All activities fully implemented with embedded test data and dev mode
+
+#### **Week 8 Competitive Strategy Implementation** 🔄 NOW ACTIVE
+- [ ] Create competitive-activity-1A.html - Competitive Landscape Analysis
   - [ ] HTML structure with React 18 CDN links
-  - [ ] Implement 4 textarea fields as specified
-  - [ ] Add embedded test data for Posh AMP
+  - [ ] Implement competitive analysis framework
+  - [ ] Add embedded test data for Posh AMP competitive landscape
   - [ ] Implement dev mode functionality
   - [ ] Create professional markdown export
   - [ ] Add navigation links
   - [ ] Test all functionality
 
-- [ ] Create partnerships-activity-2A.html - Partnership Prioritization Matrix
+- [ ] Create competitive-activity-2A.html - Competitive Positioning Strategy
   - [ ] HTML structure with React 18 CDN links
-  - [ ] Implement table layout for 3 partnership types
-  - [ ] Add embedded test data with values, efforts, targets
+  - [ ] Implement differentiation framework
+  - [ ] Add embedded test data for positioning strategy
   - [ ] Implement dev mode functionality
   - [ ] Create professional markdown export
   - [ ] Add navigation links
   - [ ] Test all functionality
 
-- [ ] Create partnerships-activity-3A.html - Ideal Partner Profile & Outreach Framework
+- [ ] Create competitive-activity-3A.html - Competitive Response Planning
   - [ ] HTML structure with React 18 CDN links
-  - [ ] Implement IPP sections for tech and channel partners
-  - [ ] Add embedded test data with profiles
+  - [ ] Implement response strategy framework
+  - [ ] Add embedded test data for competitive responses
   - [ ] Implement dev mode functionality
   - [ ] Create professional markdown export
   - [ ] Add navigation links
   - [ ] Test all functionality
-
-- [ ] Update week-8-strategic-partnerships/index.html
-  - [ ] Update activity card 1: "Ecosystem Map & Gap Analysis"
-  - [ ] Update activity card 2: "Partnership Prioritization Matrix"
-  - [ ] Update activity card 3: "Ideal Partner Profile (IPP) & Outreach Framework"
-  - [ ] Verify links work correctly
 
 #### **Quality Assurance Checklist**
 - [ ] All activities follow Week 7 design patterns
@@ -215,15 +219,19 @@ The project is now fully prepared for Claude Code to:
   - [x] channels-activity-2A.html - GTM Channel Hypothesis Matrix (Part 1)
   - [x] channels-activity-3A.html - GTM Channel Hypothesis Matrix (Part 2)
 
-- [ ] Week 8: Strategic Partnerships 🔄 IN PROGRESS
-  - [ ] partnerships-activity-1A.html - Ecosystem Map & Gap Analysis
-  - [ ] partnerships-activity-2A.html - Partnership Prioritization Matrix
-  - [ ] partnerships-activity-3A.html - Ideal Partner Profile & Outreach Framework
+- [x] Week X: Strategic Partnerships ✅ COMPLETE (ARCHIVED)
+  - [x] partnerships-activity-1A.html - Ecosystem Map & Gap Analysis
+  - [x] partnerships-activity-2A.html - Partnership Prioritization Matrix
+  - [x] partnerships-activity-3A.html - Ideal Partner Profile & Outreach Framework
+  - [x] Moved to Week X due to strategic curriculum reorganization
 
-- [ ] Week 9: Competitive Strategy (3 activities)
+- [ ] Week 8: Competitive Strategy (3 activities) 🔄 NOW ACTIVE
   - [ ] competitive-activity-1A.html - Competitive Landscape Analysis
   - [ ] competitive-activity-2A.html - Competitive Positioning Strategy
   - [ ] competitive-activity-3A.html - Competitive Response Planning
+
+- [ ] Week 9: To Be Determined
+  - [ ] Future workshop content - awaiting strategic direction
 
 #### **Implementation Standards for New Activities**
 Each new activity should follow the established A-version pattern:
