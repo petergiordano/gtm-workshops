@@ -81,13 +81,46 @@
         };
 
         // CORRECTED: Helper components are defined OUTSIDE the main component
-        const StepIndicator = ({ step, title, active }) => (
+        const StepIndicator = ({ step, title, active, completed }) => (
             <div className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${active ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
-                    {step}
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                    completed ? 'bg-green-500 text-white' :
+                    active ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                    {completed ? '✓' : step}
                 </div>
                 <div className="ml-3">
-                    <h4 className={`font-semibold ${active ? 'text-orange-600' : 'text-gray-700'}`}>{title}</h4>
+                    <h4 className={`font-semibold ${
+                        completed ? 'text-green-600' :
+                        active ? 'text-orange-600' : 'text-gray-700'
+                    }`}>{title}</h4>
+                </div>
+            </div>
+        );
+
+        const WizardStepIndicator = ({ currentStep, isStep2Complete, isStep3Complete }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    <StepIndicator 
+                        step={1} 
+                        title="Review" 
+                        active={currentStep === 1} 
+                        completed={currentStep > 1}
+                    />
+                    <div className={`flex-1 h-0.5 mx-4 ${currentStep > 1 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <StepIndicator 
+                        step={2} 
+                        title="Define" 
+                        active={currentStep === 2} 
+                        completed={currentStep > 2 || (currentStep === 2 && isStep2Complete)}
+                    />
+                    <div className={`flex-1 h-0.5 mx-4 ${(currentStep > 2 || (currentStep === 2 && isStep2Complete)) ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <StepIndicator 
+                        step={3} 
+                        title="Plan" 
+                        active={currentStep === 3} 
+                        completed={currentStep === 3 && isStep3Complete}
+                    />
                 </div>
             </div>
         );
@@ -120,20 +153,25 @@
             const [counterMoves, setCounterMoves] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).counterMoves || '');
             const [firstTests, setFirstTests] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).firstTests || '');
 
+            // Wizard navigation state
+            const [currentStep, setCurrentStep] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).currentStep || 1);
+
             // App state
             const [devMode, setDevMode] = useState(false);
             const [devFillLoading, setDevFillLoading] = useState(false);
 
-            // Progress calculation based on all input fields
+            // Step completion validation
             const isStep2Complete = useMemo(() => criticalCapabilities && requiredSystems && valueMetric && earlySignals, [criticalCapabilities, requiredSystems, valueMetric, earlySignals]);
             const isStep3Complete = useMemo(() => keyRisks && counterMoves && firstTests, [keyRisks, counterMoves, firstTests]);
             const activityComplete = isStep2Complete && isStep3Complete;
             
+            // Step-based progress calculation
             const progress = useMemo(() => {
-                if(isStep3Complete) return 100;
-                if(isStep2Complete) return 66;
-                return 33; // Part 1 is always "complete" as it's read-only review
-            }, [isStep2Complete, isStep3Complete]);
+                if(currentStep === 1) return 33;
+                if(currentStep === 2) return isStep2Complete ? 66 : 33;
+                if(currentStep === 3) return isStep3Complete ? 100 : 66;
+                return 33;
+            }, [currentStep, isStep2Complete, isStep3Complete]);
 
             // Auto-save state to localStorage whenever any form data changes
             useEffect(() => {
@@ -144,12 +182,30 @@
                     earlySignals,
                     keyRisks,
                     counterMoves,
-                    firstTests
+                    firstTests,
+                    currentStep
                 };
                 saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
-            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests]);
+            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests, currentStep]);
 
             const toggleDevMode = () => setDevMode(!devMode);
+
+            // Navigation functions
+            const goToNextStep = () => {
+                if (currentStep < 3) {
+                    setCurrentStep(currentStep + 1);
+                }
+            };
+
+            const goToPrevStep = () => {
+                if (currentStep > 1) {
+                    setCurrentStep(currentStep - 1);
+                }
+            };
+
+            // Navigation validation
+            const canContinueFromStep2 = isStep2Complete;
+            const canCompleteFromStep3 = isStep3Complete;
 
             const devFillData = () => {
                 setDevFillLoading(true);
@@ -162,6 +218,7 @@
                     setKeyRisks(data.keyRisks); 
                     setCounterMoves(data.counterMoves);
                     setFirstTests(data.firstTests);
+                    setCurrentStep(3); // Move to final step to show completed state
                     console.log('✅ Dev data loaded successfully');
                 } catch (e) { 
                     console.error('❌ Failed to load dev data:', e); 
@@ -178,6 +235,7 @@
                 setKeyRisks('');
                 setCounterMoves('');
                 setFirstTests('');
+                setCurrentStep(1); // Reset to first step
                 
                 // Clear localStorage data for this activity's input fields only
                 const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
@@ -189,44 +247,52 @@
                     earlySignals: '',
                     keyRisks: '',
                     counterMoves: '',
-                    firstTests: ''
+                    firstTests: '',
+                    currentStep: 1
                 };
                 saveWorkshopState(emptyState, WORKSHOP_STORAGE_KEY);
             };
             
             const generateMarkdownSummary = () => {
                 return `# Competitive Strategy: 1-Page Blueprint
-### ⚖️ Top Two Forces (Now)
-${workshopData.topForces || '[Not provided]'}
+
+### 🚀 Our Strategic Foundation
+* **Top Two Forces:** ${workshopData.topForces || '[Not provided]'}
+* **Key Substitutes:** ${workshopData.keySubstitutes || '[Not provided]'}
 
 ### 🎯 Where We Play
-${workshopData.whereToPlay || '[Not provided]'}
+> ${workshopData.whereToPlay || '[Not provided]'}
 
 ### 🏆 How We Win
-${workshopData.howToWin || '[Not provided]'}
+> ${workshopData.howToWin || '[Not provided]'}
 
-### 🔄 Key Substitutes
-${workshopData.keySubstitutes || '[Not provided]'}
+---
 
-### 🎯 Critical Capabilities
+### 🛠️ Our Advantage & Measures
+
+**Critical Capabilities:**
 ${criticalCapabilities || '[Not provided]'}
 
-### ⚙️ Required Systems
+**Required Systems:**
 ${requiredSystems || '[Not provided]'}
 
-### 💰 Value Metric
+**Value Metric:**
 ${valueMetric || '[Not provided]'}
 
-### 📈 Early Signals
+**Early Signals:**
 ${earlySignals || '[Not provided]'}
 
-### ⚠️ Key Risks
+---
+
+### 🧪 Our Action Plan
+
+**Key Risks:**
 ${keyRisks || '[Not provided]'}
 
-### 🛡️ Counter-Moves
+**Counter-Moves:**
 ${counterMoves || '[Not provided]'}
 
-### 🧪 First Tests
+**First Tests:**
 ${firstTests || '[Not provided]'}
 `;
             };
@@ -292,6 +358,12 @@ ${firstTests || '[Not provided]'}
                         </div>
                     </div>
                     
+                    <WizardStepIndicator 
+                        currentStep={currentStep} 
+                        isStep2Complete={isStep2Complete} 
+                        isStep3Complete={isStep3Complete} 
+                    />
+                    
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium text-gray-700">Blueprint Progress</span>
@@ -305,120 +377,169 @@ ${firstTests || '[Not provided]'}
                     <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
                         <div> {/* Left Column for Inputs */}
                             
-                            {/* Part 1: Review Your Foundation */}
-                            <div className="mb-8">
-                                <h2 className="text-xl font-bold mb-4">Step 1: Review Your Foundation</h2>
-                                <p className="text-sm text-gray-600 mb-6">Review your key strategic choices from Activities 1 and 2.</p>
-                                
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-semibold text-gray-600">Your Top Two Forces (from Activity 1)</h4>
-                                    <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                        {workshopData.topForces || "Data from Activity 1 will appear here."}
-                                    </p>
+                            {/* Step 1: Review Your Foundation */}
+                            {currentStep === 1 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 1: Review Your Foundation</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Review your key strategic choices from Activities 1 and 2.</p>
+                                    
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your Top Two Forces (from Activity 1)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {workshopData.topForces || "Data from Activity 1 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your "Where to Play" Statement (from Activity 2)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {workshopData.whereToPlay || "Data from Activity 2 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your "How to Win" Strategy (from Activity 2)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {workshopData.howToWin || "Data from Activity 2 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Key Substitutes (from Activity 1)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {workshopData.keySubstitutes || "Data from Activity 1 will appear here."}
+                                        </p>
+                                    </div>
                                 </div>
+                            )}
 
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-semibold text-gray-600">Your "Where to Play" Statement (from Activity 2)</h4>
-                                    <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                        {workshopData.whereToPlay || "Data from Activity 2 will appear here."}
-                                    </p>
+                            {/* Step 2: Define Your Advantage & Measures */}
+                            {currentStep === 2 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 2: Define Your Advantage & Measures</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Define the capabilities and systems you need, plus how you'll measure success.</p>
+                                    
+                                    <InputField
+                                        label="Critical Capabilities"
+                                        tooltip="To deliver your 'How to Win', what 2-3 activities must your company perform flawlessly?"
+                                        value={criticalCapabilities}
+                                        setter={setCriticalCapabilities}
+                                        placeholder="e.g., 1. Proprietary ML model development. 2. Seamless 10-minute customer onboarding."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Required Systems"
+                                        tooltip="What management systems, tools, or infrastructure are required to support those critical capabilities?"
+                                        value={requiredSystems}
+                                        setter={setRequiredSystems}
+                                        placeholder="e.g., 1. Unified data analytics platform. 2. Automated value-reporting engine for customers."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Value Metric"
+                                        tooltip="How does your customer measure the value you deliver? This should be an outcome, not a feature."
+                                        value={valueMetric}
+                                        setter={setValueMetric}
+                                        placeholder="e.g., Reduction in API incident resolution time (MTTR) by 50%+"
+                                        rows={2}
+                                    />
+                                    
+                                    <InputField
+                                        label="Early Signals (2-3)"
+                                        tooltip="What leading indicators prove your strategy is working? These should predict the Value Metric."
+                                        value={earlySignals}
+                                        setter={setEarlySignals}
+                                        placeholder="e.g., 1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured."
+                                        rows={3}
+                                    />
                                 </div>
+                            )}
 
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-semibold text-gray-600">Your "How to Win" Strategy (from Activity 2)</h4>
-                                    <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                        {workshopData.howToWin || "Data from Activity 2 will appear here."}
-                                    </p>
+                            {/* Step 3: Plan Your Action */}
+                            {currentStep === 3 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 3: Plan Your Action</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Identify additional risks and plan concrete next steps to test your strategy.</p>
+                                    
+                                    <InputField
+                                        label="Other Key Risks"
+                                        tooltip="You already identified your single riskiest assumption in Activity 2. What are 1-2 other key risks that could break your strategy?"
+                                        value={keyRisks}
+                                        setter={setKeyRisks}
+                                        placeholder="e.g., 1. A major competitor launches a similar 'good enough' predictive feature."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Counter-Moves"
+                                        tooltip="If the risks you identified happen, what is your pre-planned response?"
+                                        value={counterMoves}
+                                        setter={setCounterMoves}
+                                        placeholder="e.g., If competitor launches, double down on our 'setup-in-minutes' value prop and superior support."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="First Tests"
+                                        tooltip="Based on the test you designed in Activity 2, what are two more concrete tests for the next 30 days? Assign an owner and a date."
+                                        value={firstTests}
+                                        setter={setFirstTests}
+                                        placeholder="e.g., 1. Test pricing model with 10 new prospects (Owner: Sarah, by Aug 29)."
+                                        rows={3}
+                                    />
                                 </div>
+                            )}
 
-                                <div className="mb-4">
-                                    <h4 className="text-sm font-semibold text-gray-600">Key Substitutes (from Activity 1)</h4>
-                                    <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                        {workshopData.keySubstitutes || "Data from Activity 1 will appear here."}
-                                    </p>
-                                </div>
-                            </div>
+                            {/* Navigation Buttons */}
+                            <div className="flex justify-between items-center mt-8">
+                                {/* Back Button */}
+                                <button
+                                    onClick={goToPrevStep}
+                                    disabled={currentStep === 1}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                        currentStep === 1 
+                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                            : 'bg-gray-500 text-white hover:bg-gray-600'
+                                    }`}
+                                >
+                                    ← Back
+                                </button>
 
-                            {/* Part 2: Define Your Advantage & Measures */}
-                            <div className="mb-8">
-                                <h2 className="text-xl font-bold mb-4">Step 2: Define Your Advantage & Measures</h2>
-                                <p className="text-sm text-gray-600 mb-6">Define the capabilities and systems you need, plus how you'll measure success.</p>
-                                
-                                <InputField
-                                    label="Critical Capabilities"
-                                    tooltip="To deliver your 'How to Win', what 2-3 activities must your company perform flawlessly?"
-                                    value={criticalCapabilities}
-                                    setter={setCriticalCapabilities}
-                                    placeholder="e.g., 1. Proprietary ML model development. 2. Seamless 10-minute customer onboarding."
-                                    rows={3}
-                                />
-                                
-                                <InputField
-                                    label="Required Systems"
-                                    tooltip="What management systems, tools, or infrastructure are required to support those critical capabilities?"
-                                    value={requiredSystems}
-                                    setter={setRequiredSystems}
-                                    placeholder="e.g., 1. Unified data analytics platform. 2. Automated value-reporting engine for customers."
-                                    rows={3}
-                                />
-                                
-                                <InputField
-                                    label="Value Metric"
-                                    tooltip="How does your customer measure the value you deliver? This should be an outcome, not a feature."
-                                    value={valueMetric}
-                                    setter={setValueMetric}
-                                    placeholder="e.g., Reduction in API incident resolution time (MTTR) by 50%+"
-                                    rows={2}
-                                />
-                                
-                                <InputField
-                                    label="Early Signals (2-3)"
-                                    tooltip="What leading indicators prove your strategy is working? These should predict the Value Metric."
-                                    value={earlySignals}
-                                    setter={setEarlySignals}
-                                    placeholder="e.g., 1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured."
-                                    rows={3}
-                                />
-                            </div>
-
-                            {/* Part 3: Plan Your Action */}
-                            <div className="mb-8">
-                                <h2 className="text-xl font-bold mb-4">Step 3: Plan Your Action</h2>
-                                <p className="text-sm text-gray-600 mb-6">Identify additional risks and plan concrete next steps to test your strategy.</p>
-                                
-                                <InputField
-                                    label="Other Key Risks"
-                                    tooltip="You already identified your single riskiest assumption in Activity 2. What are 1-2 other key risks that could break your strategy?"
-                                    value={keyRisks}
-                                    setter={setKeyRisks}
-                                    placeholder="e.g., 1. A major competitor launches a similar 'good enough' predictive feature."
-                                    rows={3}
-                                />
-                                
-                                <InputField
-                                    label="Counter-Moves"
-                                    tooltip="If the risks you identified happen, what is your pre-planned response?"
-                                    value={counterMoves}
-                                    setter={setCounterMoves}
-                                    placeholder="e.g., If competitor launches, double down on our 'setup-in-minutes' value prop and superior support."
-                                    rows={3}
-                                />
-                                
-                                <InputField
-                                    label="First Tests"
-                                    tooltip="Based on the test you designed in Activity 2, what are two more concrete tests for the next 30 days? Assign an owner and a date."
-                                    value={firstTests}
-                                    setter={setFirstTests}
-                                    placeholder="e.g., 1. Test pricing model with 10 new prospects (Owner: Sarah, by Aug 29)."
-                                    rows={3}
-                                />
-                            </div>
-
-                            {/* Reset Button */}
-                            <div className="flex justify-center mt-8">
-                                <button onClick={resetActivity} className="bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors">
+                                {/* Reset Button */}
+                                <button 
+                                    onClick={resetActivity} 
+                                    className="bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors"
+                                >
                                     Reset Activity
                                 </button>
+
+                                {/* Continue/Complete Button */}
+                                {currentStep < 3 ? (
+                                    <button
+                                        onClick={goToNextStep}
+                                        disabled={currentStep === 2 && !canContinueFromStep2}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            (currentStep === 2 && !canContinueFromStep2)
+                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-orange-500 text-white hover:bg-orange-600'
+                                        }`}
+                                    >
+                                        Continue →
+                                    </button>
+                                ) : (
+                                    <button
+                                        disabled={!canCompleteFromStep3}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            !canCompleteFromStep3
+                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-green-500 text-white hover:bg-green-600'
+                                        }`}
+                                    >
+                                        Blueprint Complete! ✓
+                                    </button>
+                                )}
                             </div>
                         </div>
 
