@@ -35,6 +35,8 @@
         "whereToPlay": "We play in mid-market B2B SaaS teams who are struggling with unreliable, custom-built API monitoring scripts and cannot afford enterprise-grade observability platforms.",
         "howToWin": "We win with a monitoring solution that sets up in minutes, provides predictive failure alerts via a proprietary ML model, and has transparent, usage-based pricing.",
         "keySubstitutes": "In-house Python/Bash scripts, manual log checking by DevOps, basic cloud provider monitoring (e.g., CloudWatch).",
+        "criticalCapabilities": "1. Proprietary machine learning models for predictive failure detection. 2. Seamless 10-minute onboarding process across all major cloud platforms. 3. Real-time automated incident resolution capabilities.",
+        "requiredSystems": "1. Unified data analytics platform to process multi-cloud API telemetry. 2. Automated customer value-reporting engine. 3. ML model training and deployment infrastructure.",
         "valueMetric": "Reduction in API incident resolution time (MTTR) by 50%+",
         "earlySignals": "1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured within the first week. 3. Reduction in P1/P2 incidents reported by customers.",
         "keyRisks": "1. A major competitor (e.g., Datadog) launches a similar, low-cost predictive feature. 2. Our ML model for predictions is not accurate enough in diverse real-world environments.",
@@ -107,9 +109,13 @@
             // Load read-only data from localStorage (from previous activities)
             const workshopData = useMemo(() => loadWorkshopState(WORKSHOP_STORAGE_KEY), []);
             
-            // Future input fields state (for Parts 2 & 3)
+            // Step 2: Define Your Advantage & Measures state variables
+            const [criticalCapabilities, setCriticalCapabilities] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).criticalCapabilities || '');
+            const [requiredSystems, setRequiredSystems] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).requiredSystems || '');
             const [valueMetric, setValueMetric] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).valueMetric || '');
             const [earlySignals, setEarlySignals] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).earlySignals || '');
+            
+            // Step 3: Plan Your Action state variables
             const [keyRisks, setKeyRisks] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).keyRisks || '');
             const [counterMoves, setCounterMoves] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).counterMoves || '');
             const [firstTests, setFirstTests] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).firstTests || '');
@@ -118,8 +124,8 @@
             const [devMode, setDevMode] = useState(false);
             const [devFillLoading, setDevFillLoading] = useState(false);
 
-            // Simplified progress calculation based on future input fields
-            const isStep2Complete = useMemo(() => valueMetric && earlySignals, [valueMetric, earlySignals]);
+            // Progress calculation based on all input fields
+            const isStep2Complete = useMemo(() => criticalCapabilities && requiredSystems && valueMetric && earlySignals, [criticalCapabilities, requiredSystems, valueMetric, earlySignals]);
             const isStep3Complete = useMemo(() => keyRisks && counterMoves && firstTests, [keyRisks, counterMoves, firstTests]);
             const activityComplete = isStep2Complete && isStep3Complete;
             
@@ -132,6 +138,8 @@
             // Auto-save state to localStorage whenever any form data changes
             useEffect(() => {
                 const currentState = {
+                    criticalCapabilities,
+                    requiredSystems,
                     valueMetric,
                     earlySignals,
                     keyRisks,
@@ -139,7 +147,7 @@
                     firstTests
                 };
                 saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
-            }, [valueMetric, earlySignals, keyRisks, counterMoves, firstTests]);
+            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests]);
 
             const toggleDevMode = () => setDevMode(!devMode);
 
@@ -147,6 +155,8 @@
                 setDevFillLoading(true);
                 try {
                     const data = JSON.parse(document.getElementById('testData').textContent);
+                    setCriticalCapabilities(data.criticalCapabilities);
+                    setRequiredSystems(data.requiredSystems);
                     setValueMetric(data.valueMetric);
                     setEarlySignals(data.earlySignals); 
                     setKeyRisks(data.keyRisks); 
@@ -161,6 +171,8 @@
             };
             
             const resetActivity = () => {
+                setCriticalCapabilities('');
+                setRequiredSystems('');
                 setValueMetric('');
                 setEarlySignals('');
                 setKeyRisks('');
@@ -171,6 +183,8 @@
                 const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
                 const emptyState = {
                     ...currentState, // Preserve data from Activities 1 & 2
+                    criticalCapabilities: '',
+                    requiredSystems: '',
                     valueMetric: '',
                     earlySignals: '',
                     keyRisks: '',
@@ -193,6 +207,12 @@ ${workshopData.howToWin || '[Not provided]'}
 
 ### 🔄 Key Substitutes
 ${workshopData.keySubstitutes || '[Not provided]'}
+
+### 🎯 Critical Capabilities
+${criticalCapabilities || '[Not provided]'}
+
+### ⚙️ Required Systems
+${requiredSystems || '[Not provided]'}
 
 ### 💰 Value Metric
 ${valueMetric || '[Not provided]'}
@@ -235,6 +255,8 @@ ${firstTests || '[Not provided]'}
                             <tr><td className="blueprint-label">Where We Play</td><td>{workshopData.whereToPlay || '...'}</td></tr>
                             <tr><td className="blueprint-label">How We Win</td><td>{workshopData.howToWin || '...'}</td></tr>
                             <tr><td className="blueprint-label">Key Substitutes</td><td>{workshopData.keySubstitutes || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Critical Capabilities</td><td>{criticalCapabilities || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Required Systems</td><td>{requiredSystems || '...'}</td></tr>
                             <tr><td className="blueprint-label">Value Metric</td><td>{valueMetric || '...'}</td></tr>
                             <tr><td className="blueprint-label">Early Signals (2–3)</td><td>{earlySignals || '...'}</td></tr>
                             <tr><td className="blueprint-label">Key Risks</td><td>{keyRisks || '...'}</td></tr>
@@ -320,11 +342,29 @@ ${firstTests || '[Not provided]'}
                             {/* Part 2: Define Your Advantage & Measures */}
                             <div className="mb-8">
                                 <h2 className="text-xl font-bold mb-4">Step 2: Define Your Advantage & Measures</h2>
-                                <p className="text-sm text-gray-600 mb-6">Define how you'll measure success and identify your key competitive advantages.</p>
+                                <p className="text-sm text-gray-600 mb-6">Define the capabilities and systems you need, plus how you'll measure success.</p>
+                                
+                                <InputField
+                                    label="Critical Capabilities"
+                                    tooltip="To deliver your 'How to Win', what 2-3 activities must your company perform flawlessly?"
+                                    value={criticalCapabilities}
+                                    setter={setCriticalCapabilities}
+                                    placeholder="e.g., 1. Proprietary ML model development. 2. Seamless 10-minute customer onboarding."
+                                    rows={3}
+                                />
+                                
+                                <InputField
+                                    label="Required Systems"
+                                    tooltip="What management systems, tools, or infrastructure are required to support those critical capabilities?"
+                                    value={requiredSystems}
+                                    setter={setRequiredSystems}
+                                    placeholder="e.g., 1. Unified data analytics platform. 2. Automated value-reporting engine for customers."
+                                    rows={3}
+                                />
                                 
                                 <InputField
                                     label="Value Metric"
-                                    tooltip="How will you measure the value you provide to customers? Be specific and quantifiable."
+                                    tooltip="How does your customer measure the value you deliver? This should be an outcome, not a feature."
                                     value={valueMetric}
                                     setter={setValueMetric}
                                     placeholder="e.g., Reduction in API incident resolution time (MTTR) by 50%+"
@@ -332,11 +372,11 @@ ${firstTests || '[Not provided]'}
                                 />
                                 
                                 <InputField
-                                    label="Early Signals (2-3 key indicators)"
-                                    tooltip="What early warning signs will tell you that your strategy is working? List 2-3 specific, measurable indicators."
+                                    label="Early Signals (2-3)"
+                                    tooltip="What leading indicators prove your strategy is working? These should predict the Value Metric."
                                     value={earlySignals}
                                     setter={setEarlySignals}
-                                    placeholder="e.g., 1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured within the first week. 3. Reduction in P1/P2 incidents reported by customers."
+                                    placeholder="e.g., 1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured."
                                     rows={3}
                                 />
                             </div>
@@ -344,32 +384,32 @@ ${firstTests || '[Not provided]'}
                             {/* Part 3: Plan Your Action */}
                             <div className="mb-8">
                                 <h2 className="text-xl font-bold mb-4">Step 3: Plan Your Action</h2>
-                                <p className="text-sm text-gray-600 mb-6">Identify potential risks and plan your response strategy.</p>
+                                <p className="text-sm text-gray-600 mb-6">Identify additional risks and plan concrete next steps to test your strategy.</p>
                                 
                                 <InputField
-                                    label="Key Risks (2-3 major threats)"
-                                    tooltip="What are the biggest risks that could derail your strategy? Be specific about what could go wrong."
+                                    label="Other Key Risks"
+                                    tooltip="You already identified your single riskiest assumption in Activity 2. What are 1-2 other key risks that could break your strategy?"
                                     value={keyRisks}
                                     setter={setKeyRisks}
-                                    placeholder="e.g., 1. A major competitor (e.g., Datadog) launches a similar, low-cost predictive feature. 2. Our ML model for predictions is not accurate enough in diverse real-world environments."
+                                    placeholder="e.g., 1. A major competitor launches a similar 'good enough' predictive feature."
                                     rows={3}
                                 />
                                 
                                 <InputField
-                                    label="Counter-Moves (response strategies)"
-                                    tooltip="How will you respond if these risks materialize? What's your backup plan for each major risk?"
+                                    label="Counter-Moves"
+                                    tooltip="If the risks you identified happen, what is your pre-planned response?"
                                     value={counterMoves}
                                     setter={setCounterMoves}
-                                    placeholder="e.g., 1. If competitor launches, we will double down on our 'setup-in-minutes' value prop and our superior customer support. 2. We will build a 'model tuning' feature to allow customers to improve accuracy for their specific use case."
+                                    placeholder="e.g., If competitor launches, double down on our 'setup-in-minutes' value prop and superior support."
                                     rows={3}
                                 />
                                 
                                 <InputField
-                                    label="First Tests (immediate next steps)"
-                                    tooltip="What are the first 2-3 concrete tests you'll run to validate your strategy? Include owners and deadlines."
+                                    label="First Tests"
+                                    tooltip="Based on the test you designed in Activity 2, what are two more concrete tests for the next 30 days? Assign an owner and a date."
                                     value={firstTests}
                                     setter={setFirstTests}
-                                    placeholder="e.g., 1. Test pricing model with 10 new prospects to confirm value perception. (Owner: Sarah, by Aug 29). 2. Onboard 3 design partners to validate the accuracy of predictive alerts. (Owner: Tom, by Sep 5)."
+                                    placeholder="e.g., 1. Test pricing model with 10 new prospects (Owner: Sarah, by Aug 29)."
                                     rows={3}
                                 />
                             </div>
