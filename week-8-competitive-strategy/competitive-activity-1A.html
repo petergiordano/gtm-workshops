@@ -425,7 +425,7 @@ ${newEntrants || '[Not provided]'}
                         
                         <ForceBox id="newEntrants" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                         <ForceBox id="suppliers" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
-                        <ForceBox id="buyers" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="customers" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                         <ForceBox id="substitutes" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
 
                         {/* Arrows removed - to be fixed later */}
@@ -435,7 +435,7 @@ ${newEntrants || '[Not provided]'}
                         <style>{`
                             #newEntrants { top: 60px; left: 50%; transform: translateX(-50%); }
                             #suppliers { top: 50%; left: -20px; transform: translateY(-50%); }
-                            #buyers { top: 50%; right: -20px; transform: translateY(-50%); }
+                            #customers { top: 50%; right: -20px; transform: translateY(-50%); }
                             #substitutes { bottom: 60px; left: 50%; transform: translateX(-50%); }
                         `}</style>
                     </div>
@@ -444,7 +444,7 @@ ${newEntrants || '[Not provided]'}
                     <div className="grid grid-cols-1 md:hidden gap-6">
                          <ForceBox id="newEntrants-mob" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                          <ForceBox id="competitors-mob" title="Competitors (Rivals)" question="Who else is chasing this problem?" tooltip="Be specific. Name companies, not 'everyone.'" placeholder="e.g., New Relic, Datadog." value={competitors} setter={setCompetitors} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
-                         <ForceBox id="buyers-mob" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="customers-mob" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                          <ForceBox id="suppliers-mob" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                          <ForceBox id="substitutes-mob" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                     </div>
