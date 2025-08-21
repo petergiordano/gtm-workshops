@@ -55,6 +55,34 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        /**
+         * Loads the entire workshop state from localStorage.
+         * @returns {object} The parsed workshop state or an empty object.
+         */
+        const loadWorkshopState = () => {
+            try {
+                const savedState = localStorage.getItem('workshopState');
+                return savedState ? JSON.parse(savedState) : {};
+            } catch (error) {
+                console.error("Could not load state from localStorage", error);
+                return {};
+            }
+        };
+
+        /**
+         * Saves a piece of state by merging it into the existing workshop state.
+         * @param {object} stateToSave - An object containing the key-value pairs to save.
+         */
+        const saveWorkshopState = (stateToSave) => {
+            try {
+                const currentState = loadWorkshopState();
+                const newState = { ...currentState, ...stateToSave };
+                localStorage.setItem('workshopState', JSON.stringify(newState));
+            } catch (error) {
+                console.error("Could not save state to localStorage", error);
+            }
+        };
+
         // Helper function for word count feedback - MOVED OUTSIDE COMPONENT
         const WordCountFeedback = ({ text, minWords = 5 }) => {
             const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
@@ -112,15 +140,15 @@
         };
 
         const CompetitiveSnapshotActivity = () => {
-            // State for each force's textarea
-            const [customers, setCustomers] = useState('');
-            const [competitors, setCompetitors] = useState('');
-            const [substitutes, setSubstitutes] = useState('');
-            const [suppliers, setSuppliers] = useState('');
-            const [newEntrants, setNewEntrants] = useState('');
+            // State for each force's textarea - initialized from localStorage
+            const [customers, setCustomers] = useState(loadWorkshopState().customers || '');
+            const [competitors, setCompetitors] = useState(loadWorkshopState().competitors || '');
+            const [substitutes, setSubstitutes] = useState(loadWorkshopState().substitutes || '');
+            const [suppliers, setSuppliers] = useState(loadWorkshopState().suppliers || '');
+            const [newEntrants, setNewEntrants] = useState(loadWorkshopState().newEntrants || '');
 
-            // State for tracking selected forces
-            const [selectedForces, setSelectedForces] = useState([]);
+            // State for tracking selected forces - initialized from localStorage
+            const [selectedForces, setSelectedForces] = useState(loadWorkshopState().selectedForces || []);
             
             // App state
             const [activityComplete, setActivityComplete] = useState(false);
@@ -150,6 +178,17 @@
                 setNewEntrants('');
                 setSelectedForces([]);
                 setActivityComplete(false);
+                
+                // Clear localStorage data for this activity
+                const emptyState = {
+                    customers: '',
+                    competitors: '',
+                    substitutes: '',
+                    suppliers: '',
+                    newEntrants: '',
+                    selectedForces: []
+                };
+                saveWorkshopState(emptyState);
             };
 
             useEffect(() => {
@@ -159,6 +198,19 @@
                     setActivityComplete(false);
                 }
             }, [selectedForces]);
+
+            // Auto-save state to localStorage whenever any form data changes
+            useEffect(() => {
+                const currentState = {
+                    customers,
+                    competitors,
+                    substitutes,
+                    suppliers,
+                    newEntrants,
+                    selectedForces
+                };
+                saveWorkshopState(currentState);
+            }, [customers, competitors, substitutes, suppliers, newEntrants, selectedForces]);
 
             const handleForceSelection = (forceId) => {
                 setSelectedForces(prev => {
