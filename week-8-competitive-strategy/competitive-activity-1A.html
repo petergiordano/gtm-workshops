@@ -241,29 +241,29 @@ ${newEntrants || '[Not provided]'}
                         <ForceBox id="buyers" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} />
                         <ForceBox id="substitutes" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} />
 
-                        {/* Shorter Arrows with Better Positioning */}
-                        {/* Top Arrow (from New Entrants box) */}
-                        <svg className="absolute top-[320px] left-1/2 -translate-x-1/2 z-20" width="12" height="35" viewBox="0 0 12 35" fill="none">
-                            <line x1="6" y1="0" x2="6" y2="20" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
-                            <path d="M6 35 L0 20 L12 20 Z" fill="#FF7F00"/>
+                        {/* 30px Arrows with Precise Positioning */}
+                        {/* Top Arrow (from New Entrants box) - starts at y:525, ends at y:555 */}
+                        <svg className="absolute left-1/2 -translate-x-1/2 z-20" style={{top: '525px'}} width="12" height="30" viewBox="0 0 12 30" fill="none">
+                            <line x1="6" y1="0" x2="6" y2="15" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
+                            <path d="M6 30 L0 15 L12 15 Z" fill="#FF7F00"/>
                         </svg>
                         
-                        {/* Right Arrow (from Customers box) */}
-                        <svg className="absolute top-1/2 right-[240px] -translate-y-1/2 z-20" width="35" height="12" viewBox="0 0 35 12" fill="none">
-                            <line x1="15" y1="6" x2="35" y2="6" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
+                        {/* Right Arrow (from Customers box) - temporarily keeping old position */}
+                        <svg className="absolute top-1/2 right-[340px] -translate-y-1/2 z-20" width="30" height="12" viewBox="0 0 30 12" fill="none">
+                            <line x1="15" y1="6" x2="30" y2="6" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
                             <path d="M0 6 L15 0 L15 12 Z" fill="#FF7F00"/>
                         </svg>
                         
-                        {/* Bottom Arrow (from Substitutes box) */}
-                        <svg className="absolute bottom-[320px] left-1/2 -translate-x-1/2 z-20" width="12" height="35" viewBox="0 0 12 35" fill="none">
-                            <line x1="6" y1="15" x2="6" y2="35" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
+                        {/* Bottom Arrow (from Substitutes box) - starts at y:830, ends at y:800 */}
+                        <svg className="absolute left-1/2 -translate-x-1/2 z-20" style={{top: '800px'}} width="12" height="30" viewBox="0 0 12 30" fill="none">
+                            <line x1="6" y1="15" x2="6" y2="30" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
                             <path d="M6 0 L0 15 L12 15 Z" fill="#FF7F00"/>
                         </svg>
                         
-                        {/* Left Arrow (from Suppliers box) */}
-                        <svg className="absolute top-1/2 left-[240px] -translate-y-1/2 z-20" width="35" height="12" viewBox="0 0 35 12" fill="none">
-                            <line x1="0" y1="6" x2="20" y2="6" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
-                            <path d="M35 6 L20 0 L20 12 Z" fill="#FF7F00"/>
+                        {/* Left Arrow (from Suppliers box) - temporarily keeping old position */}
+                        <svg className="absolute top-1/2 left-[340px] -translate-y-1/2 z-20" width="30" height="12" viewBox="0 0 30 12" fill="none">
+                            <line x1="0" y1="6" x2="15" y2="6" stroke="#FF7F00" strokeWidth="6" strokeLinecap="round"/>
+                            <path d="M30 6 L15 0 L15 12 Z" fill="#FF7F00"/>
                         </svg>
                         
 
