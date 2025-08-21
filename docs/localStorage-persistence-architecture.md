@@ -6,45 +6,69 @@ This document defines the standard localStorage persistence architecture for GTM
 
 ## Architecture Principles
 
-### Single Workshop State Object
-All workshop data is stored in a single JSON object under the localStorage key `workshopState`:
+### Unique Project-Specific Storage Keys
+All workshop data is stored using unique, application-specific localStorage keys to prevent data collisions between different workshop applications. Each workshop should define its own storage key using the naming convention `workshopState_` followed by the project identifier.
+
+**Recommended naming convention:**
+- Competitive Strategy: `workshopState_competitive_strategy`
+- Pricing Strategy: `workshopState_pricing_strategy`  
+- Market Entry: `workshopState_market_entry`
 
 ```javascript
-// localStorage structure
+// ❌ BEFORE: Hardcoded key causes collisions
 {
   "workshopState": {
-    // Activity 1 data
+    "customers": "...",
+    "competitors": "..."
+  }
+}
+
+// ✅ AFTER: Unique key prevents collisions
+{
+  "workshopState_competitive_strategy": {
     "customers": "...",
     "competitors": "...", 
-    "selectedForces": ["customers", "substitutes"],
-    
-    // Activity 2 data (future)
-    "targetSegment": "...",
-    "specificBuyer": "...",
-    
-    // Activity N data (future)
-    "someOtherField": "..."
+    "selectedForces": ["customers", "substitutes"]
+  },
+  "workshopState_pricing_strategy": {
+    "coreValueMetric": "...",
+    "pricingModel": "..."
   }
 }
 ```
 
-### Data Merging Strategy
-New data is merged into existing localStorage state, preserving data from other activities. This enables multi-activity workshop persistence without data loss.
+### Data Isolation Strategy
+Each workshop application maintains its own isolated state in localStorage, enabling multiple workshop applications to coexist in the same browser without interfering with each other. This architecture supports:
+
+- **Data safety**: No accidental overwrites between workshops
+- **Independent development**: Teams can work on different workshops simultaneously
+- **User flexibility**: Users can work on multiple workshops concurrently
+
+### Multi-Activity Workshop Support
+Within a single workshop, activities share the same storage key, enabling data persistence and cross-activity data sharing while maintaining isolation from other workshop applications.
 
 ## Implementation Guide
 
-### Step 1: Add Global Helper Functions
+### Step 1: Define Storage Key and Add Global Helper Functions
 
-Add these functions **outside** your React component, typically after the React import:
+**First, define a unique storage key constant** at the top of your script:
+
+```javascript
+// Define unique storage key for this workshop application
+const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
+```
+
+**Then add these helper functions** outside your React component, typically after the React import:
 
 ```javascript
 /**
- * Loads the entire workshop state from localStorage.
+ * Loads the entire workshop state from localStorage using a specific key.
+ * @param {string} storageKey - The unique key for the workshop's state.
  * @returns {object} The parsed workshop state or an empty object.
  */
-const loadWorkshopState = () => {
+const loadWorkshopState = (storageKey) => {
     try {
-        const savedState = localStorage.getItem('workshopState');
+        const savedState = localStorage.getItem(storageKey);
         return savedState ? JSON.parse(savedState) : {};
     } catch (error) {
         console.error("Could not load state from localStorage", error);
@@ -55,12 +79,13 @@ const loadWorkshopState = () => {
 /**
  * Saves a piece of state by merging it into the existing workshop state.
  * @param {object} stateToSave - An object containing the key-value pairs to save.
+ * @param {string} storageKey - The unique key for the workshop's state.
  */
-const saveWorkshopState = (stateToSave) => {
+const saveWorkshopState = (stateToSave, storageKey) => {
     try {
-        const currentState = loadWorkshopState();
+        const currentState = loadWorkshopState(storageKey);
         const newState = { ...currentState, ...stateToSave };
-        localStorage.setItem('workshopState', JSON.stringify(newState));
+        localStorage.setItem(storageKey, JSON.stringify(newState));
     } catch (error) {
         console.error("Could not save state to localStorage", error);
     }
@@ -69,16 +94,19 @@ const saveWorkshopState = (stateToSave) => {
 
 ### Step 2: Initialize State from localStorage
 
-Modify useState calls to load from localStorage with fallbacks:
+Modify useState calls to load from localStorage using your unique storage key:
 
 ```javascript
+// Add this constant at the top of the script
+const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
+
 // ❌ BEFORE: Simple initialization
 const [customers, setCustomers] = useState('');
 const [selectedForces, setSelectedForces] = useState([]);
 
-// ✅ AFTER: localStorage initialization
-const [customers, setCustomers] = useState(loadWorkshopState().customers || '');
-const [selectedForces, setSelectedForces] = useState(loadWorkshopState().selectedForces || []);
+// ✅ AFTER: localStorage initialization with unique key
+const [customers, setCustomers] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).customers || '');
+const [selectedForces, setSelectedForces] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).selectedForces || []);
 ```
 
 ### Step 3: Add Auto-Persistence Hook
@@ -97,7 +125,7 @@ useEffect(() => {
         selectedForces
         // Add all fields that should persist
     };
-    saveWorkshopState(currentState);
+    saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
 }, [customers, competitors, substitutes, suppliers, newEntrants, selectedForces]);
 ```
 
@@ -123,7 +151,7 @@ const resetActivity = () => {
         newEntrants: '',
         selectedForces: []
     };
-    saveWorkshopState(emptyState);
+    saveWorkshopState(emptyState, WORKSHOP_STORAGE_KEY);
 };
 ```
 
@@ -165,6 +193,7 @@ Before committing localStorage persistence implementation:
 - [ ] Test with invalid JSON in localStorage
 - [ ] Test with partial data (some fields missing)
 - [ ] Test cross-tab behavior (optional)
+- [ ] Test data isolation (other workshop data unaffected)
 
 ### Performance Testing
 - [ ] No infinite loops in useEffect
@@ -173,7 +202,23 @@ Before committing localStorage persistence implementation:
 
 ## Common Pitfalls & Solutions
 
-### 1. ID Mismatch Bug
+### 1. Missing Storage Key Definition
+**Problem**: Helper functions called without storage key parameter
+```javascript
+// ❌ Bug: Missing storage key parameter
+const [customers, setCustomers] = useState(loadWorkshopState().customers || '');
+saveWorkshopState(currentState);
+```
+
+**Solution**: Always define and use storage key constant
+```javascript
+// ✅ Fixed: Storage key properly defined and used
+const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
+const [customers, setCustomers] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).customers || '');
+saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
+```
+
+### 2. ID Mismatch Bug
 **Problem**: Component IDs don't match state variable names
 ```javascript
 // ❌ Bug: id="buyers" but state is "customers"
@@ -186,12 +231,12 @@ Before committing localStorage persistence implementation:
 <Component id="customers" value={customers} onClick={() => handleSelection("customers")} />
 ```
 
-### 2. Missing Dependencies in useEffect
+### 3. Missing Dependencies in useEffect
 **Problem**: useEffect doesn't include all state variables
 ```javascript
 // ❌ Bug: Missing selectedForces in dependency array
 useEffect(() => {
-    saveWorkshopState({ customers, competitors, selectedForces });
+    saveWorkshopState({ customers, competitors, selectedForces }, WORKSHOP_STORAGE_KEY);
 }, [customers, competitors]); // selectedForces missing!
 ```
 
@@ -199,17 +244,17 @@ useEffect(() => {
 ```javascript
 // ✅ Fixed: All variables included
 useEffect(() => {
-    saveWorkshopState({ customers, competitors, selectedForces });
+    saveWorkshopState({ customers, competitors, selectedForces }, WORKSHOP_STORAGE_KEY);
 }, [customers, competitors, selectedForces]); // All included
 ```
 
-### 3. Infinite useEffect Loops
+### 4. Infinite useEffect Loops
 **Problem**: Objects/arrays in dependencies cause infinite loops
 ```javascript
 // ❌ Bug: Object recreation causes infinite loop
 useEffect(() => {
     const state = { customers, competitors }; // New object every render
-    saveWorkshopState(state);
+    saveWorkshopState(state, WORKSHOP_STORAGE_KEY);
 }, [{ customers, competitors }]); // New object in dependencies
 ```
 
@@ -218,11 +263,11 @@ useEffect(() => {
 // ✅ Fixed: Primitive values in dependencies
 useEffect(() => {
     const state = { customers, competitors };
-    saveWorkshopState(state);
+    saveWorkshopState(state, WORKSHOP_STORAGE_KEY);
 }, [customers, competitors]); // Primitive values only
 ```
 
-### 4. Reset Function Incomplete
+### 5. Reset Function Incomplete
 **Problem**: Reset clears UI but not localStorage
 ```javascript
 // ❌ Bug: localStorage not cleared
@@ -239,7 +284,7 @@ const resetActivity = () => {
 const resetActivity = () => {
     setCustomers('');
     setCompetitors('');
-    saveWorkshopState({ customers: '', competitors: '' });
+    saveWorkshopState({ customers: '', competitors: '' }, WORKSHOP_STORAGE_KEY);
 };
 ```
 
@@ -249,9 +294,10 @@ When implementing persistence in a new activity:
 
 ```
 workshop-activity-XA.html
+├── Unique storage key constant (WORKSHOP_STORAGE_KEY)
 ├── Global helper functions
-│   ├── loadWorkshopState()
-│   └── saveWorkshopState()
+│   ├── loadWorkshopState(storageKey)
+│   └── saveWorkshopState(stateToSave, storageKey)
 ├── React component
 │   ├── useState with localStorage initialization
 │   ├── Auto-persistence useEffect hook
@@ -276,15 +322,16 @@ Graceful degradation: App functions normally even when localStorage fails.
 - **Client-side only**: Data stored in user's browser, not transmitted
 - **Public storage**: Other scripts on same domain can access localStorage
 - **Size limits**: 5-10MB total localStorage limit per domain
+- **Data isolation**: Unique keys prevent accidental data access between workshops
 
 ## Future Enhancements
 
 ### Multi-Activity Workshop Support
-As more activities are added, the `workshopState` object will grow:
+Within a single workshop application, activities can share data using the same storage key:
 
 ```javascript
 {
-  "workshopState": {
+  "workshopState_competitive_strategy": {
     // Activity 1: Competitive Analysis
     "customers": "...",
     "selectedForces": [...],
@@ -293,7 +340,7 @@ As more activities are added, the `workshopState` object will grow:
     "targetSegment": "...",
     "whereNotToPlay": "...",
     
-    // Activity 3: Market Entry
+    // Activity 3: Strategy Blueprint
     "entryStrategy": "...",
     "timeFrame": "..."
   }
@@ -301,16 +348,17 @@ As more activities are added, the `workshopState` object will grow:
 ```
 
 ### Cross-Activity Data Sharing
-Future workshop activities may reference data from previous activities:
+Workshop activities can reference data from previous activities within the same workshop:
 
 ```javascript
-// Activity 2 can access Activity 1 data
-const previousData = loadWorkshopState();
+// Activity 2 can access Activity 1 data from same workshop
+const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
+const previousData = loadWorkshopState(WORKSHOP_STORAGE_KEY);
 const competitiveForces = previousData.selectedForces || [];
 ```
 
 ### Workshop Progress Tracking
-Track overall workshop completion:
+Track overall workshop completion within each workshop application:
 
 ```javascript
 const workshopProgress = {
@@ -320,25 +368,68 @@ const workshopProgress = {
   startedDate: '2024-01-15',
   lastModified: '2024-01-15T14:30:00Z'
 };
+saveWorkshopState({ workshopProgress }, WORKSHOP_STORAGE_KEY);
+```
+
+### Cross-Workshop Data Integration
+Future enhancements may enable controlled data sharing between workshops:
+
+```javascript
+// Hypothetical future feature: controlled cross-workshop data access
+const competitiveData = loadWorkshopState('workshopState_competitive_strategy');
+const pricingData = loadWorkshopState('workshopState_pricing_strategy');
+const integratedInsights = combineWorkshopData(competitiveData, pricingData);
 ```
 
 ## Migration Guide
 
 To add persistence to existing activities:
 
-1. **Create feature branch**: `feat/activity-N-persistence`
-2. **Add helper functions** (copy from this doc)
-3. **Update useState calls** with localStorage initialization
-4. **Add persistence useEffect** with all form fields
-5. **Update reset function** to clear localStorage
-6. **Fix any ID mismatches** between components and state
-7. **Test thoroughly** using checklist above
-8. **Commit with descriptive message**
+1. **Define a unique storage key**: At the top of your script, declare a constant for your application's unique localStorage key (e.g., `const WORKSHOP_STORAGE_KEY = 'workshopState_my_app';`).
+2. **Create feature branch**: `feat/activity-N-persistence`
+3. **Add helper functions** (copy from this doc)
+4. **Update useState calls** with localStorage initialization using storage key
+5. **Add persistence useEffect** with all form fields and storage key
+6. **Update reset function** to clear localStorage using storage key
+7. **Fix any ID mismatches** between components and state
+8. **Test thoroughly** using checklist above
+9. **Commit with descriptive message**
+
+### Migrating from Hardcoded 'workshopState' Key
+
+If updating existing implementations that use the old hardcoded key:
+
+1. **Define new unique storage key** constant
+2. **Update all function calls** to include storage key parameter
+3. **Consider data migration** if preserving existing user data is required:
+
+```javascript
+// Optional: Migrate existing data to new key
+const oldData = localStorage.getItem('workshopState');
+if (oldData && !localStorage.getItem(WORKSHOP_STORAGE_KEY)) {
+    localStorage.setItem(WORKSHOP_STORAGE_KEY, oldData);
+    localStorage.removeItem('workshopState'); // Clean up old key
+}
+```
+
+## Storage Key Naming Conventions
+
+### Recommended Patterns
+- **Workshop name based**: `workshopState_competitive_strategy`
+- **Domain specific**: `workshopState_gtm_planning`
+- **Sequential**: `workshopState_week1`, `workshopState_week2`
+
+### Avoid These Patterns
+- **Generic names**: `workshopState`, `data`, `state`
+- **Conflicting names**: Using same key for different workshops
+- **Special characters**: Spaces, punctuation that might cause issues
+- **Very long names**: Keep under 50 characters for readability
 
 ## Maintenance Notes
 
 - **Update this document** when patterns change
 - **Version control**: Keep helper functions consistent across activities
+- **Storage key registry**: Maintain list of used storage keys to prevent collisions
 - **Testing**: Add localStorage tests to CI/CD pipeline (future)
 - **Monitoring**: Track localStorage usage in production (future)
 
@@ -346,4 +437,5 @@ To add persistence to existing activities:
 
 **Last Updated**: 2024-01-XX  
 **Implementation**: competitive-activity-1A.html (reference implementation)  
-**Status**: Active - use for all new workshop activities
+**Status**: Active - use for all new workshop activities  
+**Breaking Change**: v2.0 - Requires unique storage keys (migration guide above)
