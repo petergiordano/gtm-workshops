@@ -327,7 +327,12 @@ ${newEntrants || '[Not provided]'}
                         </div>
                     </div>
 
-                    <div id="notification-bar" className="fixed top-5 right-5 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none">You can only select up to two forces.</div>
+                    <div id="notification-bar" className="fixed top-5 right-5 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50">You can only select up to two forces.</div>
+                    <style>{`
+                        #notification-bar.show {
+                            opacity: 1 !important;
+                        }
+                    `}</style>
 
                     <div className="relative w-full h-[900px] my-10 hidden md:block">
                         {/* Center Interactive Competitors Box */}
@@ -348,7 +353,15 @@ ${newEntrants || '[Not provided]'}
                                 placeholder="e.g., New Relic, Datadog"
                                 className="w-full laptop-textarea p-3 border border-blue-300 rounded-lg text-sm text-gray-800 bg-white/90 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400 resize-none"
                             />
-                            <WordCountFeedback text={competitors} minWords={5} />
+                            <div className="flex justify-between items-center mt-1">
+                                <span className="text-xs text-blue-200">
+                                    (describe in 5+ words)
+                                </span>
+                                <span className={`text-sm flex items-center gap-1 ${competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 ? 'text-white' : 'text-blue-200'}`}>
+                                    {competitors.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                    {competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 && <span>✓</span>}
+                                </span>
+                            </div>
                             <button 
                                 onClick={() => handleForceSelection('competitors')} 
                                 className={`mt-2 w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${selectedForces.includes('competitors') ? 'bg-orange-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
@@ -445,21 +458,28 @@ ${newEntrants || '[Not provided]'}
                             className={`px-4 py-2 rounded-lg font-medium transition-colors flex-shrink-0 ${
                                 activityComplete 
                                     ? 'bg-gray-500 text-white hover:bg-gray-600' 
-                                    : 'bg-green-500 text-white hover:bg-green-600'
+                                    : selectedForces.length >= 2 
+                                        ? 'bg-green-500 text-white hover:bg-green-600'
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
                             }`}
-                            disabled={!activityComplete && selectedForces.length < 2}
+                            disabled={selectedForces.length < 2}
                         >
                             {activityComplete ? 'Return to Workshop' : 'Generate Report'}
                         </button>
                         
                         <button
                             onClick={() => {
+                                console.log('Continue button clicked, selectedForces:', selectedForces);
                                 if (!activityComplete) {
                                     setActivityComplete(true);
                                 }
                                 window.location.href = 'competitive-activity-2A.html';
                             }}
-                            className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition-colors font-semibold flex-shrink-0"
+                            className={`px-4 py-2 rounded-lg font-semibold transition-colors flex-shrink-0 ${
+                                selectedForces.length >= 2 
+                                    ? 'bg-orange-500 text-white hover:bg-orange-600'
+                                    : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                            }`}
                             disabled={selectedForces.length < 2}
                         >
                             Continue to Activity 2
