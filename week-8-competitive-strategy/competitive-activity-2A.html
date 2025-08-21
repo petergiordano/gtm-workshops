@@ -21,6 +21,27 @@
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        input::placeholder {
+            color: #9CA3AF;
+        }
+        @media (max-width: 768px) {
+            .fields-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
     </style>
 </head>
 <body>
@@ -28,30 +49,91 @@
 
     <script type="application/json" id="testData">
     {
-        "whereToPlay": "We play in mid-market B2B SaaS teams (50-500 employees) who are struggling with unreliable, custom-built API monitoring scripts and cannot afford enterprise-grade observability platforms.",
-        "howToWin": "We win with a monitoring solution that sets up in minutes (not weeks), provides predictive failure alerts powered by a proprietary ML model, and has transparent, usage-based pricing that is 50% cheaper than enterprise rivals."
+        "targetSegment": "Mid-market B2B SaaS companies",
+        "specificBuyer": "Heads of DevOps and Engineering Directors", 
+        "urgentProblem": "Who experience weekly API failures costing $50K+ per incident",
+        "whereNotToPlay": "We will not serve the Fortune 500 or companies without a dedicated DevOps team",
+        "value1": "Preemptive Problem Resolution",
+        "capability1": "Proprietary Machine Learning Models",
+        "value2": "Automated Resolution & Cost Savings",
+        "capability2": "Enhanced Automated Problem Resolution Engine",
+        "value3": "Comprehensive Visibility",
+        "capability3": "Seamless Cross-Platform Integration",
+        "riskiestAssumption": "Engineering leaders will trust and act on ML-generated predictive alerts over their existing monitoring tools"
     }
     </script>
 
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // Helper component for input fields with tooltips - MOVED OUTSIDE COMPONENT
+        const InputField = ({ label, tooltip, placeholder, value, setter }) => (
+            <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2 relative group">
+                    {label}
+                    <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                        {tooltip}
+                    </span>
+                </label>
+                <input
+                    type="text"
+                    value={value}
+                    onChange={(e) => setter(e.target.value)}
+                    placeholder={placeholder}
+                    className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                />
+            </div>
+        );
+
         const PlayWinChoicesActivity = () => {
-            const [whereToPlay, setWhereToPlay] = useState('');
-            const [howToWin, setHowToWin] = useState('');
+            // Step 1: Where to Play fields
+            const [targetSegment, setTargetSegment] = useState('');
+            const [specificBuyer, setSpecificBuyer] = useState('');
+            const [urgentProblem, setUrgentProblem] = useState('');
+            const [whereNotToPlay, setWhereNotToPlay] = useState('');
+            
+            // Step 2: How to Win fields - Value/Capability pairs
+            const [value1, setValue1] = useState('');
+            const [capability1, setCapability1] = useState('');
+            const [value2, setValue2] = useState('');
+            const [capability2, setCapability2] = useState('');
+            const [value3, setValue3] = useState('');
+            const [capability3, setCapability3] = useState('');
+            
+            // Step 3: Riskiest Assumption
+            const [riskiestAssumption, setRiskiestAssumption] = useState('');
 
             const [activityComplete, setActivityComplete] = useState(false);
+            const [showExportSection, setShowExportSection] = useState(false);
             const [devMode, setDevMode] = useState(false);
             const [devFillLoading, setDevFillLoading] = useState(false);
             
-            // Completion is based on having content in both fields
+            // Calculate progress based on filled fields
+            const getFilledFieldsCount = () => {
+                let count = 0;
+                if (targetSegment.trim().length > 3) count++;
+                if (specificBuyer.trim().length > 3) count++;
+                if (urgentProblem.trim().length > 3) count++;
+                if (whereNotToPlay.trim().length > 3) count++;
+                if (value1.trim().length > 3) count++;
+                if (capability1.trim().length > 3) count++;
+                if (value2.trim().length > 3) count++;
+                if (capability2.trim().length > 3) count++;
+                if (value3.trim().length > 3) count++;
+                if (capability3.trim().length > 3) count++;
+                if (riskiestAssumption.trim().length > 3) count++;
+                return count;
+            };
+            
+            const filledFieldsCount = getFilledFieldsCount();
+            const progressPercentage = (filledFieldsCount / 11) * 100;
+
+            // Check if all fields have meaningful content (>10 characters)
             useEffect(() => {
-                if (whereToPlay.trim().length > 20 && howToWin.trim().length > 20) {
-                    setActivityComplete(true);
-                } else {
-                    setActivityComplete(false);
-                }
-            }, [whereToPlay, howToWin]);
+                const allFieldsFilled = filledFieldsCount === 11;
+                setActivityComplete(allFieldsFilled);
+            }, [targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, riskiestAssumption]);
 
             const toggleDevMode = () => setDevMode(!devMode);
 
@@ -59,8 +141,17 @@
                 setDevFillLoading(true);
                 try {
                     const testData = JSON.parse(document.getElementById('testData').textContent);
-                    setWhereToPlay(testData.whereToPlay);
-                    setHowToWin(testData.howToWin);
+                    setTargetSegment(testData.targetSegment);
+                    setSpecificBuyer(testData.specificBuyer);
+                    setUrgentProblem(testData.urgentProblem);
+                    setWhereNotToPlay(testData.whereNotToPlay);
+                    setValue1(testData.value1);
+                    setCapability1(testData.capability1);
+                    setValue2(testData.value2);
+                    setCapability2(testData.capability2);
+                    setValue3(testData.value3);
+                    setCapability3(testData.capability3);
+                    setRiskiestAssumption(testData.riskiestAssumption);
                     console.log('✅ Dev data loaded successfully');
                 } catch (error) {
                     console.error('❌ Failed to load dev data:', error);
@@ -68,17 +159,59 @@
                     setDevFillLoading(false);
                 }
             };
+            
+            const resetActivity = () => {
+                setTargetSegment('');
+                setSpecificBuyer('');
+                setUrgentProblem('');
+                setWhereNotToPlay('');
+                setValue1('');
+                setCapability1('');
+                setValue2('');
+                setCapability2('');
+                setValue3('');
+                setCapability3('');
+                setRiskiestAssumption('');
+                setShowExportSection(false);
+            };
 
             const generateMarkdownSummary = () => {
                 const timestamp = new Date().toLocaleString();
                 return `# Competitive Strategy: Play & Win Choices
 Generated: ${timestamp}
 
-### 🎯 Where We Play
-${whereToPlay || '[Not provided]'}
+## 🎯 Where We Play
 
-### 🏆 How We Win
-${howToWin || '[Not provided]'}
+**Target Segment:** ${targetSegment || '[Not provided]'}
+
+**Specific Buyer:** ${specificBuyer || '[Not provided]'}
+
+**Urgent Problem:** ${urgentProblem || '[Not provided]'}
+
+**Where We Will NOT Play:** ${whereNotToPlay || '[Not provided]'}
+
+**Strategic Statement:** We play in ${targetSegment || '[segment]'}, for ${specificBuyer || '[buyer]'}, who have ${urgentProblem || '[problem]'}.
+
+**Strategic Trade-off:** To win, we will explicitly not serve ${whereNotToPlay || '[your defined trade-off]'}.
+
+## 🏆 How We Win
+
+Our unique advantage is a system of reinforcing capabilities that deliver exceptional value:
+
+1. **We deliver:** ${value1 || '[Value #1]'}  
+   **Through our:** ${capability1 || '[Capability #1]'}
+
+2. **We deliver:** ${value2 || '[Value #2]'}  
+   **Through our:** ${capability2 || '[Capability #2]'}
+
+3. **We deliver:** ${value3 || '[Value #3]'}  
+   **Through our:** ${capability3 || '[Capability #3]'}
+
+**Strategic Statement:** We win by delivering ${value1 || '[value 1]'} through ${capability1 || '[capability 1]'}, ${value2 || '[value 2]'} through ${capability2 || '[capability 2]'}, and ${value3 || '[value 3]'} through ${capability3 || '[capability 3]'}.
+
+## ⚠️ Riskiest Assumption
+
+${riskiestAssumption || '[Not provided]'}
 
 ---
 ### 📅 Assessment Details
@@ -89,38 +222,79 @@ ${howToWin || '[Not provided]'}
             };
 
             const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.focus();
+                            textArea.select();
+                            
+                            try {
+                                const successful = document.execCommand('copy');
+                                document.body.removeChild(textArea);
+                                return successful;
+                            } catch (err) {
+                                document.body.removeChild(textArea);
+                                return false;
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Copy failed:', err);
+                        return false;
+                    }
+                };
+
                 const markdown = generateMarkdownSummary();
-                navigator.clipboard.writeText(markdown).then(() => {
-                    const notification = document.createElement('div');
-                    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
-                    notification.textContent = '✅ Play & Win choices copied!';
-                    document.body.appendChild(notification);
-                    setTimeout(() => {
-                        notification.style.transition = 'opacity 0.5s';
-                        notification.style.opacity = '0';
-                        setTimeout(() => notification.remove(), 500);
-                    }, 3000);
+                copyToClipboard(markdown).then((success) => {
+                    if (success) {
+                        const statusDiv = document.getElementById('copyStatus');
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg animate-fadeIn">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                        notification.textContent = '✅ Play & Win choices copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 3000);
+                        
+                        setTimeout(() => {
+                            statusDiv.innerHTML = '';
+                        }, 3000);
+                    } else {
+                        const statusDiv = document.getElementById('copyStatus');
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">❌ Copy Failed</p>
+                                <p class="text-sm">Please select and copy the text manually.</p>
+                            </div>
+                        `;
+                        
+                        setTimeout(() => {
+                            statusDiv.innerHTML = '';
+                        }, 3000);
+                    }
                 });
             };
-            
-            const InfoBox = ({ children }) => (
-                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg h-full">
-                    <div className="flex">
-                        <div className="flex-shrink-0">
-                            <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-                                <path fillRule="evenodd" d="M8.257 3.099c.636-1.21 2.27-1.21 2.906 0l4.5 8.625c.636 1.21-.242 2.776-1.453 2.776H5.204c-1.21 0-2.088-1.566-1.453-2.776l4.5-8.625zM10 15a1 1 0 110-2 1 1 0 010 2zm0-5a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1z" clipRule="evenodd" />
-                            </svg>
-                        </div>
-                        <div className="ml-3">
-                            <div className="text-sm text-yellow-700">{children}</div>
-                        </div>
-                    </div>
-                </div>
-            );
-
 
             return (
-                 <div className="max-w-6xl mx-auto p-4 md:p-8">
+                <div className="max-w-6xl mx-auto p-4 md:p-8">
+                    {/* Header */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                         <div className="flex justify-between items-center w-full mb-2">
                             <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">← Back to Workshop</a>
@@ -131,7 +305,7 @@ ${howToWin || '[Not provided]'}
                                 Activity 2: Play & Win Choices {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Make two clear, powerful choices. These sentences will become the core of your strategy.</p>
-                             {devMode && (
+                            {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
                                         <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
@@ -144,66 +318,291 @@ ${howToWin || '[Not provided]'}
                         </div>
                     </div>
 
-                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                        <div className="lg:col-span-2 space-y-6">
-                             <div className="bg-white p-6 rounded-xl border-2 border-gray-200">
-                                <label className="block text-xl font-bold text-gray-800 mb-2 relative group">
-                                    Where We Play
-                                    <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
-                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2">
-                                        Be narrow. Specific is stronger than broad. Which customers, use case, or wedge are you focusing on?
-                                    </span>
-                                </label>
-                                <textarea
-                                    value={whereToPlay}
-                                    onChange={(e) => setWhereToPlay(e.target.value)}
-                                    placeholder="We play in [segment/market] for [specific buyer persona] who have [specific problem]."
-                                    className="w-full p-3 border border-gray-300 rounded-lg text-base h-32 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                                />
-                             </div>
-                             <div className="bg-white p-6 rounded-xl border-2 border-gray-200">
-                                <label className="block text-xl font-bold text-gray-800 mb-2 relative group">
-                                    How We Win
-                                    <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
-                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2">
-                                        Winning comes from a system of strengths, not a single feature. Why you, not a rival or substitute?
-                                    </span>
-                                </label>
-                                <textarea
-                                    value={howToWin}
-                                    onChange={(e) => setHowToWin(e.target.value)}
-                                    placeholder="We win with [unique advantage #1], [unique advantage #2], and [unique advantage #3]."
-                                    className="w-full p-3 border border-gray-300 rounded-lg text-base h-32 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
-                                />
-                             </div>
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">
+                                {activityComplete ? 'Complete' : `${filledFieldsCount}/11 fields completed`}
+                            </span>
                         </div>
-
-                        <div className="lg:col-span-1 space-y-4">
-                            <InfoBox>
-                                <h4 className="font-bold text-yellow-800">Reminder from Activity 1</h4>
-                                <p className="mt-1">Check if your choices address the <strong>Top Two Forces</strong> you identified. For example, if 'Power of Buyer' is high, your 'How to Win' must neutralize that power (e.g., by creating high switching costs or a uniquely differentiated product).</p>
-                            </InfoBox>
-                             <InfoBox>
-                                <h4 className="font-bold text-yellow-800">Next Step: Your Blueprint</h4>
-                                <p className="mt-1">Keep your 'Play' & 'Win' sentences clear and powerful. You will copy them directly into your final **Competitive Strategy Blueprint** in the next activity.</p>
-                            </InfoBox>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-orange-500 h-2 rounded-full transition-all duration-300" 
+                                style={{width: `${progressPercentage}%`}}
+                            ></div>
                         </div>
                     </div>
 
-                    {activityComplete && (
-                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
+                    {/* Step 1: Define Where to Play */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="step-icon">01</div>
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800">Define Where to Play</h2>
+                                <p className="text-gray-600 text-sm mt-1">Break your market choice into three parts.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Review & Reflect Callout Box */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 text-blue-600 text-lg">📌</div>
+                                <div>
+                                    <h4 className="font-semibold text-blue-800 mb-2">First, Review Your Customer Profile</h4>
+                                    <p className="text-blue-700 text-sm leading-relaxed">
+                                        Your 'Where to Play' choice is the most specific articulation of your ECP (Early Customer Profile). Review your ECP definition. The best choices are narrow and focused. You are defining the beachhead market you can dominate <strong>now</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fields-grid">
+                            <InputField
+                                label="Target Segment"
+                                tooltip="The specific industry or market you're focusing on. Be narrow! 'All small businesses' is too broad; 'Series A-C SaaS companies with dedicated DevOps teams' is better."
+                                placeholder="e.g., High-growth B2B SaaS companies"
+                                value={targetSegment}
+                                setter={setTargetSegment}
+                            />
+                            <InputField
+                                label="Specific Buyer"
+                                tooltip="The ideal persona who feels the pain most acutely and has the power to purchase or champion your product. Get specific on their title and context."
+                                placeholder="e.g., Heads of DevOps and Engineering Directors"
+                                value={specificBuyer}
+                                setter={setSpecificBuyer}
+                            />
+                            <InputField
+                                label="Urgent Problem"
+                                tooltip="The high-cost 'struggling moment' your buyer needs to solve now. Quantify it if possible (e.g., '$100k per hour of downtime')."
+                                placeholder="e.g., Who experience weekly API failures costing $50K+ per incident"
+                                value={urgentProblem}
+                                setter={setUrgentProblem}
+                            />
+                        </div>
+                        
+                        {/* Where We Will NOT Play - Full Width Field */}
+                        <div className="mt-6">
+                            <InputField
+                                label="Where We Will Not Play (Explicit Trade-off)"
+                                tooltip="A true strategy requires saying 'no.' What customer segments, product categories, or geographies will you deliberately ignore for the next 12-18 months to ensure you can win your chosen beachhead?"
+                                placeholder="e.g., We will not serve the Fortune 500 or companies without a dedicated DevOps team."
+                                value={whereNotToPlay}
+                                setter={setWhereNotToPlay}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Step 2: Define How to Win */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="step-icon">02</div>
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800">Define How to Win</h2>
+                                <p className="text-gray-600 text-sm mt-1">Connect your product's capabilities to the specific outcomes customers value.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Review & Reflect Callout Box */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 text-blue-600 text-lg">💡</div>
+                                <div>
+                                    <h4 className="font-semibold text-blue-800 mb-2">Connect Your Value Proposition</h4>
+                                    <p className="text-blue-700 text-sm leading-relaxed">
+                                        Your 'How to Win' choice is your unique value proposition in action. Review your positioning canvas. This is not a list of features, but a system of reinforcing advantages that delivers unique value to your 'Where to Play' target.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 fields-grid">
+                            {/* Column 1 */}
+                            <div className="space-y-4">
+                                <InputField
+                                    label="Core Customer Value #1"
+                                    tooltip="What is the primary outcome or benefit the customer gets? Focus on the 'what,' not the 'how.'"
+                                    placeholder="e.g., Preemptive Problem Resolution"
+                                    value={value1}
+                                    setter={setValue1}
+                                />
+                                <InputField
+                                    label="Supporting Capability #1"
+                                    tooltip="What specific feature or capability of your product delivers this value? This is the 'how.'"
+                                    placeholder="e.g., Proprietary Machine Learning Models"
+                                    value={capability1}
+                                    setter={setCapability1}
+                                />
+                            </div>
+                            
+                            {/* Column 2 */}
+                            <div className="space-y-4">
+                                <InputField
+                                    label="Core Customer Value #2"
+                                    tooltip="What is the second key outcome for the customer?"
+                                    placeholder="e.g., Automated Resolution & Cost Savings"
+                                    value={value2}
+                                    setter={setValue2}
+                                />
+                                <InputField
+                                    label="Supporting Capability #2"
+                                    tooltip="What feature or capability delivers this second value point?"
+                                    placeholder="e.g., Enhanced Automated Problem Resolution Engine"
+                                    value={capability2}
+                                    setter={setCapability2}
+                                />
+                            </div>
+                            
+                            {/* Column 3 */}
+                            <div className="space-y-4">
+                                <InputField
+                                    label="Core Customer Value #3"
+                                    tooltip="What is the third key outcome for the customer?"
+                                    placeholder="e.g., Comprehensive Visibility"
+                                    value={value3}
+                                    setter={setValue3}
+                                />
+                                <InputField
+                                    label="Supporting Capability #3"
+                                    tooltip="What feature or capability delivers this third value point?"
+                                    placeholder="e.g., Seamless Cross-Platform Integration"
+                                    value={capability3}
+                                    setter={setCapability3}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Step 3: Identify the Riskiest Assumption */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="step-icon">03</div>
+                            <div className="flex-1">
+                                <h2 className="text-xl font-semibold text-gray-800">Identify the Riskiest Assumption</h2>
+                                <p className="text-gray-600 text-sm mt-1">For this strategy to succeed, what is the single most important belief that <strong>must be true</strong> about your customers?</p>
+                            </div>
+                        </div>
+                        <div>
+                            <label className="block text-sm font-medium text-gray-700 mb-2 relative group">
+                                Your Riskiest Assumption
+                                <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                                    This is your leap-of-faith belief. If this is wrong, the whole strategy fails. What do you need to test first?
+                                </span>
+                            </label>
+                            <input
+                                type="text"
+                                value={riskiestAssumption}
+                                onChange={(e) => setRiskiestAssumption(e.target.value)}
+                                placeholder="e.g., Buyers will trust predictive alerts generated by ML."
+                                className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Auto-Summary Footer */}
+                    <div className="bg-gray-50 rounded-lg border border-gray-200 p-6 mb-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview: Your Strategic Choice</h3>
+                        <div className="space-y-3">
+                            <p className="text-gray-700">
+                                <strong>Where we play:</strong> We play in <span className="text-orange-600">{targetSegment || '[Target Segment]'}</span>, for <span className="text-orange-600">{specificBuyer || '[Specific Buyer]'}</span>, who have <span className="text-orange-600">{urgentProblem || '[Urgent Problem]'}</span>.
+                            </p>
+                            <p className="text-gray-700">
+                                <strong>Where we won't play:</strong> To win, we will explicitly not serve <span className="text-orange-600">{whereNotToPlay || '[your defined trade-off]'}</span>.
+                            </p>
+                            <p className="text-gray-700">
+                                <strong>How we win:</strong> We win by delivering <span className="text-orange-600">{value1 || '[Value #1]'}</span> through <span className="text-orange-600">{capability1 || '[Capability #1]'}</span>, <span className="text-orange-600">{value2 || '[Value #2]'}</span> through <span className="text-orange-600">{capability2 || '[Capability #2]'}</span>, and <span className="text-orange-600">{value3 || '[Value #3]'}</span> through <span className="text-orange-600">{capability3 || '[Capability #3]'}</span>.
+                            </p>
+                        </div>
+                        <p className="text-sm text-gray-600 mt-4">Keep these sentences clear—they'll be copied directly into your Competitive Strategy Blueprint.</p>
+                    </div>
+
+                    {/* Export Section */}
+                    {showExportSection && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6 animate-fadeIn">
                             <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Play & Win Choices</h3>
                             <p className="text-sm text-gray-600 mb-4">
-                                Copy your completed strategic choices as formatted text.
+                                Your strategic choices have been formatted as a professional markdown report for easy sharing and documentation.
                             </p>
-                            <button
-                                onClick={handleCopyToClipboard}
-                                className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
-                            >
-                                Copy Activity Summary
-                            </button>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Activity Summary" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                                >
+                                    📋 Copy Activity Summary
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
                         </div>
                     )}
+
+                    {/* Action Buttons */}
+                    <div className="flex justify-between items-center mt-8 gap-4">
+                        <button
+                            onClick={resetActivity}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium flex-shrink-0"
+                        >
+                            Reset Activity
+                        </button>
+                        
+                        <button
+                            onClick={() => {
+                                if (showExportSection) {
+                                    window.location.href = 'index.html';
+                                } else {
+                                    setShowExportSection(true);
+                                }
+                            }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors flex-shrink-0 ${
+                                showExportSection 
+                                    ? 'bg-gray-500 text-white hover:bg-gray-600' 
+                                    : activityComplete 
+                                        ? 'bg-green-500 text-white hover:bg-green-600'
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                            }`}
+                            disabled={!activityComplete}
+                        >
+                            {showExportSection ? 'Return to Workshop' : 'Generate Report'}
+                        </button>
+                        
+                        <button
+                            onClick={() => {
+                                if (!showExportSection && activityComplete) {
+                                    setShowExportSection(true);
+                                }
+                                window.location.href = 'competitive-activity-3A.html';
+                            }}
+                            className={`px-4 py-2 rounded-lg font-semibold transition-colors flex-shrink-0 ${
+                                activityComplete 
+                                    ? 'bg-orange-500 text-white hover:bg-orange-600'
+                                    : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                            }`}
+                            disabled={!activityComplete}
+                        >
+                            Continue to Activity 3
+                        </button>
+                    </div>
                 </div>
             );
         };
