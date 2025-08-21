@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Differentiation Strategy - Competitive Strategy</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #fafafa;
+        }
+        .strategy-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 24px;
+            background: white;
+            transition: all 0.3s ease;
+        }
+        .strategy-card:hover {
+            border-color: #FF9000;
+            box-shadow: 0 8px 24px rgba(255, 144, 0, 0.12);
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #FF9000;
+            box-shadow: 0 0 0 3px rgba(255, 144, 0, 0.1);
+        }
+        .section-title {
+            color: #FF9000;
+            font-weight: 600;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+        }
+        .section-description {
+            color: #8a8a8a;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Test Data from test_data/competitive-activity-2A.json -->
+    <script type="application/json" id="testData">
+    {
+        "coreAdvantage": "Predictive machine learning engine that prevents API failures before they impact customers, shifting from reactive monitoring to proactive prevention with automated resolution",
+        "reinforcingActivities": [
+            {
+                "activity": "Proprietary predictive ML models for API failure prediction",
+                "description": "Advanced machine learning algorithms trained on API performance patterns to predict failures 15-30 minutes before they occur",
+                "competitiveImpact": "Creates a significant data moat and first-mover advantage that competitors cannot easily replicate without similar training data"
+            },
+            {
+                "activity": "Seamless 10-minute cloud platform integrations",
+                "description": "Native, one-click integrations with AWS, Azure, GCP, and major DevOps tools that require minimal configuration", 
+                "competitiveImpact": "Eliminates implementation friction and reduces time-to-value compared to complex enterprise monitoring setups"
+            },
+            {
+                "activity": "Automated incident resolution engine",
+                "description": "AI-powered automation that not only detects issues but automatically implements common fixes and scaling responses",
+                "competitiveImpact": "Reduces MTTR from hours to minutes and frees engineering teams from manual firefighting compared to alert-only solutions"
+            }
+        ],
+        "uniqueValueProps": [
+            {
+                "proposition": "Predictive API failure prevention with automated resolution", 
+                "target": "VPs of Engineering and DevOps leaders at high-growth SaaS companies",
+                "benefit": "Prevent costly API downtime before it impacts customers and automatically resolve common issues without manual intervention"
+            },
+            {
+                "proposition": "Cross-platform observability with ML-driven insights",
+                "target": "Platform Engineering teams and Site Reliability Engineers", 
+                "benefit": "Gain unified visibility across all cloud platforms and microservices with actionable predictions and optimization recommendations"
+            },
+            {
+                "proposition": "Complementary integration with existing monitoring tools",
+                "target": "Engineering teams already using Datadog, New Relic, or Dynatrace",
+                "benefit": "Enhance current monitoring investments with predictive capabilities without requiring tool replacement or workflow disruption"
+            }
+        ],
+        "positioningStrategy": "Category definition: 'Predictive API Operations (PredictiveOps)' - moving beyond reactive monitoring to proactive failure prevention and automated incident resolution",
+        "competitiveDifferentiation": "While competitors like Datadog and New Relic focus on reactive monitoring and alerting, POSH delivers predictive prevention and automated resolution, shifting teams from firefighting to innovation",
+        "currentStep": 3
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState } = React;
+
+        const DifferentiationStrategyActivity = () => {
+            // State for differentiation strategy
+            const [currentStep, setCurrentStep] = useState(1);
+            const [coreAdvantage, setCoreAdvantage] = useState('');
+            const [reinforcingActivities, setReinforcingActivities] = useState([
+                { activity: '', description: '', competitiveImpact: '' },
+                { activity: '', description: '', competitiveImpact: '' },
+                { activity: '', description: '', competitiveImpact: '' }
+            ]);
+            const [uniqueValueProps, setUniqueValueProps] = useState([
+                { proposition: '', target: '', benefit: '' },
+                { proposition: '', target: '', benefit: '' },
+                { proposition: '', target: '', benefit: '' }
+            ]);
+            const [positioningStrategy, setPositioningStrategy] = useState('');
+            const [competitiveDifferentiation, setCompetitiveDifferentiation] = useState('');
+
+            // Dev mode state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            // Toggle dev mode
+            const toggleDevMode = () => {
+                setDevMode(!devMode);
+                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            };
+
+            // Load test data
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setCoreAdvantage(testData.coreAdvantage);
+                    setReinforcingActivities(testData.reinforcingActivities);
+                    setUniqueValueProps(testData.uniqueValueProps);
+                    setPositioningStrategy(testData.positioningStrategy);
+                    setCompetitiveDifferentiation(testData.competitiveDifferentiation);
+                    setCurrentStep(testData.currentStep || 3);
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // Update reinforcing activity
+            const updateReinforcingActivity = (index, field, value) => {
+                const updated = [...reinforcingActivities];
+                updated[index] = { ...updated[index], [field]: value };
+                setReinforcingActivities(updated);
+            };
+
+            // Update unique value prop
+            const updateValueProp = (index, field, value) => {
+                const updated = [...uniqueValueProps];
+                updated[index] = { ...updated[index], [field]: value };
+                setUniqueValueProps(updated);
+            };
+
+            // Step validation
+            const isStepComplete = (step) => {
+                switch (step) {
+                    case 1:
+                        return coreAdvantage.trim().length >= 15;
+                    case 2:
+                        return reinforcingActivities.every(activity => 
+                            activity.activity.trim().length >= 10 && 
+                            activity.description.trim().length >= 15 &&
+                            activity.competitiveImpact.trim().length >= 15
+                        );
+                    case 3:
+                        return uniqueValueProps.every(prop => 
+                            prop.proposition.trim().length >= 10 && 
+                            prop.target.trim().length >= 10 &&
+                            prop.benefit.trim().length >= 15
+                        ) && positioningStrategy.trim().length >= 15 && competitiveDifferentiation.trim().length >= 15;
+                    default:
+                        return false;
+                }
+            };
+
+            // Word count helper
+            const getWordCount = (text) => {
+                return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            };
+
+            // Generate markdown summary
+            const generateMarkdownSummary = () => {
+                const timestamp = new Date().toLocaleString();
+                
+                return `# Competitive Strategy: Differentiation Strategy
+Generated: ${timestamp}
+
+## Differentiation Strategy Analysis
+
+### 🎯 Core Competitive Advantage
+
+${coreAdvantage}
+
+### 🔧 Reinforcing Activities
+
+${reinforcingActivities.map((activity, i) => `**${activity.activity}**
+${activity.description}
+
+*Competitive Impact:* ${activity.competitiveImpact}
+
+`).join('')}
+
+### 💎 Unique Value Propositions
+
+${uniqueValueProps.map((prop, i) => `**${prop.proposition}**
+*Target:* ${prop.target}
+*Benefit:* ${prop.benefit}
+
+`).join('')}
+
+### 🎪 Market Positioning Strategy
+
+${positioningStrategy}
+
+### ⚔️ Competitive Differentiation
+
+${competitiveDifferentiation}
+
+---
+
+**Report Generated:** ${timestamp}
+**Workshop:** Competitive Strategy - Differentiation Strategy
+**Next Steps:** Continue to Activity 3 - Competitive Response Planning
+`;
+            };
+
+            // Copy to clipboard functionality
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            const successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            return successful;
+                        }
+                    } catch (err) {
+                        return false;
+                    }
+                };
+
+                const el = document.getElementById('markdownSummary');
+                const statusDiv = document.getElementById('copyStatus');
+                
+                copyToClipboard(el.value).then((success) => {
+                    if (success) {
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        const notification = document.createElement('div');
+                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; z-index: 9999;';
+                        notification.textContent = '✅ Differentiation strategy copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 2500);
+                    }
+                });
+            };
+
+            return (
+                <div className="max-w-[900px] mx-auto p-4">
+                    {/* Header */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="competitive-activity-1A.html" className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium">
+                                <span className="mr-1">←</span> Activity 1
+                            </a>
+                            <a href="../index.html" className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium">
+                                All GTM Workshops <span className="ml-1">↑</span>
+                            </a>
+                        </div>
+
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 
+                                className={`text-2xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
+                                onDoubleClick={toggleDevMode}
+                                title="Double-click to toggle dev mode"
+                            >
+                                Activity 2: Differentiation Strategy {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">
+                                Define your core advantages and unique positioning in the market
+                            </p>
+                        </div>
+
+                        {devMode && (
+                            <div className="mt-3 pt-3 border-t border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button
+                                        onClick={devFillData}
+                                        disabled={devFillLoading}
+                                        className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
+                                    >
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">
+                                {currentStep === 3 ? 'Complete' : `Step ${currentStep} of 3`}
+                            </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-orange-500 h-2 rounded-full transition-all duration-300" 
+                                style={{width: `${(currentStep / 3) * 100}%`}}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Step 1: Core Competitive Advantage */}
+                    {currentStep >= 1 && (
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                            <div className="section-title">Step 1: Core Competitive Advantage</div>
+                            <div className="section-description">
+                                What is your primary, hard-to-replicate advantage over competitors?
+                            </div>
+
+                            <div>
+                                <label className="block text-gray-700 font-medium mb-2">
+                                    Core Advantage <span className="text-xs text-gray-500">(3+ words)</span>
+                                </label>
+                                <textarea
+                                    value={coreAdvantage}
+                                    onChange={(e) => setCoreAdvantage(e.target.value)}
+                                    placeholder="e.g., Predictive machine learning engine that prevents API failures before customer impact..."
+                                    className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                />
+                                <div className="flex justify-end mt-1">
+                                    <span className={`text-sm ${getWordCount(coreAdvantage) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                        {getWordCount(coreAdvantage)} words
+                                    </span>
+                                </div>
+                            </div>
+
+                            {currentStep === 1 && (
+                                <div className="flex justify-center mt-6">
+                                    <button
+                                        onClick={() => setCurrentStep(2)}
+                                        disabled={!isStepComplete(1)}
+                                        className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                                    >
+                                        Continue to Step 2
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Step 2: Reinforcing Activities */}
+                    {currentStep >= 2 && (
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                            <div className="section-title">Step 2: Reinforcing Activities</div>
+                            <div className="section-description">
+                                What activities support and strengthen your core advantage?
+                            </div>
+
+                            {reinforcingActivities.map((activity, index) => (
+                                <div key={index} className="strategy-card mb-4">
+                                    <div className="grid md:grid-cols-1 gap-4">
+                                        <div>
+                                            <label className="block text-gray-700 font-medium mb-2">
+                                                Activity {index + 1} <span className="text-xs text-gray-500">(3+ words)</span>
+                                            </label>
+                                            <input
+                                                type="text"
+                                                value={activity.activity}
+                                                onChange={(e) => updateReinforcingActivity(index, 'activity', e.target.value)}
+                                                placeholder="e.g., Proprietary predictive ML models for API failure prediction"
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                            />
+                                            <div className="flex justify-end mt-1">
+                                                <span className={`text-sm ${getWordCount(activity.activity) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {getWordCount(activity.activity)} words
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-gray-700 font-medium mb-2">
+                                                Description <span className="text-xs text-gray-500">(3+ words)</span>
+                                            </label>
+                                            <textarea
+                                                value={activity.description}
+                                                onChange={(e) => updateReinforcingActivity(index, 'description', e.target.value)}
+                                                placeholder="e.g., Advanced machine learning algorithms trained on API patterns to predict failures 15-30 minutes before they occur..."
+                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                            />
+                                            <div className="flex justify-end mt-1">
+                                                <span className={`text-sm ${getWordCount(activity.description) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {getWordCount(activity.description)} words
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-gray-700 font-medium mb-2">
+                                                Competitive Impact <span className="text-xs text-gray-500">(3+ words)</span>
+                                            </label>
+                                            <textarea
+                                                value={activity.competitiveImpact}
+                                                onChange={(e) => updateReinforcingActivity(index, 'competitiveImpact', e.target.value)}
+                                                placeholder="e.g., Creates a significant data moat and first-mover advantage that competitors cannot easily replicate..."
+                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                            />
+                                            <div className="flex justify-end mt-1">
+                                                <span className={`text-sm ${getWordCount(activity.competitiveImpact) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {getWordCount(activity.competitiveImpact)} words
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+
+                            {currentStep === 2 && (
+                                <div className="flex justify-between mt-6">
+                                    <button
+                                        onClick={() => setCurrentStep(1)}
+                                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
+                                    >
+                                        ← Back
+                                    </button>
+                                    <button
+                                        onClick={() => setCurrentStep(3)}
+                                        disabled={!isStepComplete(2)}
+                                        className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
+                                    >
+                                        Continue to Step 3
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Step 3: Value Propositions & Positioning */}
+                    {currentStep >= 3 && (
+                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                            <div className="section-title">Step 3: Value Propositions & Positioning</div>
+                            <div className="section-description">
+                                Define unique value propositions and market positioning strategy
+                            </div>
+
+                            <div className="space-y-6">
+                                <div>
+                                    <h4 className="font-semibold text-gray-800 mb-4">Unique Value Propositions</h4>
+                                    {uniqueValueProps.map((prop, index) => (
+                                        <div key={index} className="strategy-card mb-4">
+                                            <div className="grid md:grid-cols-3 gap-4">
+                                                <div>
+                                                    <label className="block text-gray-700 font-medium mb-2">
+                                                        Value Proposition <span className="text-xs text-gray-500">(3+ words)</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={prop.proposition}
+                                                        onChange={(e) => updateValueProp(index, 'proposition', e.target.value)}
+                                                        placeholder="e.g., Predictive API failure prevention with automated resolution"
+                                                        className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                                    />
+                                                    <div className="flex justify-end mt-1">
+                                                        <span className={`text-sm ${getWordCount(prop.proposition) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                            {getWordCount(prop.proposition)} words
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-gray-700 font-medium mb-2">
+                                                        Target Audience <span className="text-xs text-gray-500">(3+ words)</span>
+                                                    </label>
+                                                    <input
+                                                        type="text"
+                                                        value={prop.target}
+                                                        onChange={(e) => updateValueProp(index, 'target', e.target.value)}
+                                                        placeholder="e.g., VPs of Engineering and DevOps leaders at high-growth SaaS companies"
+                                                        className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                                    />
+                                                    <div className="flex justify-end mt-1">
+                                                        <span className={`text-sm ${getWordCount(prop.target) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                            {getWordCount(prop.target)} words
+                                                        </span>
+                                                    </div>
+                                                </div>
+
+                                                <div>
+                                                    <label className="block text-gray-700 font-medium mb-2">
+                                                        Benefit <span className="text-xs text-gray-500">(3+ words)</span>
+                                                    </label>
+                                                    <textarea
+                                                        value={prop.benefit}
+                                                        onChange={(e) => updateValueProp(index, 'benefit', e.target.value)}
+                                                        placeholder="e.g., Prevent costly API downtime before it impacts customers and automatically resolve common issues"
+                                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                                    />
+                                                    <div className="flex justify-end mt-1">
+                                                        <span className={`text-sm ${getWordCount(prop.benefit) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                            {getWordCount(prop.benefit)} words
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div>
+                                    <h4 className="font-semibold text-gray-800 mb-4">Market Positioning</h4>
+                                    <div className="grid md:grid-cols-1 gap-4">
+                                        <div>
+                                            <label className="block text-gray-700 font-medium mb-2">
+                                                Positioning Strategy <span className="text-xs text-gray-500">(3+ words)</span>
+                                            </label>
+                                            <textarea
+                                                value={positioningStrategy}
+                                                onChange={(e) => setPositioningStrategy(e.target.value)}
+                                                placeholder="e.g., Category definition: 'Predictive API Operations (PredictiveOps)' - moving beyond reactive monitoring..."
+                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                            />
+                                            <div className="flex justify-end mt-1">
+                                                <span className={`text-sm ${getWordCount(positioningStrategy) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {getWordCount(positioningStrategy)} words
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div>
+                                            <label className="block text-gray-700 font-medium mb-2">
+                                                Competitive Differentiation <span className="text-xs text-gray-500">(3+ words)</span>
+                                            </label>
+                                            <textarea
+                                                value={competitiveDifferentiation}
+                                                onChange={(e) => setCompetitiveDifferentiation(e.target.value)}
+                                                placeholder="e.g., While competitors like Datadog focus on reactive monitoring, we deliver predictive prevention and automated resolution..."
+                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                                            />
+                                            <div className="flex justify-end mt-1">
+                                                <span className={`text-sm ${getWordCount(competitiveDifferentiation) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
+                                                    {getWordCount(competitiveDifferentiation)} words
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {currentStep === 3 && isStepComplete(3) && (
+                                <div className="flex justify-between mt-6">
+                                    <button
+                                        onClick={() => setCurrentStep(2)}
+                                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
+                                    >
+                                        ← Back
+                                    </button>
+                                    <button
+                                        onClick={() => window.location.href = 'competitive-activity-3A.html'}
+                                        className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 font-semibold"
+                                    >
+                                        Continue to Activity 3
+                                    </button>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* Professional Export Section */}
+                    {currentStep === 3 && isStepComplete(3) && (
+                        <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
+                            <div className="flex items-center mb-3">
+                                <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
+                            </div>
+                            
+                            <p className="text-sm text-gray-600 mb-3">
+                                Your differentiation strategy has been formatted as a professional markdown report for easy sharing and documentation.
+                            </p>
+
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Activity Summary" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                                >
+                                    📋 Copy Activity Summary
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // React 18 rendering
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<DifferentiationStrategyActivity />);
+    </script>
+</body>
+</html>

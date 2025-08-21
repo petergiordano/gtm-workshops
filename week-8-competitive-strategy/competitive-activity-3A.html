@@ -3,62 +3,309 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Competitive Response Activity</title>
+    <title>Activity 3: Competitive Strategy Blueprint</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
         }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .blueprint-table td { padding: 12px 16px; }
+        .blueprint-table tr:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+        .blueprint-label { font-weight: 600; color: #4b5563; }
+        .sticky-blueprint { position: sticky; top: 100px; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState } = React;
+    <script type="application/json" id="testData">
+    {
+        "wedge": "Mid-market B2B SaaS teams (50-500 employees)",
+        "topForces": "High power of Substitutes (DIY scripts); High power of Customers (Buyers) who have many choices.",
+        "whereToPlay": "We play in mid-market B2B SaaS teams who are struggling with unreliable, custom-built API monitoring scripts and cannot afford enterprise-grade observability platforms.",
+        "howToWin": "We win with a monitoring solution that sets up in minutes, provides predictive failure alerts via a proprietary ML model, and has transparent, usage-based pricing.",
+        "keySubstitutes": "In-house Python/Bash scripts, manual log checking by DevOps, basic cloud provider monitoring (e.g., CloudWatch).",
+        "valueMetric": "Reduction in API incident resolution time (MTTR) by 50%+",
+        "earlySignals": "1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured within the first week. 3. Reduction in P1/P2 incidents reported by customers.",
+        "keyRisks": "1. A major competitor (e.g., Datadog) launches a similar, low-cost predictive feature. 2. Our ML model for predictions is not accurate enough in diverse real-world environments.",
+        "counterMoves": "1. If competitor launches, we will double down on our 'setup-in-minutes' value prop and our superior customer support. 2. We will build a 'model tuning' feature to allow customers to improve accuracy for their specific use case.",
+        "firstTests": "1. Test pricing model with 10 new prospects to confirm value perception. (Owner: Sarah, by Aug 29). 2. Onboard 3 design partners to validate the accuracy of predictive alerts. (Owner: Tom, by Sep 5).",
+        "currentStep": 3
+    }
+    </script>
 
-        const ComingSoonActivity = () => {
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        // CORRECTED: Helper components are defined OUTSIDE the main component
+        const StepIndicator = ({ step, title, active }) => (
+            <div className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${active ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'}`}>
+                    {step}
+                </div>
+                <div className="ml-3">
+                    <h4 className={`font-semibold ${active ? 'text-orange-600' : 'text-gray-700'}`}>{title}</h4>
+                </div>
+            </div>
+        );
+
+        const InputField = ({ label, tooltip, value, setter, placeholder, rows=3 }) => (
+             <div className="mb-6">
+                <label className="block text-base font-semibold text-gray-800 mb-2 relative group">
+                    {label}
+                    <span className="absolute -top-0.5 -right-0.5 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-64 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                        {tooltip}
+                    </div>
+                </label>
+                <textarea value={value} onChange={(e) => setter(e.target.value)} placeholder={placeholder} rows={rows} className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500" />
+             </div>
+        );
+
+        const BlueprintActivity = () => {
+            const [currentStep, setCurrentStep] = useState(1);
+            
+            // Blueprint fields state
+            const [wedge, setWedge] = useState('');
+            const [topForces, setTopForces] = useState('');
+            const [whereToPlay, setWhereToPlay] = useState('');
+            const [howToWin, setHowToWin] = useState('');
+            const [keySubstitutes, setKeySubstitutes] = useState('');
+            const [valueMetric, setValueMetric] = useState('');
+            const [earlySignals, setEarlySignals] = useState('');
+            const [keyRisks, setKeyRisks] = useState('');
+            const [counterMoves, setCounterMoves] = useState('');
+            const [firstTests, setFirstTests] = useState('');
+
+            // App state
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            const isStep1Complete = useMemo(() => wedge && topForces && whereToPlay && howToWin && keySubstitutes, [wedge, topForces, whereToPlay, howToWin, keySubstitutes]);
+            const isStep2Complete = useMemo(() => valueMetric && earlySignals, [valueMetric, earlySignals]);
+            const isStep3Complete = useMemo(() => keyRisks && counterMoves && firstTests, [keyRisks, counterMoves, firstTests]);
+            const activityComplete = isStep1Complete && isStep2Complete && isStep3Complete;
+            
+            const progress = useMemo(() => {
+                if(isStep3Complete) return 100;
+                if(isStep2Complete) return 66;
+                if(isStep1Complete) return 33;
+                return 0;
+            }, [isStep1Complete, isStep2Complete, isStep3Complete]);
+
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const data = JSON.parse(document.getElementById('testData').textContent);
+                    setWedge(data.wedge); setTopForces(data.topForces); setWhereToPlay(data.whereToPlay);
+                    setHowToWin(data.howToWin); setKeySubstitutes(data.keySubstitutes); setValueMetric(data.valueMetric);
+                    setEarlySignals(data.earlySignals); setKeyRisks(data.keyRisks); setCounterMoves(data.counterMoves);
+                    setFirstTests(data.firstTests); setCurrentStep(data.currentStep || 3);
+                } catch (e) { console.error("Failed to load dev data", e); }
+                finally { setDevFillLoading(false); }
+            };
+            
+            const generateMarkdownSummary = () => {
+                return `# Competitive Strategy: 1-Page Blueprint
+### 🚀 Company & Wedge
+${wedge || '[Not provided]'}
+
+### ⚖️ Top Two Forces (Now)
+${topForces || '[Not provided]'}
+
+### 🎯 Where We Play
+${whereToPlay || '[Not provided]'}
+
+### 🏆 How We Win
+${howToWin || '[Not provided]'}
+
+###  alternativa Key Substitutes
+${keySubstitutes || '[Not provided]'}
+
+### 💰 Value Metric
+${valueMetric || '[Not provided]'}
+
+### 📈 Early Signals
+${earlySignals || '[Not provided]'}
+
+### ⚠️ Key Risks
+${keyRisks || '[Not provided]'}
+
+### 🛡️ Counter-Moves
+${counterMoves || '[Not provided]'}
+
+### 🧪 First Tests
+${firstTests || '[Not provided]'}
+`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const markdown = generateMarkdownSummary();
+                navigator.clipboard.writeText(markdown).then(() => {
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                    notification.textContent = '✅ Blueprint copied to clipboard!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => {
+                        notification.style.transition = 'opacity 0.5s';
+                        notification.style.opacity = '0';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 3000);
+                });
+            };
+
+            const BlueprintTable = () => (
+                <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg sticky-blueprint">
+                    <h3 className="text-xl font-bold text-gray-800 p-4 border-b-2 border-gray-200">Your 1-Page Blueprint</h3>
+                    <table className="w-full text-sm blueprint-table">
+                        <tbody>
+                            <tr><td className="w-1/3 blueprint-label">Company & Wedge</td><td>{wedge || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Top Two Forces (Now)</td><td>{topForces || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Where We Play</td><td>{whereToPlay || '...'}</td></tr>
+                            <tr><td className="blueprint-label">How We Win</td><td>{howToWin || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Substitutes</td><td>{keySubstitutes || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Value Metric</td><td>{valueMetric || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Early Signals (2–3)</td><td>{earlySignals || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Risks</td><td>{keyRisks || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Counter-Moves</td><td>{counterMoves || '...'}</td></tr>
+                            <tr><td className="blueprint-label">First Tests</td><td>{firstTests || '...'}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            );
+
             return (
-                <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="bg-white rounded-lg shadow-lg p-8">
-                            <div className="text-center">
-                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                                    <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
-                                    </svg>
+                <div className="max-w-7xl mx-auto p-4 md:p-8">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                         <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">← Back to Workshop</a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">All GTM Workshops ↑</a>
+                        </div>
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 onDoubleClick={toggleDevMode} className={`text-2xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                                Activity 3: Assemble Your Blueprint {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">Combine your insights into a single, actionable strategy document.</p>
+                             {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button onClick={devFillData} disabled={devFillLoading} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50">
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
                                 </div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                    Competitive Response Activity
-                                </h1>
-                                <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
-                                    <h2 className="text-lg font-semibold text-red-900 mb-2">Coming Soon</h2>
-                                    <p className="text-red-700">
-                                        This activity will teach you competitive response strategies, defense mechanisms, 
-                                        and market protection tactics. Check back soon for the full interactive experience!
-                                    </p>
-                                </div>
-                                <div className="space-y-4">
-                                    <a 
-                                        href="index.html" 
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
-                                    >
-                                        ← Back to Competitive Strategy Workshop
-                                    </a>
-                                </div>
-                            </div>
+                            )}
                         </div>
                     </div>
+                    
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Blueprint Progress</span>
+                            <span className="text-sm font-semibold text-gray-800">{progress}% Complete</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div className="bg-orange-500 h-2.5 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div> {/* Left Column for Inputs */}
+                            <div className="flex justify-between mb-6">
+                                <StepIndicator step="1" title="Consolidate" active={currentStep === 1} />
+                                <StepIndicator step="2" title="Measure" active={currentStep === 2} />
+                                <StepIndicator step="3" title="Act" active={currentStep === 3} />
+                            </div>
+
+                            {currentStep === 1 && <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4">Step 1: Consolidate & Review</h2>
+                                <p className="text-sm text-gray-600 mb-6">Confirm your foundational choices from the previous activities.</p>
+                                <InputField label="Company & Wedge" tooltip="Your ICP + the job/use case you will win." value={wedge} setter={setWedge} placeholder="e.g., SMB e-commerce teams, abandoned cart recovery." />
+                                <InputField label="Top Two Forces (Now)" tooltip="The two forces from Activity 1 that matter most this quarter." value={topForces} setter={setTopForces} placeholder="e.g., DIY spreadsheets are common; switching costs low." />
+                                <InputField label="Where We Play" tooltip="Your focused segment, buyer, and problem context from Activity 2." value={whereToPlay} setter={setWhereToPlay} placeholder="e.g., We play in mid-market SaaS teams..." rows={4} />
+                                <InputField label="How We Win" tooltip="Your unique advantage system from Activity 2 (3 bullets max)." value={howToWin} setter={setHowToWin} placeholder="e.g., We win with a fast setup..." rows={4} />
+                                <InputField label="Key Substitutes" tooltip="From Activity 1. Include DIY, status quo, and adjacent tools." value={keySubstitutes} setter={setKeySubstitutes} placeholder="e.g., In-house Python scripts, manual checks." />
+                            </div>}
+
+                            {currentStep === 2 && <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4">Step 2: Connect Strategy to Measurement</h2>
+                                <p className="text-sm text-gray-600 mb-6">Define how you and your customers will measure success.</p>
+                                <InputField label="Value Metric" tooltip="How do customers measure the value you deliver? Should be an outcome, not a feature." value={valueMetric} setter={setValueMetric} placeholder="e.g., Recovered revenue per month." />
+                                <InputField label="Early Signals (2-3)" tooltip="What leading indicators prove your strategy is working? These should predict the Value Metric." value={earlySignals} setter={setEarlySignals} placeholder="e.g., 1. Weekly active users > 3. 2. Carts recovered > 10/week." rows={4} />
+                            </div>}
+
+                             {currentStep === 3 && <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4">Step 3: Stress-Test & Plan Action</h2>
+                                <p className="text-sm text-gray-600 mb-6">Turn your strategy into a testable plan with clear next steps.</p>
+                                <InputField label="Key Risks" tooltip="What one or two things could completely break your strategic plan?" value={keyRisks} setter={setKeyRisks} placeholder="e.g., Stripe launches a similar free plug-in." />
+                                <InputField label="Counter-Moves" tooltip="If the risk happens, what is your pre-planned response?" value={counterMoves} setter={setCounterMoves} placeholder="e.g., Double down on our superior Shopify integration." />
+                                <InputField label="First Tests" tooltip="What two concrete tests will you run next week? Assign an owner and a date." value={firstTests} setter={setFirstTests} placeholder="e.g., 1. Run 5 demos with Shopify brands (Owner: Alex, by Aug 29)." />
+                            </div>}
+
+                            <div className="flex justify-between items-center mt-8">
+                                <button onClick={() => setCurrentStep(s => Math.max(1, s-1))} disabled={currentStep === 1} className="bg-gray-200 text-gray-700 px-6 py-2 rounded-lg font-medium hover:bg-gray-300 disabled:opacity-50">Back</button>
+                                {currentStep < 3 ? (
+                                    <button 
+                                        onClick={() => setCurrentStep(s => s + 1)} 
+                                        disabled={(currentStep === 1 && !isStep1Complete) || (currentStep === 2 && !isStep2Complete)} 
+                                        className="bg-orange-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-600 disabled:opacity-50">
+                                        Continue to Step {currentStep + 1}
+                                    </button>
+                                ) : (
+                                    <button 
+                                        disabled={!activityComplete} 
+                                        className="bg-green-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-green-600 disabled:opacity-50">
+                                        Blueprint Complete!
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div> {/* Right Column for Blueprint */}
+                            <BlueprintTable />
+                        </div>
+                    </div>
+                    
+                    {activityComplete && currentStep === 3 && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
+                            <div className="flex items-center">
+                                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
+                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
+                                 </div>
+                                 <div>
+                                    <h3 className="text-lg font-semibold text-gray-800">Export Your Strategy</h3>
+                                    <p className="text-sm text-gray-600">You now have a complete, 1-page strategic blueprint. Copy it to share with your team and guide your next steps.</p>
+                                </div>
+                            </div>
+                            <div className="text-center mt-4">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                                >
+                                    📋 Copy Strategy Blueprint
+                                </button>
+                            </div>
+                        </div>
+                    )}
                 </div>
             );
         };
 
-        ReactDOM.render(<ComingSoonActivity />, document.getElementById('root'));
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<BlueprintActivity />);
     </script>
 </body>
 </html>

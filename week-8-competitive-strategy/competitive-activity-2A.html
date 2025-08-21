@@ -3,62 +3,214 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Differentiation Strategy Activity</title>
+    <title>Activity 2: Play & Win Choices</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <script type="text/babel">
-        const { useState } = React;
+    <script type="application/json" id="testData">
+    {
+        "whereToPlay": "We play in mid-market B2B SaaS teams (50-500 employees) who are struggling with unreliable, custom-built API monitoring scripts and cannot afford enterprise-grade observability platforms.",
+        "howToWin": "We win with a monitoring solution that sets up in minutes (not weeks), provides predictive failure alerts powered by a proprietary ML model, and has transparent, usage-based pricing that is 50% cheaper than enterprise rivals."
+    }
+    </script>
 
-        const ComingSoonActivity = () => {
-            return (
-                <div className="min-h-screen bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
-                    <div className="max-w-3xl mx-auto">
-                        <div className="bg-white rounded-lg shadow-lg p-8">
-                            <div className="text-center">
-                                <div className="mx-auto flex items-center justify-center h-12 w-12 rounded-full bg-red-100 mb-4">
-                                    <svg className="h-6 w-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                                    </svg>
-                                </div>
-                                <h1 className="text-3xl font-bold text-gray-900 mb-4">
-                                    Differentiation Strategy Activity
-                                </h1>
-                                <div className="bg-red-50 border border-red-200 rounded-lg p-6 mb-8">
-                                    <h2 className="text-lg font-semibold text-red-900 mb-2">Coming Soon</h2>
-                                    <p className="text-red-700">
-                                        This activity will help you develop unique value propositions, competitive advantages, 
-                                        and differentiation frameworks. Check back soon for the full interactive experience!
-                                    </p>
-                                </div>
-                                <div className="space-y-4">
-                                    <a 
-                                        href="index.html" 
-                                        className="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors duration-200"
-                                    >
-                                        ← Back to Competitive Strategy Workshop
-                                    </a>
-                                </div>
-                            </div>
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const PlayWinChoicesActivity = () => {
+            const [whereToPlay, setWhereToPlay] = useState('');
+            const [howToWin, setHowToWin] = useState('');
+
+            const [activityComplete, setActivityComplete] = useState(false);
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+            
+            // Completion is based on having content in both fields
+            useEffect(() => {
+                if (whereToPlay.trim().length > 20 && howToWin.trim().length > 20) {
+                    setActivityComplete(true);
+                } else {
+                    setActivityComplete(false);
+                }
+            }, [whereToPlay, howToWin]);
+
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setWhereToPlay(testData.whereToPlay);
+                    setHowToWin(testData.howToWin);
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            const generateMarkdownSummary = () => {
+                const timestamp = new Date().toLocaleString();
+                return `# Competitive Strategy: Play & Win Choices
+Generated: ${timestamp}
+
+### 🎯 Where We Play
+${whereToPlay || '[Not provided]'}
+
+### 🏆 How We Win
+${howToWin || '[Not provided]'}
+
+---
+### 📅 Assessment Details
+- **Activity:** 2 - Play & Win Choices
+- **Workshop:** Competitive Strategy Principles
+- **Next Step:** Transfer these statements directly into the final Competitive Strategy Blueprint.
+`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const markdown = generateMarkdownSummary();
+                navigator.clipboard.writeText(markdown).then(() => {
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                    notification.textContent = '✅ Play & Win choices copied!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => {
+                        notification.style.transition = 'opacity 0.5s';
+                        notification.style.opacity = '0';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 3000);
+                });
+            };
+            
+            const InfoBox = ({ children }) => (
+                <div className="bg-yellow-50 border-l-4 border-yellow-400 p-4 rounded-r-lg h-full">
+                    <div className="flex">
+                        <div className="flex-shrink-0">
+                            <svg className="h-5 w-5 text-yellow-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                                <path fillRule="evenodd" d="M8.257 3.099c.636-1.21 2.27-1.21 2.906 0l4.5 8.625c.636 1.21-.242 2.776-1.453 2.776H5.204c-1.21 0-2.088-1.566-1.453-2.776l4.5-8.625zM10 15a1 1 0 110-2 1 1 0 010 2zm0-5a1 1 0 01-1-1v-2a1 1 0 112 0v2a1 1 0 01-1 1z" clipRule="evenodd" />
+                            </svg>
+                        </div>
+                        <div className="ml-3">
+                            <div className="text-sm text-yellow-700">{children}</div>
                         </div>
                     </div>
                 </div>
             );
+
+
+            return (
+                 <div className="max-w-6xl mx-auto p-4 md:p-8">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">← Back to Workshop</a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">All GTM Workshops ↑</a>
+                        </div>
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 onDoubleClick={toggleDevMode} className={`text-2xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                                Activity 2: Play & Win Choices {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">Make two clear, powerful choices. These sentences will become the core of your strategy.</p>
+                             {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button onClick={devFillData} disabled={devFillLoading} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50">
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                        <div className="lg:col-span-2 space-y-6">
+                             <div className="bg-white p-6 rounded-xl border-2 border-gray-200">
+                                <label className="block text-xl font-bold text-gray-800 mb-2 relative group">
+                                    Where We Play
+                                    <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2">
+                                        Be narrow. Specific is stronger than broad. Which customers, use case, or wedge are you focusing on?
+                                    </span>
+                                </label>
+                                <textarea
+                                    value={whereToPlay}
+                                    onChange={(e) => setWhereToPlay(e.target.value)}
+                                    placeholder="We play in [segment/market] for [specific buyer persona] who have [specific problem]."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-base h-32 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                                />
+                             </div>
+                             <div className="bg-white p-6 rounded-xl border-2 border-gray-200">
+                                <label className="block text-xl font-bold text-gray-800 mb-2 relative group">
+                                    How We Win
+                                    <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                                    <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2">
+                                        Winning comes from a system of strengths, not a single feature. Why you, not a rival or substitute?
+                                    </span>
+                                </label>
+                                <textarea
+                                    value={howToWin}
+                                    onChange={(e) => setHowToWin(e.target.value)}
+                                    placeholder="We win with [unique advantage #1], [unique advantage #2], and [unique advantage #3]."
+                                    className="w-full p-3 border border-gray-300 rounded-lg text-base h-32 focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                                />
+                             </div>
+                        </div>
+
+                        <div className="lg:col-span-1 space-y-4">
+                            <InfoBox>
+                                <h4 className="font-bold text-yellow-800">Reminder from Activity 1</h4>
+                                <p className="mt-1">Check if your choices address the <strong>Top Two Forces</strong> you identified. For example, if 'Power of Buyer' is high, your 'How to Win' must neutralize that power (e.g., by creating high switching costs or a uniquely differentiated product).</p>
+                            </InfoBox>
+                             <InfoBox>
+                                <h4 className="font-bold text-yellow-800">Next Step: Your Blueprint</h4>
+                                <p className="mt-1">Keep your 'Play' & 'Win' sentences clear and powerful. You will copy them directly into your final **Competitive Strategy Blueprint** in the next activity.</p>
+                            </InfoBox>
+                        </div>
+                    </div>
+
+                    {activityComplete && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Play & Win Choices</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Copy your completed strategic choices as formatted text.
+                            </p>
+                            <button
+                                onClick={handleCopyToClipboard}
+                                className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                            >
+                                Copy Activity Summary
+                            </button>
+                        </div>
+                    )}
+                </div>
+            );
         };
 
-        ReactDOM.render(<ComingSoonActivity />, document.getElementById('root'));
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<PlayWinChoicesActivity />);
     </script>
 </body>
 </html>

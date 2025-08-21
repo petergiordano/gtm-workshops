@@ -1,0 +1,59 @@
+{
+  "directCompetitors": [
+    {
+      "name": "Datadog",
+      "description": "Comprehensive monitoring and analytics platform for infrastructure, applications, and logs",
+      "strengths": "Full-stack observability, strong dashboard capabilities, wide platform integrations, large user base",
+      "weaknesses": "Reactive monitoring only, expensive for high-volume usage, no predictive capabilities, requires manual troubleshooting"
+    },
+    {
+      "name": "Dynatrace", 
+      "description": "AI-powered application performance monitoring and observability platform",
+      "strengths": "Automated root cause analysis, strong enterprise presence, good AI insights for performance",
+      "weaknesses": "Purely reactive approach, complex setup, high pricing, limited API-specific predictive features"
+    },
+    {
+      "name": "New Relic",
+      "description": "Observability platform providing application monitoring, infrastructure monitoring, and digital experience monitoring", 
+      "strengths": "User-friendly interface, good APM features, strong community, comprehensive monitoring coverage",
+      "weaknesses": "Limited predictive analytics, reactive alerting system, manual incident resolution, higher costs at scale"
+    }
+  ],
+  "substituteBehaviors": [
+    {
+      "behavior": "Manual API monitoring by DevOps teams",
+      "description": "Engineering teams manually checking API health through logs, dashboards, and periodic testing",
+      "limitations": "Time-intensive, reactive only, human error prone, doesn't scale with API complexity, inconsistent monitoring"
+    },
+    {
+      "behavior": "Basic AWS CloudWatch and native cloud monitoring",
+      "description": "Using built-in cloud provider monitoring tools like CloudWatch, Azure Monitor, or Google Cloud Monitoring",
+      "limitations": "Limited cross-platform visibility, basic alerting, no predictive capabilities, requires extensive manual configuration"
+    },
+    {
+      "behavior": "In-house monitoring scripts and custom dashboards",
+      "description": "Custom-built monitoring solutions using tools like Prometheus, Grafana, or internal logging systems",
+      "limitations": "High maintenance overhead, limited AI/ML capabilities, reactive approach, requires dedicated engineering resources"
+    }
+  ],
+  "customerPowerFactors": [
+    {
+      "factor": "Existing monitoring tool investments and integrations",
+      "impact": "High",
+      "description": "Significant investments in current APM tools like Datadog or New Relic create switching costs and integration dependencies"
+    },
+    {
+      "factor": "Engineering team bandwidth and priority constraints",
+      "impact": "Medium", 
+      "description": "DevOps teams are often stretched thin with competing priorities, making new tool adoption challenging without clear ROI"
+    },
+    {
+      "factor": "API downtime cost sensitivity and SLA requirements",
+      "impact": "High",
+      "description": "High cost of API failures ($100K+/hour) and strict SLA commitments create urgency for better monitoring solutions"
+    }
+  ],
+  "marketNiche": "High-growth B2B SaaS companies and cloud-native enterprises with complex microservices architectures requiring predictive API monitoring to prevent costly downtime",
+  "competitivePositioning": "POSH positions as the only predictive API monitoring solution that prevents failures before they impact customers, shifting from reactive firefighting to proactive prevention",
+  "currentStep": 3
+}
