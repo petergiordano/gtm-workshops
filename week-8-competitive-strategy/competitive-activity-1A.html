@@ -55,6 +55,62 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        // Helper function for word count feedback - MOVED OUTSIDE COMPONENT
+        const WordCountFeedback = ({ text, minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">
+                        (describe in 5+ words)
+                    </span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words
+                        {isValid && <span>✓</span>}
+                    </span>
+                </div>
+            );
+        };
+
+        // ForceBox component - MOVED OUTSIDE COMPONENT
+        const ForceBox = ({ id, title, question, tooltip, placeholder, value, setter, selectedForces, handleForceSelection }) => {
+            const isSelected = selectedForces.includes(id);
+            const wordCount = value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = value.trim().length >= 25;
+            
+            return (
+                <div id={id} className={`force-box absolute w-80 p-4 border-2 rounded-xl bg-white shadow-lg transition-all duration-300 ${isSelected ? 'selected' : (isValid ? 'border-green-500' : 'border-gray-200')}`}>
+                    <h3 className="text-base font-semibold text-gray-800 flex justify-between items-center">
+                        {title}
+                        <div className="relative group">
+                            <span className="text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                                {tooltip}
+                            </div>
+                        </div>
+                    </h3>
+                    <p className="text-xs text-gray-500 italic mt-1 mb-2">{question}</p>
+                    <textarea
+                        value={value}
+                        onChange={(e) => setter(e.target.value)}
+                        placeholder={placeholder}
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+                    />
+                    <WordCountFeedback text={value} minWords={5} />
+                    <div className="mt-2">
+                        <button 
+                            onClick={() => handleForceSelection(id)} 
+                            className={`w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${isSelected ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                            disabled={!isValid}
+                        >
+                            {isSelected ? '✓ Selected' : 'Select as Top Force'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
         const CompetitiveSnapshotActivity = () => {
             // State for each force's textarea
             const [customers, setCustomers] = useState('');
@@ -231,60 +287,6 @@ ${newEntrants || '[Not provided]'}
                 });
             };
 
-            // Helper function for word count feedback
-            const WordCountFeedback = ({ text, minWords = 5 }) => {
-                const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-                const isValid = wordCount >= minWords;
-                
-                return (
-                    <div className="flex justify-between items-center mt-1">
-                        <span className="text-xs text-gray-500">
-                            (describe in 5+ words)
-                        </span>
-                        <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
-                            {wordCount} words
-                            {isValid && <span>✓</span>}
-                        </span>
-                    </div>
-                );
-            };
-
-            const ForceBox = ({ id, title, question, tooltip, placeholder, value, setter }) => {
-                const isSelected = selectedForces.includes(id);
-                const wordCount = value.trim().split(/\s+/).filter(w => w.length > 0).length;
-                const isValid = value.trim().length >= 25;
-                
-                return (
-                    <div id={id} className={`force-box absolute w-80 p-4 border-2 rounded-xl bg-white shadow-lg transition-all duration-300 ${isSelected ? 'selected' : (isValid ? 'border-green-500' : 'border-gray-200')}`}>
-                        <h3 className="text-base font-semibold text-gray-800 flex justify-between items-center">
-                            {title}
-                            <div className="relative group">
-                                <span className="text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
-                                <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
-                                    {tooltip}
-                                </div>
-                            </div>
-                        </h3>
-                        <p className="text-xs text-gray-500 italic mt-1 mb-2">{question}</p>
-                        <textarea
-                            value={value}
-                            onChange={(e) => setter(e.target.value)}
-                            placeholder={placeholder}
-                            className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
-                        />
-                        <WordCountFeedback text={value} minWords={5} />
-                        <div className="mt-2">
-                            <button 
-                                onClick={() => handleForceSelection(id)} 
-                                className={`w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${isSelected ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
-                                disabled={!isValid}
-                            >
-                                {isSelected ? '✓ Selected' : 'Select as Top Force'}
-                            </button>
-                        </div>
-                    </div>
-                );
-            };
 
             return (
                 <div className="max-w-6xl mx-auto p-4 md:p-8" style={{backgroundColor: '#fafafa', minHeight: '100vh'}}>
@@ -356,10 +358,10 @@ ${newEntrants || '[Not provided]'}
                             </button>
                         </div>
                         
-                        <ForceBox id="newEntrants" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} />
-                        <ForceBox id="suppliers" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} />
-                        <ForceBox id="buyers" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} />
-                        <ForceBox id="substitutes" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} />
+                        <ForceBox id="newEntrants" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="suppliers" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="buyers" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="substitutes" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
 
                         {/* Arrows removed - to be fixed later */}
                         
@@ -375,11 +377,11 @@ ${newEntrants || '[Not provided]'}
 
                     {/* Mobile / Fallback Layout */}
                     <div className="grid grid-cols-1 md:hidden gap-6">
-                         <ForceBox id="newEntrants-mob" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} />
-                         <ForceBox id="competitors-mob" title="Competitors (Rivals)" question="Who else is chasing this problem?" tooltip="Be specific. Name companies, not 'everyone.'" placeholder="e.g., New Relic, Datadog." value={competitors} setter={setCompetitors} />
-                         <ForceBox id="buyers-mob" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} />
-                         <ForceBox id="suppliers-mob" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} />
-                         <ForceBox id="substitutes-mob" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} />
+                         <ForceBox id="newEntrants-mob" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="competitors-mob" title="Competitors (Rivals)" question="Who else is chasing this problem?" tooltip="Be specific. Name companies, not 'everyone.'" placeholder="e.g., New Relic, Datadog." value={competitors} setter={setCompetitors} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="buyers-mob" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="suppliers-mob" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="substitutes-mob" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
                     </div>
                     
                     {/* Export Section */}
