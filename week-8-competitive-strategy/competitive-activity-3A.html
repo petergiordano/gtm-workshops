@@ -142,6 +142,12 @@
             // Load read-only data from localStorage (from previous activities)
             const workshopData = useMemo(() => loadWorkshopState(WORKSHOP_STORAGE_KEY), []);
             
+            // Process and transform data from Activities 1 & 2 for display
+            const topForcesText = (workshopData.selectedForces || []).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+            const keySubstitutesText = workshopData.substitutes || '';
+            const whereToPlayText = `We play in ${workshopData.targetSegment || '[segment]'}, for ${workshopData.specificBuyer || '[buyer]'}, who have ${workshopData.urgentProblem || '[problem]'}.`;
+            const howToWinText = `We win by delivering ${workshopData.value1 || '[value 1]'} through ${workshopData.capability1 || '[capability 1]'}, ${workshopData.value2 || '[value 2]'} through ${workshopData.capability2 || '[capability 2]'}, and ${workshopData.value3 || '[value 3]'} through ${workshopData.capability3 || '[capability 3]'}.`;
+            
             // Step 2: Define Your Advantage & Measures state variables
             const [criticalCapabilities, setCriticalCapabilities] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).criticalCapabilities || '');
             const [requiredSystems, setRequiredSystems] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).requiredSystems || '');
@@ -159,6 +165,7 @@
             // App state
             const [devMode, setDevMode] = useState(false);
             const [devFillLoading, setDevFillLoading] = useState(false);
+            const [showExportSection, setShowExportSection] = useState(false);
 
             // Step completion validation
             const isStep2Complete = useMemo(() => criticalCapabilities && requiredSystems && valueMetric && earlySignals, [criticalCapabilities, requiredSystems, valueMetric, earlySignals]);
@@ -236,6 +243,7 @@
                 setCounterMoves('');
                 setFirstTests('');
                 setCurrentStep(1); // Reset to first step
+                setShowExportSection(false); // Reset export section visibility
                 
                 // Clear localStorage data for this activity's input fields only
                 const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
@@ -257,14 +265,14 @@
                 return `# Competitive Strategy: 1-Page Blueprint
 
 ### 🚀 Our Strategic Foundation
-* **Top Two Forces:** ${workshopData.topForces || '[Not provided]'}
-* **Key Substitutes:** ${workshopData.keySubstitutes || '[Not provided]'}
+* **Top Two Forces:** ${topForcesText || '[Not provided]'}
+* **Key Substitutes:** ${keySubstitutesText || '[Not provided]'}
 
 ### 🎯 Where We Play
-> ${workshopData.whereToPlay || '[Not provided]'}
+> ${whereToPlayText || '[Not provided]'}
 
 ### 🏆 How We Win
-> ${workshopData.howToWin || '[Not provided]'}
+> ${howToWinText || '[Not provided]'}
 
 ---
 
@@ -317,10 +325,10 @@ ${firstTests || '[Not provided]'}
                     <h3 className="text-xl font-bold text-gray-800 p-4 border-b-2 border-gray-200">Your 1-Page Blueprint</h3>
                     <table className="w-full text-sm blueprint-table">
                         <tbody>
-                            <tr><td className="w-1/3 blueprint-label">Top Two Forces (Now)</td><td>{workshopData.topForces || '...'}</td></tr>
-                            <tr><td className="blueprint-label">Where We Play</td><td>{workshopData.whereToPlay || '...'}</td></tr>
-                            <tr><td className="blueprint-label">How We Win</td><td>{workshopData.howToWin || '...'}</td></tr>
-                            <tr><td className="blueprint-label">Key Substitutes</td><td>{workshopData.keySubstitutes || '...'}</td></tr>
+                            <tr><td className="w-1/3 blueprint-label">Top Two Forces (Now)</td><td>{topForcesText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Where We Play</td><td>{whereToPlayText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">How We Win</td><td>{howToWinText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Substitutes</td><td>{keySubstitutesText || '...'}</td></tr>
                             <tr><td className="blueprint-label">Critical Capabilities</td><td>{criticalCapabilities || '...'}</td></tr>
                             <tr><td className="blueprint-label">Required Systems</td><td>{requiredSystems || '...'}</td></tr>
                             <tr><td className="blueprint-label">Value Metric</td><td>{valueMetric || '...'}</td></tr>
@@ -386,28 +394,28 @@ ${firstTests || '[Not provided]'}
                                     <div className="mb-4">
                                         <h4 className="text-sm font-semibold text-gray-600">Your Top Two Forces (from Activity 1)</h4>
                                         <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                            {workshopData.topForces || "Data from Activity 1 will appear here."}
+                                            {topForcesText || "Data from Activity 1 will appear here."}
                                         </p>
                                     </div>
 
                                     <div className="mb-4">
                                         <h4 className="text-sm font-semibold text-gray-600">Your "Where to Play" Statement (from Activity 2)</h4>
                                         <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                            {workshopData.whereToPlay || "Data from Activity 2 will appear here."}
+                                            {whereToPlayText || "Data from Activity 2 will appear here."}
                                         </p>
                                     </div>
 
                                     <div className="mb-4">
                                         <h4 className="text-sm font-semibold text-gray-600">Your "How to Win" Strategy (from Activity 2)</h4>
                                         <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                            {workshopData.howToWin || "Data from Activity 2 will appear here."}
+                                            {howToWinText || "Data from Activity 2 will appear here."}
                                         </p>
                                     </div>
 
                                     <div className="mb-4">
                                         <h4 className="text-sm font-semibold text-gray-600">Key Substitutes (from Activity 1)</h4>
                                         <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
-                                            {workshopData.keySubstitutes || "Data from Activity 1 will appear here."}
+                                            {keySubstitutesText || "Data from Activity 1 will appear here."}
                                         </p>
                                     </div>
                                 </div>
@@ -530,6 +538,7 @@ ${firstTests || '[Not provided]'}
                                     </button>
                                 ) : (
                                     <button
+                                        onClick={() => setShowExportSection(true)}
                                         disabled={!canCompleteFromStep3}
                                         className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                                             !canCompleteFromStep3
@@ -537,7 +546,7 @@ ${firstTests || '[Not provided]'}
                                                 : 'bg-green-500 text-white hover:bg-green-600'
                                         }`}
                                     >
-                                        Blueprint Complete! ✓
+                                        Generate Report
                                     </button>
                                 )}
                             </div>
@@ -548,24 +557,41 @@ ${firstTests || '[Not provided]'}
                         </div>
                     </div>
                     
-                    {activityComplete && (
+                    {showExportSection && (
                         <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
-                            <div className="flex items-center">
-                                 <div className="w-12 h-12 bg-green-500 rounded-full flex items-center justify-center flex-shrink-0 mr-4">
-                                     <svg className="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path></svg>
-                                 </div>
-                                 <div>
-                                    <h3 className="text-lg font-semibold text-gray-800">Export Your Strategy</h3>
-                                    <p className="text-sm text-gray-600">You now have a complete, 1-page strategic blueprint. Copy it to share with your team and guide your next steps.</p>
-                                </div>
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Strategy Blueprint</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Your complete competitive strategy blueprint has been formatted as a professional markdown report for easy sharing and documentation.
+                            </p>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Strategy Blueprint" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
                             </div>
-                            <div className="text-center mt-4">
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
                                 <button
                                     onClick={handleCopyToClipboard}
-                                    className="bg-orange-500 text-white px-8 py-3 rounded-lg font-semibold hover:bg-orange-600 transition-colors"
+                                    className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
                                 >
                                     📋 Copy Strategy Blueprint
                                 </button>
+                                <div id="copyStatus"></div>
                             </div>
                         </div>
                     )}
