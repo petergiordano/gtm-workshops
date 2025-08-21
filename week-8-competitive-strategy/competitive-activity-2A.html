@@ -59,7 +59,14 @@
         "capability2": "Enhanced Automated Problem Resolution Engine",
         "value3": "Comprehensive Visibility",
         "capability3": "Seamless Cross-Platform Integration",
-        "riskiestAssumption": "Engineering leaders will trust and act on ML-generated predictive alerts over their existing monitoring tools"
+        "spacesAssumption": "A distinct 'Predictive API Operations' category can be created and is not just a feature of the broader APM market",
+        "valueAssumption": "VPs of Engineering will pay a premium price (>$50k/year) for a predictive solution when they already have 'good enough' reactive tools",
+        "capabilitiesAssumption": "We can maintain our technological lead in predictive accuracy even when large competitors begin investing in their own AI/ML capabilities",
+        "reactionAssumption": "Major competitors will not quickly acquire a smaller AI-native startup to neutralize our advantage or bundle a 'good enough' predictive feature",
+        "selectedRiskiestKey": "value",
+        "testObjective": "Confirm that target customers perceive quantifiable value in prevention that justifies our target price",
+        "theTest": "Conduct 25 in-depth value-proposition interviews with VPs of Engineering and Directors of DevOps using ROI model and Van Westendorp Price Sensitivity Meter",
+        "theMetric": "At least 60% (15 out of 25) validate the ROI model as compelling and state willingness-to-pay within our $50k-$75k ARR range"
     }
     </script>
 
@@ -101,8 +108,17 @@
             const [value3, setValue3] = useState('');
             const [capability3, setCapability3] = useState('');
             
-            // Step 3: Riskiest Assumption
-            const [riskiestAssumption, setRiskiestAssumption] = useState('');
+            // Step 3: Riskiest Assumption - SPACES Framework
+            const [spacesAssumption, setSpacesAssumption] = useState('');
+            const [valueAssumption, setValueAssumption] = useState('');
+            const [capabilitiesAssumption, setCapabilitiesAssumption] = useState('');
+            const [reactionAssumption, setReactionAssumption] = useState('');
+            const [selectedRiskiestKey, setSelectedRiskiestKey] = useState('');
+            
+            // Step 3B: Test Design
+            const [testObjective, setTestObjective] = useState('');
+            const [theTest, setTheTest] = useState('');
+            const [theMetric, setTheMetric] = useState('');
 
             const [activityComplete, setActivityComplete] = useState(false);
             const [showExportSection, setShowExportSection] = useState(false);
@@ -122,18 +138,24 @@
                 if (capability2.trim().length > 3) count++;
                 if (value3.trim().length > 3) count++;
                 if (capability3.trim().length > 3) count++;
-                if (riskiestAssumption.trim().length > 3) count++;
+                if (spacesAssumption.trim().length > 3) count++;
+                if (valueAssumption.trim().length > 3) count++;
+                if (capabilitiesAssumption.trim().length > 3) count++;
+                if (reactionAssumption.trim().length > 3) count++;
+                if (testObjective.trim().length > 3) count++;
+                if (theTest.trim().length > 3) count++;
+                if (theMetric.trim().length > 3) count++;
                 return count;
             };
             
             const filledFieldsCount = getFilledFieldsCount();
-            const progressPercentage = (filledFieldsCount / 11) * 100;
+            const progressPercentage = (filledFieldsCount / 17) * 100;
 
-            // Check if all fields have meaningful content (>10 characters)
+            // Check if all fields have meaningful content (>3 characters)
             useEffect(() => {
-                const allFieldsFilled = filledFieldsCount === 11;
+                const allFieldsFilled = filledFieldsCount === 17;
                 setActivityComplete(allFieldsFilled);
-            }, [targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, riskiestAssumption]);
+            }, [targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, spacesAssumption, valueAssumption, capabilitiesAssumption, reactionAssumption, testObjective, theTest, theMetric]);
 
             const toggleDevMode = () => setDevMode(!devMode);
 
@@ -151,7 +173,14 @@
                     setCapability2(testData.capability2);
                     setValue3(testData.value3);
                     setCapability3(testData.capability3);
-                    setRiskiestAssumption(testData.riskiestAssumption);
+                    setSpacesAssumption(testData.spacesAssumption);
+                    setValueAssumption(testData.valueAssumption);
+                    setCapabilitiesAssumption(testData.capabilitiesAssumption);
+                    setReactionAssumption(testData.reactionAssumption);
+                    setSelectedRiskiestKey(testData.selectedRiskiestKey);
+                    setTestObjective(testData.testObjective);
+                    setTheTest(testData.theTest);
+                    setTheMetric(testData.theMetric);
                     console.log('✅ Dev data loaded successfully');
                 } catch (error) {
                     console.error('❌ Failed to load dev data:', error);
@@ -171,12 +200,25 @@
                 setCapability2('');
                 setValue3('');
                 setCapability3('');
-                setRiskiestAssumption('');
+                setSpacesAssumption('');
+                setValueAssumption('');
+                setCapabilitiesAssumption('');
+                setReactionAssumption('');
+                setSelectedRiskiestKey('');
+                setTestObjective('');
+                setTheTest('');
+                setTheMetric('');
                 setShowExportSection(false);
             };
 
             const generateMarkdownSummary = () => {
                 const timestamp = new Date().toLocaleString();
+                const selectedAssumption = selectedRiskiestKey === 'spaces' ? spacesAssumption :
+                    selectedRiskiestKey === 'value' ? valueAssumption :
+                    selectedRiskiestKey === 'capabilities' ? capabilitiesAssumption :
+                    selectedRiskiestKey === 'reaction' ? reactionAssumption : '';
+                const selectedCategory = selectedRiskiestKey ? selectedRiskiestKey.toUpperCase() : 'UNSELECTED';
+                
                 return `# Competitive Strategy: Play & Win Choices
 Generated: ${timestamp}
 
@@ -209,15 +251,35 @@ Our unique advantage is a system of reinforcing capabilities that deliver except
 
 **Strategic Statement:** We win by delivering ${value1 || '[value 1]'} through ${capability1 || '[capability 1]'}, ${value2 || '[value 2]'} through ${capability2 || '[capability 2]'}, and ${value3 || '[value 3]'} through ${capability3 || '[capability 3]'}.
 
-## ⚠️ Riskiest Assumption
+## ⚠️ Riskiest Assumption Analysis (SPACES Framework)
 
-${riskiestAssumption || '[Not provided]'}
+### Strategic Assumptions Identified:
+
+**SPACES (Market Structure):** ${spacesAssumption || '[Not analyzed]'}
+
+**VALUE (Customer Beliefs):** ${valueAssumption || '[Not analyzed]'}
+
+**CAPABILITIES (Core Competencies):** ${capabilitiesAssumption || '[Not analyzed]'}
+
+**REACTION (Competitive Response):** ${reactionAssumption || '[Not analyzed]'}
+
+### Selected Riskiest Assumption:
+**Category:** ${selectedCategory}
+**Assumption:** ${selectedAssumption || '[Not selected]'}
+
+### Test Design:
+**Test Objective:** ${testObjective || '[Not defined]'}
+
+**The Test:** ${theTest || '[Not defined]'}
+
+**Success Metric:** ${theMetric || '[Not defined]'}
 
 ---
 ### 📅 Assessment Details
 - **Activity:** 2 - Play & Win Choices
-- **Workshop:** Competitive Strategy Principles
-- **Next Step:** Transfer these statements directly into the final Competitive Strategy Blueprint.
+- **Workshop:** Competitive Strategy Principles  
+- **Framework:** SPACES Strategic Assumption Analysis
+- **Next Step:** Execute the designed test to validate or invalidate the riskiest assumption before proceeding with strategy implementation.
 `;
             };
 
@@ -323,7 +385,7 @@ ${riskiestAssumption || '[Not provided]'}
                         <div className="flex items-center justify-between mb-2">
                             <span className="text-sm font-medium text-gray-700">Progress</span>
                             <span className="text-sm text-gray-600">
-                                {activityComplete ? 'Complete' : `${filledFieldsCount}/11 fields completed`}
+                                {activityComplete ? 'Complete' : `${filledFieldsCount}/17 fields completed`}
                             </span>
                         </div>
                         <div className="w-full bg-gray-200 rounded-full h-2">
@@ -479,25 +541,185 @@ ${riskiestAssumption || '[Not provided]'}
                             <div className="step-icon">03</div>
                             <div className="flex-1">
                                 <h2 className="text-xl font-semibold text-gray-800">Identify the Riskiest Assumption</h2>
-                                <p className="text-gray-600 text-sm mt-1">For this strategy to succeed, what is the single most important belief that <strong>must be true</strong> about your customers?</p>
+                                <p className="text-gray-600 text-sm mt-1">Turn your strategy into a set of testable beliefs.</p>
                             </div>
                         </div>
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2 relative group">
-                                Your Riskiest Assumption
-                                <span className="absolute -top-1 -right-1 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
-                                <span className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
-                                    This is your leap-of-faith belief. If this is wrong, the whole strategy fails. What do you need to test first?
-                                </span>
-                            </label>
-                            <input
-                                type="text"
-                                value={riskiestAssumption}
-                                onChange={(e) => setRiskiestAssumption(e.target.value)}
-                                placeholder="e.g., Buyers will trust predictive alerts generated by ML."
-                                className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                        
+                        <p className="text-gray-700 mb-6">
+                            A strategy is a set of beliefs about the future. To find your riskiest assumption, you first need to state the core beliefs that <strong>must be true</strong> for your strategy to succeed.
+                        </p>
+                        
+                        {/* Part A: Four SPACES Assumption Fields */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InputField
+                                label="Belief about your SPACE"
+                                tooltip="What must be true about the industry structure and segments you've chosen to play in?"
+                                placeholder="e.g., That 'PredictiveOps' is a distinct, high-value category, not just a feature."
+                                value={spacesAssumption}
+                                setter={setSpacesAssumption}
+                            />
+                            <InputField
+                                label="Belief about the VALUE you create"
+                                tooltip="What must be true about what your customers and channels truly value and are willing to pay for?"
+                                placeholder="e.g., VPs of Eng will pay a premium for a predictive solution over their 'good enough' reactive tool."
+                                value={valueAssumption}
+                                setter={setValueAssumption}
+                            />
+                            <InputField
+                                label="Belief about your CAPABILITIES"
+                                tooltip="What must be true about your unique ability to execute and your relative costs vs. competitors?"
+                                placeholder="e.g., We can maintain our ML model's predictive lead against larger competitors."
+                                value={capabilitiesAssumption}
+                                setter={setCapabilitiesAssumption}
+                            />
+                            <InputField
+                                label="Belief about competitor REACTION"
+                                tooltip="What must be true about how your competitors will (or will not) react to your strategy?"
+                                placeholder="e.g., Incumbents like Datadog will be too slow to replicate our architecture."
+                                value={reactionAssumption}
+                                setter={setReactionAssumption}
                             />
                         </div>
+                        
+                        {/* Radio Button Selection */}
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">Select Your Single Riskiest Assumption</h3>
+                            <p className="text-gray-600 text-sm mb-4">
+                                Review your four core beliefs. Which one worries you the most? If this one belief is wrong, the entire strategy fails.
+                            </p>
+                            
+                            <div className="space-y-3">
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="spaces"
+                                        checked={selectedRiskiestKey === 'spaces'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!spacesAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">SPACE Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {spacesAssumption.trim() || 'Complete the SPACE belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="value"
+                                        checked={selectedRiskiestKey === 'value'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!valueAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">VALUE Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {valueAssumption.trim() || 'Complete the VALUE belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="capabilities"
+                                        checked={selectedRiskiestKey === 'capabilities'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!capabilitiesAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">CAPABILITIES Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {capabilitiesAssumption.trim() || 'Complete the CAPABILITIES belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="reaction"
+                                        checked={selectedRiskiestKey === 'reaction'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!reactionAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">REACTION Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {reactionAssumption.trim() || 'Complete the REACTION belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        {/* Part B: Test Design (Conditional) */}
+                        {selectedRiskiestKey && (
+                            <div className="border-t mt-6 pt-6">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-2xl">🔬</span>
+                                    <h3 className="text-lg font-semibold text-gray-800">Design Your Test</h3>
+                                </div>
+                                <p className="text-gray-600 text-sm mb-6">
+                                    Now, let's turn your riskiest assumption into a testable hypothesis. A great strategy is built on evidence, not just hope.
+                                </p>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* The Risk (Read-only) */}
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            The Risk (Your Selected Assumption)
+                                        </label>
+                                        <textarea
+                                            readOnly
+                                            value={
+                                                selectedRiskiestKey === 'spaces' ? spacesAssumption :
+                                                selectedRiskiestKey === 'value' ? valueAssumption :
+                                                selectedRiskiestKey === 'capabilities' ? capabilitiesAssumption :
+                                                selectedRiskiestKey === 'reaction' ? reactionAssumption : ''
+                                            }
+                                            className="w-full p-3 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none h-20"
+                                        />
+                                    </div>
+                                    
+                                    <InputField
+                                        label="Test Objective"
+                                        tooltip="What, specifically, do you need to confirm to de-risk this assumption?"
+                                        placeholder="e.g., Confirm that customers perceive enough value to justify a >$50k/year price."
+                                        value={testObjective}
+                                        setter={setTestObjective}
+                                    />
+                                    
+                                    <InputField
+                                        label="The Test"
+                                        tooltip="What specific, low-cost test will give you confidence (e.g., interviews, landing page, pricing survey)?"
+                                        placeholder="e.g., Conduct 25 value-prop interviews with VPs of Engineering using an ROI model."
+                                        value={theTest}
+                                        setter={setTheTest}
+                                    />
+                                    
+                                    <div className="md:col-span-2">
+                                        <InputField
+                                            label="The Metric (Measure of Proof)"
+                                            tooltip="What is your quantitative success metric? This makes the result undeniable."
+                                            placeholder="e.g., At least 60% of interviewees state a willingness-to-pay within our target range."
+                                            value={theMetric}
+                                            setter={setTheMetric}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
                     </div>
 
                     {/* Auto-Summary Footer */}
@@ -514,6 +736,24 @@ ${riskiestAssumption || '[Not provided]'}
                                 <strong>How we win:</strong> We win by delivering <span className="text-orange-600">{value1 || '[Value #1]'}</span> through <span className="text-orange-600">{capability1 || '[Capability #1]'}</span>, <span className="text-orange-600">{value2 || '[Value #2]'}</span> through <span className="text-orange-600">{capability2 || '[Capability #2]'}</span>, and <span className="text-orange-600">{value3 || '[Value #3]'}</span> through <span className="text-orange-600">{capability3 || '[Capability #3]'}</span>.
                             </p>
                         </div>
+                        
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                            <p className="text-gray-700">
+                                <strong>⚠️ Riskiest Assumption:</strong> <span className="text-orange-600">
+                                    {selectedRiskiestKey ? 
+                                        (selectedRiskiestKey === 'spaces' ? spacesAssumption :
+                                         selectedRiskiestKey === 'value' ? valueAssumption :
+                                         selectedRiskiestKey === 'capabilities' ? capabilitiesAssumption :
+                                         selectedRiskiestKey === 'reaction' ? reactionAssumption : '') 
+                                        : '[Select an assumption]'
+                                    }
+                                </span>
+                            </p>
+                            <p className="text-gray-700 mt-1">
+                                <strong>✅ Test Metric:</strong> <span className="text-orange-600">{theMetric || '[Define a success metric]'}</span>
+                            </p>
+                        </div>
+                        
                         <p className="text-sm text-gray-600 mt-4">Keep these sentences clear—they'll be copied directly into your Competitive Strategy Blueprint.</p>
                     </div>
 
