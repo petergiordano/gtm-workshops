@@ -72,6 +72,37 @@
 
     <script type="text/babel">
         const { useState, useEffect } = React;
+        const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
+
+        /**
+         * Loads the entire workshop state from localStorage using a specific key.
+         * @param {string} storageKey - The unique key for the workshop's state.
+         * @returns {object} The parsed workshop state or an empty object.
+         */
+        const loadWorkshopState = (storageKey) => {
+            try {
+                const savedState = localStorage.getItem(storageKey);
+                return savedState ? JSON.parse(savedState) : {};
+            } catch (error) {
+                console.error("Could not load state from localStorage", error);
+                return {};
+            }
+        };
+
+        /**
+         * Saves a piece of state by merging it into the existing workshop state.
+         * @param {object} stateToSave - An object containing the key-value pairs to save.
+         * @param {string} storageKey - The unique key for the workshop's state.
+         */
+        const saveWorkshopState = (stateToSave, storageKey) => {
+            try {
+                const currentState = loadWorkshopState(storageKey);
+                const newState = { ...currentState, ...stateToSave };
+                localStorage.setItem(storageKey, JSON.stringify(newState));
+            } catch (error) {
+                console.error("Could not save state to localStorage", error);
+            }
+        };
 
         // Helper component for input fields with tooltips - MOVED OUTSIDE COMPONENT
         const InputField = ({ label, tooltip, placeholder, value, setter }) => (
@@ -94,31 +125,31 @@
         );
 
         const PlayWinChoicesActivity = () => {
-            // Step 1: Where to Play fields
-            const [targetSegment, setTargetSegment] = useState('');
-            const [specificBuyer, setSpecificBuyer] = useState('');
-            const [urgentProblem, setUrgentProblem] = useState('');
-            const [whereNotToPlay, setWhereNotToPlay] = useState('');
+            // Step 1: Where to Play fields - initialized from localStorage
+            const [targetSegment, setTargetSegment] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).targetSegment || '');
+            const [specificBuyer, setSpecificBuyer] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).specificBuyer || '');
+            const [urgentProblem, setUrgentProblem] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).urgentProblem || '');
+            const [whereNotToPlay, setWhereNotToPlay] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).whereNotToPlay || '');
             
-            // Step 2: How to Win fields - Value/Capability pairs
-            const [value1, setValue1] = useState('');
-            const [capability1, setCapability1] = useState('');
-            const [value2, setValue2] = useState('');
-            const [capability2, setCapability2] = useState('');
-            const [value3, setValue3] = useState('');
-            const [capability3, setCapability3] = useState('');
+            // Step 2: How to Win fields - Value/Capability pairs - initialized from localStorage
+            const [value1, setValue1] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).value1 || '');
+            const [capability1, setCapability1] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capability1 || '');
+            const [value2, setValue2] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).value2 || '');
+            const [capability2, setCapability2] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capability2 || '');
+            const [value3, setValue3] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).value3 || '');
+            const [capability3, setCapability3] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capability3 || '');
             
-            // Step 3: Riskiest Assumption - SPACES Framework
-            const [spacesAssumption, setSpacesAssumption] = useState('');
-            const [valueAssumption, setValueAssumption] = useState('');
-            const [capabilitiesAssumption, setCapabilitiesAssumption] = useState('');
-            const [reactionAssumption, setReactionAssumption] = useState('');
-            const [selectedRiskiestKey, setSelectedRiskiestKey] = useState('');
+            // Step 3: Riskiest Assumption - SPACES Framework - initialized from localStorage
+            const [spacesAssumption, setSpacesAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).spacesAssumption || '');
+            const [valueAssumption, setValueAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).valueAssumption || '');
+            const [capabilitiesAssumption, setCapabilitiesAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capabilitiesAssumption || '');
+            const [reactionAssumption, setReactionAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).reactionAssumption || '');
+            const [selectedRiskiestKey, setSelectedRiskiestKey] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).selectedRiskiestKey || '');
             
-            // Step 3B: Test Design
-            const [testObjective, setTestObjective] = useState('');
-            const [theTest, setTheTest] = useState('');
-            const [theMetric, setTheMetric] = useState('');
+            // Step 3B: Test Design - initialized from localStorage
+            const [testObjective, setTestObjective] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).testObjective || '');
+            const [theTest, setTheTest] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).theTest || '');
+            const [theMetric, setTheMetric] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).theMetric || '');
 
             const [activityComplete, setActivityComplete] = useState(false);
             const [showExportSection, setShowExportSection] = useState(false);
@@ -156,6 +187,31 @@
                 const allFieldsFilled = filledFieldsCount === 17;
                 setActivityComplete(allFieldsFilled);
             }, [targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, spacesAssumption, valueAssumption, capabilitiesAssumption, reactionAssumption, testObjective, theTest, theMetric]);
+
+            // Auto-save state to localStorage whenever any form data changes
+            useEffect(() => {
+                const currentState = {
+                    targetSegment,
+                    specificBuyer,
+                    urgentProblem,
+                    whereNotToPlay,
+                    value1,
+                    capability1,
+                    value2,
+                    capability2,
+                    value3,
+                    capability3,
+                    spacesAssumption,
+                    valueAssumption,
+                    capabilitiesAssumption,
+                    reactionAssumption,
+                    selectedRiskiestKey,
+                    testObjective,
+                    theTest,
+                    theMetric
+                };
+                saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
+            }, [targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, spacesAssumption, valueAssumption, capabilitiesAssumption, reactionAssumption, selectedRiskiestKey, testObjective, theTest, theMetric]);
 
             const toggleDevMode = () => setDevMode(!devMode);
 
@@ -209,6 +265,29 @@
                 setTheTest('');
                 setTheMetric('');
                 setShowExportSection(false);
+                
+                // Clear localStorage data for this activity
+                const emptyState = {
+                    targetSegment: '',
+                    specificBuyer: '',
+                    urgentProblem: '',
+                    whereNotToPlay: '',
+                    value1: '',
+                    capability1: '',
+                    value2: '',
+                    capability2: '',
+                    value3: '',
+                    capability3: '',
+                    spacesAssumption: '',
+                    valueAssumption: '',
+                    capabilitiesAssumption: '',
+                    reactionAssumption: '',
+                    selectedRiskiestKey: '',
+                    testObjective: '',
+                    theTest: '',
+                    theMetric: ''
+                };
+                saveWorkshopState(emptyState, WORKSHOP_STORAGE_KEY);
             };
 
             const generateMarkdownSummary = () => {
