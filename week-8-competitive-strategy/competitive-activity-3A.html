@@ -42,7 +42,7 @@
         "keyRisks": "1. A major competitor (e.g., Datadog) launches a similar, low-cost predictive feature. 2. Our ML model for predictions is not accurate enough in diverse real-world environments.",
         "counterMoves": "1. If competitor launches, we will double down on our 'setup-in-minutes' value prop and our superior customer support. 2. We will build a 'model tuning' feature to allow customers to improve accuracy for their specific use case.",
         "firstTests": "1. Test pricing model with 10 new prospects to confirm value perception. (Owner: Sarah, by Aug 29). 2. Onboard 3 design partners to validate the accuracy of predictive alerts. (Owner: Tom, by Sep 5).",
-        "currentStep": 3
+        "blueprintStep": 3
     }
     </script>
 
@@ -98,28 +98,28 @@
             </div>
         );
 
-        const WizardStepIndicator = ({ currentStep, isStep2Complete, isStep3Complete }) => (
+        const WizardStepIndicator = ({ blueprintStep, isStep2Complete, isStep3Complete }) => (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <div className="flex justify-between items-center">
                     <StepIndicator 
                         step={1} 
                         title="Review" 
-                        active={currentStep === 1} 
-                        completed={currentStep > 1}
+                        active={blueprintStep === 1} 
+                        completed={blueprintStep > 1}
                     />
-                    <div className={`flex-1 h-0.5 mx-4 ${currentStep > 1 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <div className={`flex-1 h-0.5 mx-4 ${blueprintStep > 1 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
                     <StepIndicator 
                         step={2} 
                         title="Define" 
-                        active={currentStep === 2} 
-                        completed={currentStep > 2 || (currentStep === 2 && isStep2Complete)}
+                        active={blueprintStep === 2} 
+                        completed={blueprintStep > 2 || (blueprintStep === 2 && isStep2Complete)}
                     />
-                    <div className={`flex-1 h-0.5 mx-4 ${(currentStep > 2 || (currentStep === 2 && isStep2Complete)) ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <div className={`flex-1 h-0.5 mx-4 ${(blueprintStep > 2 || (blueprintStep === 2 && isStep2Complete)) ? 'bg-green-500' : 'bg-gray-200'}`}></div>
                     <StepIndicator 
                         step={3} 
                         title="Plan" 
-                        active={currentStep === 3} 
-                        completed={currentStep === 3 && isStep3Complete}
+                        active={blueprintStep === 3} 
+                        completed={blueprintStep === 3 && isStep3Complete}
                     />
                 </div>
             </div>
@@ -160,7 +160,7 @@
             const [firstTests, setFirstTests] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).firstTests || '');
 
             // Wizard navigation state
-            const [currentStep, setCurrentStep] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).currentStep || 1);
+            const [blueprintStep, setBlueprintStep] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).blueprintStep || 1);
 
             // App state
             const [devMode, setDevMode] = useState(false);
@@ -174,11 +174,11 @@
             
             // Step-based progress calculation
             const progress = useMemo(() => {
-                if(currentStep === 1) return 33;
-                if(currentStep === 2) return isStep2Complete ? 66 : 33;
-                if(currentStep === 3) return isStep3Complete ? 100 : 66;
+                if(blueprintStep === 1) return 33;
+                if(blueprintStep === 2) return isStep2Complete ? 66 : 33;
+                if(blueprintStep === 3) return isStep3Complete ? 100 : 66;
                 return 33;
-            }, [currentStep, isStep2Complete, isStep3Complete]);
+            }, [blueprintStep, isStep2Complete, isStep3Complete]);
 
             // Auto-save state to localStorage whenever any form data changes
             useEffect(() => {
@@ -190,23 +190,23 @@
                     keyRisks,
                     counterMoves,
                     firstTests,
-                    currentStep
+                    blueprintStep
                 };
                 saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
-            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests, currentStep]);
+            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests, blueprintStep]);
 
             const toggleDevMode = () => setDevMode(!devMode);
 
             // Navigation functions
             const goToNextStep = () => {
-                if (currentStep < 3) {
-                    setCurrentStep(currentStep + 1);
+                if (blueprintStep < 3) {
+                    setBlueprintStep(blueprintStep + 1);
                 }
             };
 
             const goToPrevStep = () => {
-                if (currentStep > 1) {
-                    setCurrentStep(currentStep - 1);
+                if (blueprintStep > 1) {
+                    setBlueprintStep(blueprintStep - 1);
                 }
             };
 
@@ -225,7 +225,7 @@
                     setKeyRisks(data.keyRisks); 
                     setCounterMoves(data.counterMoves);
                     setFirstTests(data.firstTests);
-                    setCurrentStep(3); // Move to final step to show completed state
+                    setBlueprintStep(3); // Move to final step to show completed state
                     console.log('✅ Dev data loaded successfully');
                 } catch (e) { 
                     console.error('❌ Failed to load dev data:', e); 
@@ -242,7 +242,7 @@
                 setKeyRisks('');
                 setCounterMoves('');
                 setFirstTests('');
-                setCurrentStep(1); // Reset to first step
+                setBlueprintStep(1); // Reset to first step
                 setShowExportSection(false); // Reset export section visibility
                 
                 // Clear localStorage data for this activity's input fields only
@@ -256,7 +256,7 @@
                     keyRisks: '',
                     counterMoves: '',
                     firstTests: '',
-                    currentStep: 1
+                    blueprintStep: 1
                 };
                 saveWorkshopState(emptyState, WORKSHOP_STORAGE_KEY);
             };
@@ -367,7 +367,7 @@ ${firstTests || '[Not provided]'}
                     </div>
                     
                     <WizardStepIndicator 
-                        currentStep={currentStep} 
+                        blueprintStep={blueprintStep} 
                         isStep2Complete={isStep2Complete} 
                         isStep3Complete={isStep3Complete} 
                     />
@@ -386,7 +386,7 @@ ${firstTests || '[Not provided]'}
                         <div> {/* Left Column for Inputs */}
                             
                             {/* Step 1: Review Your Foundation */}
-                            {currentStep === 1 && (
+                            {blueprintStep === 1 && (
                                 <div className="mb-8">
                                     <h2 className="text-xl font-bold mb-4">Step 1: Review Your Foundation</h2>
                                     <p className="text-sm text-gray-600 mb-6">Review your key strategic choices from Activities 1 and 2.</p>
@@ -422,7 +422,7 @@ ${firstTests || '[Not provided]'}
                             )}
 
                             {/* Step 2: Define Your Advantage & Measures */}
-                            {currentStep === 2 && (
+                            {blueprintStep === 2 && (
                                 <div className="mb-8">
                                     <h2 className="text-xl font-bold mb-4">Step 2: Define Your Advantage & Measures</h2>
                                     <p className="text-sm text-gray-600 mb-6">Define the capabilities and systems you need, plus how you'll measure success.</p>
@@ -466,7 +466,7 @@ ${firstTests || '[Not provided]'}
                             )}
 
                             {/* Step 3: Plan Your Action */}
-                            {currentStep === 3 && (
+                            {blueprintStep === 3 && (
                                 <div className="mb-8">
                                     <h2 className="text-xl font-bold mb-4">Step 3: Plan Your Action</h2>
                                     <p className="text-sm text-gray-600 mb-6">Identify additional risks and plan concrete next steps to test your strategy.</p>
@@ -505,9 +505,9 @@ ${firstTests || '[Not provided]'}
                                 {/* Back Button */}
                                 <button
                                     onClick={goToPrevStep}
-                                    disabled={currentStep === 1}
+                                    disabled={blueprintStep === 1}
                                     className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                                        currentStep === 1 
+                                        blueprintStep === 1 
                                             ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                                             : 'bg-gray-500 text-white hover:bg-gray-600'
                                     }`}
@@ -524,12 +524,12 @@ ${firstTests || '[Not provided]'}
                                 </button>
 
                                 {/* Continue/Complete Button */}
-                                {currentStep < 3 ? (
+                                {blueprintStep < 3 ? (
                                     <button
                                         onClick={goToNextStep}
-                                        disabled={currentStep === 2 && !canContinueFromStep2}
+                                        disabled={blueprintStep === 2 && !canContinueFromStep2}
                                         className={`px-6 py-2 rounded-lg font-medium transition-colors ${
-                                            (currentStep === 2 && !canContinueFromStep2)
+                                            (blueprintStep === 2 && !canContinueFromStep2)
                                                 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
                                                 : 'bg-orange-500 text-white hover:bg-orange-600'
                                         }`}
