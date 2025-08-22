@@ -1,0 +1,2223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Competitive Strategy Workshop</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .force-box.selected {
+            border: 3px solid #FF9000;
+            box-shadow: 0 0 0 2px rgba(255, 144, 0, 0.2);
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .blueprint-table td { padding: 12px 16px; }
+        .blueprint-table tr:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+        .blueprint-label { font-weight: 600; color: #4b5563; }
+        .sticky-blueprint { position: sticky; top: 100px; }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        input::placeholder {
+            color: #9CA3AF;
+        }
+        @media (max-width: 768px) {
+            .fields-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+        .blueprint-table td { padding: 12px 16px; }
+        .blueprint-table tr:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+        .blueprint-label { font-weight: 600; color: #4b5563; }
+        .sticky-blueprint { position: sticky; top: 100px; }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <!-- Test Data for Activity 1 Dev Mode -->
+    <script type="application/json" id="testData">
+    {
+        "customers": "Mid-market to Enterprise tech companies (e.g., SaaS, e-commerce) with complex, API-driven architectures. They have many monitoring choices (Datadog, New Relic, etc.) and significant power to demand performance and specific features.",
+        "competitors": "Direct: Datadog, New Relic, Dynatrace. Indirect: Open-source solutions like Prometheus + Grafana.",
+        "substitutes": "In-house custom monitoring scripts (Python/Bash), manual log checking by DevOps teams, relying on cloud provider's basic monitoring (e.g., CloudWatch), or simply 'doing nothing' until a major incident occurs.",
+        "suppliers": "Primary dependencies are on cloud providers (AWS, GCP, Azure) for log data APIs and infrastructure. A change in their API terms, rate limits, or pricing could significantly impact our service.",
+        "newEntrants": "Observability platforms like Honeycomb or Grafana Labs could easily extend their offerings. Large tech companies (e.g., Cloudflare, AWS) could bundle a more advanced, competitive monitoring solution into their platforms.",
+        "selectedForces": ["substitutes", "customers"]
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        // Global constants and helper functions
+        const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
+
+        /**
+         * Loads the entire workshop state from localStorage using a specific key.
+         * @param {string} storageKey - The unique key for the workshop's state.
+         * @returns {object} The parsed workshop state or an empty object.
+         */
+        const loadWorkshopState = (storageKey) => {
+            try {
+                const savedState = localStorage.getItem(storageKey);
+                return savedState ? JSON.parse(savedState) : {};
+            } catch (error) {
+                console.error("Could not load state from localStorage", error);
+                return {};
+            }
+        };
+
+        /**
+         * Saves a piece of state by merging it into the existing workshop state.
+         * @param {object} stateToSave - An object containing the key-value pairs to save.
+         * @param {string} storageKey - The unique key for the workshop's state.
+         */
+        const saveWorkshopState = (stateToSave, storageKey) => {
+            try {
+                const currentState = loadWorkshopState(storageKey);
+                const newState = { ...currentState, ...stateToSave };
+                localStorage.setItem(storageKey, JSON.stringify(newState));
+            } catch (error) {
+                console.error("Could not save state to localStorage", error);
+            }
+        };
+
+        // Helper Components for Activity 1
+        const WordCountFeedback = ({ text, minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">
+                        (describe in 5+ words)
+                    </span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words
+                        {isValid && <span>✓</span>}
+                    </span>
+                </div>
+            );
+        };
+
+        const ForceBox = ({ id, title, question, tooltip, placeholder, value, setter, selectedForces, handleForceSelection }) => {
+            const isSelected = selectedForces.includes(id);
+            const wordCount = value.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = value.trim().length >= 25;
+            
+            return (
+                <div id={id} className={`force-box absolute w-80 p-4 border-2 rounded-xl bg-white shadow-lg transition-all duration-300 ${isSelected ? 'selected' : (isValid ? 'border-green-500' : 'border-gray-200')}`}>
+                    <h3 className="text-base font-semibold text-gray-800 flex justify-between items-center">
+                        {title}
+                        <div className="relative group">
+                            <span className="text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                            <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                                {tooltip}
+                            </div>
+                        </div>
+                    </h3>
+                    <p className="text-xs text-gray-500 italic mt-1 mb-2">{question}</p>
+                    <textarea
+                        value={value}
+                        onChange={(e) => setter(e.target.value)}
+                        placeholder={placeholder}
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+                    />
+                    <WordCountFeedback text={value} minWords={5} />
+                    <div className="mt-2">
+                        <button 
+                            onClick={() => handleForceSelection(id)} 
+                            className={`w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${isSelected ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
+                            disabled={!isValid}
+                        >
+                            {isSelected ? '✓ Selected' : 'Select as Top Force'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Helper Component for Activity 2
+        const InputField = ({ label, tooltip, placeholder, value, setter, rows=1 }) => (
+            <div className="mb-6">
+                <label className="block text-base font-semibold text-gray-800 mb-2 relative group">
+                    {label}
+                    <span className="absolute -top-0.5 -right-0.5 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-64 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                        {tooltip}
+                    </div>
+                </label>
+                {rows === 1 ? (
+                    <input
+                        type="text"
+                        value={value}
+                        onChange={(e) => setter(e.target.value)}
+                        placeholder={placeholder}
+                        className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
+                    />
+                ) : (
+                    <textarea
+                        value={value}
+                        onChange={(e) => setter(e.target.value)}
+                        placeholder={placeholder}
+                        rows={rows}
+                        className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500"
+                    />
+                )}
+            </div>
+        );
+
+        // Activity 3 Helper Components
+        const Activity3StepIndicator = ({ step, title, active, completed }) => (
+            <div className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                    completed ? 'bg-green-500 text-white' :
+                    active ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                    {completed ? '✓' : step}
+                </div>
+                <div className="ml-3">
+                    <h4 className={`font-semibold ${
+                        completed ? 'text-green-600' :
+                        active ? 'text-orange-600' : 'text-gray-700'
+                    }`}>{title}</h4>
+                </div>
+            </div>
+        );
+
+        const WizardStepIndicator = ({ currentStep, isStep2Complete, isStep3Complete }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    <Activity3StepIndicator 
+                        step={1} 
+                        title="Review" 
+                        active={currentStep === 1} 
+                        completed={currentStep > 1}
+                    />
+                    <div className={`flex-1 h-0.5 mx-4 ${currentStep > 1 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <Activity3StepIndicator 
+                        step={2} 
+                        title="Define" 
+                        active={currentStep === 2} 
+                        completed={currentStep > 2 || (currentStep === 2 && isStep2Complete)}
+                    />
+                    <div className={`flex-1 h-0.5 mx-4 ${(currentStep > 2 || (currentStep === 2 && isStep2Complete)) ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <Activity3StepIndicator 
+                        step={3} 
+                        title="Plan" 
+                        active={currentStep === 3} 
+                        completed={currentStep === 3 && isStep3Complete}
+                    />
+                </div>
+            </div>
+        );
+
+        // Activity 1: Competitive Snapshot Activity Component
+        const CompetitiveSnapshotActivity = ({ 
+            customers, setCustomers, 
+            competitors, setCompetitors, 
+            substitutes, setSubstitutes, 
+            suppliers, setSuppliers, 
+            newEntrants, setNewEntrants, 
+            selectedForces, setSelectedForces,
+            activityComplete,
+            resetActivity
+        }) => {
+            // UI-specific state (kept in component)
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+            
+            // Helper function to count filled fields
+            const getFilledFieldsCount = () => {
+                let count = 0;
+                if (customers.trim().length >= 25) count++;
+                if (competitors.trim().length >= 25) count++;
+                if (substitutes.trim().length >= 25) count++;
+                if (suppliers.trim().length >= 25) count++;
+                if (newEntrants.trim().length >= 25) count++;
+                return count;
+            };
+            
+            // Calculate progress percentage
+            const progressPercentage = (getFilledFieldsCount() / 5) * 100;
+
+            const handleForceSelection = (forceId) => {
+                setSelectedForces(prev => {
+                    if (prev.includes(forceId)) {
+                        return prev.filter(id => id !== forceId);
+                    } else {
+                        if (prev.length < 2) {
+                            return [...prev, forceId];
+                        } else {
+                            // Show notification if trying to select more than 2
+                            const notification = document.getElementById('notification-bar');
+                            if(notification) {
+                                notification.classList.add('show');
+                                setTimeout(() => notification.classList.remove('show'), 3000);
+                            }
+                            return prev;
+                        }
+                    }
+                });
+            };
+            
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setCustomers(testData.customers);
+                    setCompetitors(testData.competitors);
+                    setSubstitutes(testData.substitutes);
+                    setSuppliers(testData.suppliers);
+                    setNewEntrants(testData.newEntrants);
+                    setSelectedForces(testData.selectedForces || []);
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+            
+            const generateMarkdownSummary = () => {
+                const timestamp = new Date().toLocaleString();
+                const topForcesText = selectedForces.length > 0 ? selectedForces.map(f => f.charAt(0).toUpperCase() + f.slice(1)).join(', ') : '[Not selected]';
+
+                return `# Competitive Strategy: Competitive Field Snapshot
+Generated: ${timestamp}
+
+### 📋 Executive Summary
+- **Top Two Forces Identified:** ${topForcesText}
+- **Status:** Activity Complete
+
+### 🌏 Competitive Forces Analysis
+
+#### 🎯 Customers (Buyers)
+${customers || '[Not provided]'}
+
+#### ⚔️ Competitors (Direct Rivals)
+${competitors || '[Not provided]'}
+
+#### 🔄 Substitutes / DIY
+${substitutes || '[Not provided]'}
+
+#### 🔗 Suppliers / Dependencies
+${suppliers || '[Not provided]'}
+
+#### 🚀 New Entrants
+${newEntrants || '[Not provided]'}
+
+---
+### 📅 Assessment Details
+- **Activity:** 1 - Competitive Field Snapshot
+- **Workshop:** Competitive Strategy Principles
+- **Next Step:** Use the top two forces to inform 'Where to Play' choices.
+`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            // Fallback for older browsers
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.select();
+                            const successful = document.execCommand('copy');
+                            document.body.removeChild(textArea);
+                            return successful;
+                        }
+                    } catch (err) {
+                        return false;
+                    }
+                };
+
+                const markdown = generateMarkdownSummary();
+                const statusDiv = document.getElementById('copyStatus');
+                
+                copyToClipboard(markdown).then((success) => {
+                    if (success) {
+                        // Show success status
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        // Floating notification
+                        const notification = document.createElement('div');
+                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; z-index: 9999;';
+                        notification.textContent = '✅ Activity summary copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 2500);
+                    }
+                });
+            };
+
+            return (
+                <div>
+                    {/* Activity Header */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <h1 onDoubleClick={toggleDevMode} className={`text-xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                            Activity 1: Competitive Field Snapshot {devMode && '🔧'}
+                        </h1>
+                        <p className="text-gray-600 text-sm mt-1">Identify the pressures shaping your market, then select the <strong>top two forces</strong> that matter most to your startup right now.</p>
+                         {devMode && (
+                            <div className="mt-3 pt-3 border-t border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button onClick={devFillData} disabled={devFillLoading} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50">
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">{Math.round(progressPercentage)}% Complete</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="bg-orange-500 h-2 rounded-full transition-all duration-300" style={{width: `${progressPercentage}%`}}></div>
+                        </div>
+                        <div className="mt-2 text-xs text-gray-500">
+                            Fill out all 5 forces to enable selection of top two forces
+                        </div>
+                    </div>
+
+                    <div id="notification-bar" className="fixed top-5 right-5 bg-yellow-500 text-white px-6 py-3 rounded-lg shadow-lg opacity-0 transition-opacity duration-300 pointer-events-none z-50">You can only select up to two forces.</div>
+                    <style>{`
+                        #notification-bar.show {
+                            opacity: 1 !important;
+                        }
+                    `}</style>
+
+                    {/* Desktop Porter's Five Forces Layout */}
+                    <div className="relative w-full h-[900px] my-10 hidden md:block">
+                        {/* Center Interactive Competitors Box */}
+                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-80 bg-[#3B82F6] text-white rounded-xl flex flex-col p-4 z-10 shadow-lg transition-all duration-300 ${selectedForces.includes('competitors') ? 'ring-4 ring-orange-400' : ''}`}>
+                            <div className="flex justify-between items-center mb-2">
+                                <h3 className="text-base font-semibold">Competitors (Rivals)</h3>
+                                <div className="relative group">
+                                    <span className="text-blue-200 cursor-pointer border border-blue-200 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-60 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                                        Be specific. Name companies, not 'everyone.'
+                                    </div>
+                                </div>
+                            </div>
+                            <p className="text-xs text-blue-100 mb-2">Who else is chasing this problem?</p>
+                            <textarea
+                                value={competitors}
+                                onChange={(e) => setCompetitors(e.target.value)}
+                                placeholder="e.g., New Relic, Datadog"
+                                className="w-full laptop-textarea p-3 border border-blue-300 rounded-lg text-sm text-gray-800 bg-white/90 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400 resize-none"
+                            />
+                            <div className="flex justify-between items-center mt-1">
+                                <span className="text-xs text-blue-200">
+                                    (describe in 5+ words)
+                                </span>
+                                <span className={`text-sm flex items-center gap-1 ${competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 ? 'text-white' : 'text-blue-200'}`}>
+                                    {competitors.trim().split(/\s+/).filter(w => w.length > 0).length} words
+                                    {competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 && <span>✓</span>}
+                                </span>
+                            </div>
+                            <button 
+                                onClick={() => handleForceSelection('competitors')} 
+                                className={`mt-2 w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${selectedForces.includes('competitors') ? 'bg-orange-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
+                                disabled={competitors.trim().length < 25}
+                            >
+                                {selectedForces.includes('competitors') ? '✓ Selected' : 'Select as Top Force'}
+                            </button>
+                        </div>
+                        
+                        <ForceBox id="newEntrants" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="suppliers" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="customers" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                        <ForceBox id="substitutes" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+
+                        {/* Positioning for Force Boxes - Balanced spacing */}
+                        <style>{`
+                            #newEntrants { top: 60px; left: 50%; transform: translateX(-50%); }
+                            #suppliers { top: 50%; left: -20px; transform: translateY(-50%); }
+                            #customers { top: 50%; right: -20px; transform: translateY(-50%); }
+                            #substitutes { bottom: 60px; left: 50%; transform: translateX(-50%); }
+                        `}</style>
+                    </div>
+
+                    {/* Mobile / Fallback Layout */}
+                    <div className="grid grid-cols-1 md:hidden gap-6">
+                         <ForceBox id="newEntrants-mob" title="New Entrants" question="Who else could easily enter?" tooltip="Adjacent startups, big tech expansions." placeholder="e.g., Grafana Labs could extend into this." value={newEntrants} setter={setNewEntrants} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="competitors-mob" title="Competitors (Rivals)" question="Who else is chasing this problem?" tooltip="Be specific. Name companies, not 'everyone.'" placeholder="e.g., New Relic, Datadog." value={competitors} setter={setCompetitors} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="customers-mob" title="Customers (Buyers)" question="How much choice do they have?" tooltip="Buyers with many choices have more power." placeholder="e.g., Mid-market IT leads have 10+ choices." value={customers} setter={setCustomers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="suppliers-mob" title="Suppliers / Dependencies" question="What providers do you depend on?" tooltip="APIs, data sources, platforms. If they change terms, what happens?" placeholder="e.g., AWS logs API." value={suppliers} setter={setSuppliers} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                         <ForceBox id="substitutes-mob" title="Substitutes / DIY" question="How else can buyers solve this?" tooltip="DIY scripts, spreadsheets, consultants all count." placeholder="e.g., Python scripts + cron jobs." value={substitutes} setter={setSubstitutes} selectedForces={selectedForces} handleForceSelection={handleForceSelection} />
+                    </div>
+                    
+                    {/* Export Section */}
+                    {activityComplete && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Competitive Field Snapshot</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Your competitive field analysis has been formatted as a professional markdown report for easy sharing and documentation.
+                            </p>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Activity Summary" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                                >
+                                    📋 Copy Activity Summary
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Activity-Specific Action Buttons */}
+                    <div className="flex justify-center items-center mt-8 gap-4">
+                        <button
+                            onClick={resetActivity}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                        >
+                            Reset Activity
+                        </button>
+                        
+                        <button
+                            onClick={() => {
+                                // Generate export and show completion for SPA
+                                if (selectedForces.length >= 2) {
+                                    // Activity completion is handled by parent WorkshopApp
+                                    console.log('Activity 1 completed with forces:', selectedForces);
+                                }
+                            }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                selectedForces.length >= 2 
+                                    ? 'bg-green-500 text-white hover:bg-green-600'
+                                    : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                            }`}
+                            disabled={selectedForces.length < 2}
+                        >
+                            {activityComplete ? 'Export Complete' : 'Generate Report'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const PlayWinChoicesActivity = ({ 
+            targetSegment, setTargetSegment,
+            specificBuyer, setSpecificBuyer,
+            urgentProblem, setUrgentProblem,
+            whereNotToPlay, setWhereNotToPlay,
+            value1, setValue1,
+            capability1, setCapability1,
+            value2, setValue2,
+            capability2, setCapability2,
+            value3, setValue3,
+            capability3, setCapability3,
+            spacesAssumption, setSpacesAssumption,
+            valueAssumption, setValueAssumption,
+            capabilitiesAssumption, setCapabilitiesAssumption,
+            reactionAssumption, setReactionAssumption,
+            selectedRiskiestKey, setSelectedRiskiestKey,
+            testObjective, setTestObjective,
+            theTest, setTheTest,
+            theMetric, setTheMetric,
+            activityComplete,
+            resetActivity
+        }) => {
+            // UI-specific state (kept in component)
+            const [showExportSection, setShowExportSection] = useState(false);
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+            
+            // Calculate progress based on filled fields
+            const getFilledFieldsCount = () => {
+                let count = 0;
+                if (targetSegment.trim().length > 3) count++;
+                if (specificBuyer.trim().length > 3) count++;
+                if (urgentProblem.trim().length > 3) count++;
+                if (whereNotToPlay.trim().length > 3) count++;
+                if (value1.trim().length > 3) count++;
+                if (capability1.trim().length > 3) count++;
+                if (value2.trim().length > 3) count++;
+                if (capability2.trim().length > 3) count++;
+                if (value3.trim().length > 3) count++;
+                if (capability3.trim().length > 3) count++;
+                if (spacesAssumption.trim().length > 3) count++;
+                if (valueAssumption.trim().length > 3) count++;
+                if (capabilitiesAssumption.trim().length > 3) count++;
+                if (reactionAssumption.trim().length > 3) count++;
+                if (testObjective.trim().length > 3) count++;
+                if (theTest.trim().length > 3) count++;
+                if (theMetric.trim().length > 3) count++;
+                return count;
+            };
+            
+            const filledFieldsCount = getFilledFieldsCount();
+            const progressPercentage = (filledFieldsCount / 17) * 100;
+
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setTargetSegment(testData.targetSegment);
+                    setSpecificBuyer(testData.specificBuyer);
+                    setUrgentProblem(testData.urgentProblem);
+                    setWhereNotToPlay(testData.whereNotToPlay);
+                    setValue1(testData.value1);
+                    setCapability1(testData.capability1);
+                    setValue2(testData.value2);
+                    setCapability2(testData.capability2);
+                    setValue3(testData.value3);
+                    setCapability3(testData.capability3);
+                    setSpacesAssumption(testData.spacesAssumption);
+                    setValueAssumption(testData.valueAssumption);
+                    setCapabilitiesAssumption(testData.capabilitiesAssumption);
+                    setReactionAssumption(testData.reactionAssumption);
+                    setSelectedRiskiestKey(testData.selectedRiskiestKey);
+                    setTestObjective(testData.testObjective);
+                    setTheTest(testData.theTest);
+                    setTheMetric(testData.theMetric);
+                    console.log('✅ Dev data loaded successfully');
+                } catch (error) {
+                    console.error('❌ Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+            
+            const generateMarkdownSummary = () => {
+                const timestamp = new Date().toLocaleString();
+                const selectedAssumption = selectedRiskiestKey === 'spaces' ? spacesAssumption :
+                    selectedRiskiestKey === 'value' ? valueAssumption :
+                    selectedRiskiestKey === 'capabilities' ? capabilitiesAssumption :
+                    selectedRiskiestKey === 'reaction' ? reactionAssumption : '';
+                const selectedCategory = selectedRiskiestKey ? selectedRiskiestKey.toUpperCase() : 'UNSELECTED';
+                
+                return `# Competitive Strategy: Play & Win Choices
+Generated: ${timestamp}
+
+## 🎯 Where We Play
+
+**Target Segment:** ${targetSegment || '[Not provided]'}
+
+**Specific Buyer:** ${specificBuyer || '[Not provided]'}
+
+**Urgent Problem:** ${urgentProblem || '[Not provided]'}
+
+**Where We Will NOT Play:** ${whereNotToPlay || '[Not provided]'}
+
+**Strategic Statement:** We play in ${targetSegment || '[segment]'}, for ${specificBuyer || '[buyer]'}, who have ${urgentProblem || '[problem]'}.
+
+**Strategic Trade-off:** To win, we will explicitly not serve ${whereNotToPlay || '[your defined trade-off]'}.
+
+## 🏆 How We Win
+
+Our unique advantage is a system of reinforcing capabilities that deliver exceptional value:
+
+1. **We deliver:** ${value1 || '[Value #1]'}  
+   **Through our:** ${capability1 || '[Capability #1]'}
+
+2. **We deliver:** ${value2 || '[Value #2]'}  
+   **Through our:** ${capability2 || '[Capability #2]'}
+
+3. **We deliver:** ${value3 || '[Value #3]'}  
+   **Through our:** ${capability3 || '[Capability #3]'}
+
+**Strategic Statement:** We win by delivering ${value1 || '[value 1]'} through ${capability1 || '[capability 1]'}, ${value2 || '[value 2]'} through ${capability2 || '[capability 2]'}, and ${value3 || '[value 3]'} through ${capability3 || '[capability 3]'}.
+
+## ⚠️ Riskiest Assumption Analysis (SPACES Framework)
+
+### Strategic Assumptions Identified:
+
+**SPACES (Market Structure):** ${spacesAssumption || '[Not analyzed]'}
+
+**VALUE (Customer Beliefs):** ${valueAssumption || '[Not analyzed]'}
+
+**CAPABILITIES (Core Competencies):** ${capabilitiesAssumption || '[Not analyzed]'}
+
+**REACTION (Competitive Response):** ${reactionAssumption || '[Not analyzed]'}
+
+### Selected Riskiest Assumption:
+**Category:** ${selectedCategory}
+**Assumption:** ${selectedAssumption || '[Not selected]'}
+
+### Test Design:
+**Test Objective:** ${testObjective || '[Not defined]'}
+
+**The Test:** ${theTest || '[Not defined]'}
+
+**Success Metric:** ${theMetric || '[Not defined]'}
+
+---
+### 📅 Assessment Details
+- **Activity:** 2 - Play & Win Choices
+- **Workshop:** Competitive Strategy Principles  
+- **Framework:** SPACES Strategic Assumption Analysis
+- **Next Step:** Execute the designed test to validate or invalidate the riskiest assumption before proceeding with strategy implementation.
+`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const copyToClipboard = async (text) => {
+                    try {
+                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                            await navigator.clipboard.writeText(text);
+                            return true;
+                        } else {
+                            const textArea = document.createElement('textarea');
+                            textArea.value = text;
+                            textArea.style.position = 'fixed';
+                            textArea.style.left = '-999999px';
+                            document.body.appendChild(textArea);
+                            textArea.focus();
+                            textArea.select();
+                            
+                            try {
+                                const successful = document.execCommand('copy');
+                                document.body.removeChild(textArea);
+                                return successful;
+                            } catch (err) {
+                                document.body.removeChild(textArea);
+                                return false;
+                            }
+                        }
+                    } catch (err) {
+                        console.error('Copy failed:', err);
+                        return false;
+                    }
+                };
+
+                const markdown = generateMarkdownSummary();
+                copyToClipboard(markdown).then((success) => {
+                    if (success) {
+                        const statusDiv = document.getElementById('copyStatus');
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg animate-fadeIn">
+                                <p class="font-medium">✅ Copied to Clipboard!</p>
+                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
+                            </div>
+                        `;
+                        
+                        const notification = document.createElement('div');
+                        notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                        notification.textContent = '✅ Play & Win choices copied!';
+                        document.body.appendChild(notification);
+                        
+                        setTimeout(() => {
+                            notification.style.transition = 'opacity 0.5s';
+                            notification.style.opacity = '0';
+                            setTimeout(() => notification.remove(), 500);
+                        }, 3000);
+                        
+                        setTimeout(() => {
+                            statusDiv.innerHTML = '';
+                        }, 3000);
+                    } else {
+                        const statusDiv = document.getElementById('copyStatus');
+                        statusDiv.innerHTML = `
+                            <div class="mt-2 bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg">
+                                <p class="font-medium">❌ Copy Failed</p>
+                                <p class="text-sm">Please select and copy the text manually.</p>
+                            </div>
+                        `;
+                        
+                        setTimeout(() => {
+                            statusDiv.innerHTML = '';
+                        }, 3000);
+                    }
+                });
+            };
+
+            return (
+                <div>
+                    {/* Activity Header */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <h1 onDoubleClick={toggleDevMode} className={`text-xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                            Activity 2: Play & Win Choices {devMode && '🔧'}
+                        </h1>
+                        <p className="text-gray-600 text-sm mt-1">Make two clear, powerful choices. These sentences will become the core of your strategy.</p>
+                        {devMode && (
+                            <div className="mt-3 pt-3 border-t border-orange-200">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                    <button onClick={devFillData} disabled={devFillLoading} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50">
+                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Progress</span>
+                            <span className="text-sm text-gray-600">
+                                {activityComplete ? 'Complete' : `${filledFieldsCount}/17 fields completed`}
+                            </span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div 
+                                className="bg-orange-500 h-2 rounded-full transition-all duration-300" 
+                                style={{width: `${progressPercentage}%`}}
+                            ></div>
+                        </div>
+                    </div>
+
+                    {/* Step 1: Define Where to Play */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="step-icon">01</div>
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800">Define Where to Play</h2>
+                                <p className="text-gray-600 text-sm mt-1">Break your market choice into three parts.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Review & Reflect Callout Box */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 text-blue-600 text-lg">📌</div>
+                                <div>
+                                    <h4 className="font-semibold text-blue-800 mb-2">First, Review Your Customer Profile</h4>
+                                    <p className="text-blue-700 text-sm leading-relaxed">
+                                        Your 'Where to Play' choice is the most specific articulation of your ECP (Early Customer Profile). Review your ECP definition. The best choices are narrow and focused. You are defining the beachhead market you can dominate <strong>now</strong>.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 fields-grid">
+                            <InputField
+                                label="Target Segment"
+                                tooltip="The specific industry or market you're focusing on. Be narrow! 'All small businesses' is too broad; 'Series A-C SaaS companies with dedicated DevOps teams' is better."
+                                placeholder="e.g., High-growth B2B SaaS companies"
+                                value={targetSegment}
+                                setter={setTargetSegment}
+                            />
+                            <InputField
+                                label="Specific Buyer"
+                                tooltip="The ideal persona who feels the pain most acutely and has the power to purchase or champion your product. Get specific on their title and context."
+                                placeholder="e.g., Heads of DevOps and Engineering Directors"
+                                value={specificBuyer}
+                                setter={setSpecificBuyer}
+                            />
+                            <InputField
+                                label="Urgent Problem"
+                                tooltip="The high-cost 'struggling moment' your buyer needs to solve now. Quantify it if possible (e.g., '$100k per hour of downtime')."
+                                placeholder="e.g., Who experience weekly API failures costing $50K+ per incident"
+                                value={urgentProblem}
+                                setter={setUrgentProblem}
+                            />
+                        </div>
+                        
+                        {/* Where We Will NOT Play - Full Width Field */}
+                        <div className="mt-6">
+                            <InputField
+                                label="Where We Will Not Play (Explicit Trade-off)"
+                                tooltip="A true strategy requires saying 'no.' What customer segments, product categories, or geographies will you deliberately ignore for the next 12-18 months to ensure you can win your chosen beachhead?"
+                                placeholder="e.g., We will not serve the Fortune 500 or companies without a dedicated DevOps team."
+                                value={whereNotToPlay}
+                                setter={setWhereNotToPlay}
+                            />
+                        </div>
+                    </div>
+
+                    {/* Step 2: Define How to Win */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="step-icon">02</div>
+                            <div>
+                                <h2 className="text-xl font-semibold text-gray-800">Define How to Win</h2>
+                                <p className="text-gray-600 text-sm mt-1">Connect your product's capabilities to the specific outcomes customers value.</p>
+                            </div>
+                        </div>
+                        
+                        {/* Review & Reflect Callout Box */}
+                        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+                            <div className="flex items-start gap-3">
+                                <div className="flex-shrink-0 text-blue-600 text-lg">💡</div>
+                                <div>
+                                    <h4 className="font-semibold text-blue-800 mb-2">Connect Your Value Proposition</h4>
+                                    <p className="text-blue-700 text-sm leading-relaxed">
+                                        Your 'How to Win' choice is your unique value proposition in action. Review your positioning canvas. This is not a list of features, but a system of reinforcing advantages that delivers unique value to your 'Where to Play' target.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 fields-grid">
+                            {/* Column 1 */}
+                            <div className="space-y-4">
+                                <InputField
+                                    label="Core Customer Value #1"
+                                    tooltip="What is the primary outcome or benefit the customer gets? Focus on the 'what,' not the 'how.'"
+                                    placeholder="e.g., Preemptive Problem Resolution"
+                                    value={value1}
+                                    setter={setValue1}
+                                />
+                                <InputField
+                                    label="Supporting Capability #1"
+                                    tooltip="What specific feature or capability of your product delivers this value? This is the 'how.'"
+                                    placeholder="e.g., Proprietary Machine Learning Models"
+                                    value={capability1}
+                                    setter={setCapability1}
+                                />
+                            </div>
+                            
+                            {/* Column 2 */}
+                            <div className="space-y-4">
+                                <InputField
+                                    label="Core Customer Value #2"
+                                    tooltip="What is the second key outcome for the customer?"
+                                    placeholder="e.g., Automated Resolution & Cost Savings"
+                                    value={value2}
+                                    setter={setValue2}
+                                />
+                                <InputField
+                                    label="Supporting Capability #2"
+                                    tooltip="What feature or capability delivers this second value point?"
+                                    placeholder="e.g., Enhanced Automated Problem Resolution Engine"
+                                    value={capability2}
+                                    setter={setCapability2}
+                                />
+                            </div>
+                            
+                            {/* Column 3 */}
+                            <div className="space-y-4">
+                                <InputField
+                                    label="Core Customer Value #3"
+                                    tooltip="What is the third key outcome for the customer?"
+                                    placeholder="e.g., Comprehensive Visibility"
+                                    value={value3}
+                                    setter={setValue3}
+                                />
+                                <InputField
+                                    label="Supporting Capability #3"
+                                    tooltip="What feature or capability delivers this third value point?"
+                                    placeholder="e.g., Seamless Cross-Platform Integration"
+                                    value={capability3}
+                                    setter={setCapability3}
+                                />
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Step 3: Identify the Riskiest Assumption */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex items-start gap-4 mb-4">
+                            <div className="step-icon">03</div>
+                            <div className="flex-1">
+                                <h2 className="text-xl font-semibold text-gray-800">Identify the Riskiest Assumption</h2>
+                                <p className="text-gray-600 text-sm mt-1">Turn your strategy into a set of testable beliefs.</p>
+                            </div>
+                        </div>
+                        
+                        <p className="text-gray-700 mb-6">
+                            A strategy is a set of beliefs about the future. To find your riskiest assumption, you first need to state the core beliefs that <strong>must be true</strong> for your strategy to succeed.
+                        </p>
+                        
+                        {/* Part A: Four SPACES Assumption Fields */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <InputField
+                                label="Belief about your SPACE"
+                                tooltip="What must be true about the industry structure and segments you've chosen to play in?"
+                                placeholder="e.g., That 'PredictiveOps' is a distinct, high-value category, not just a feature."
+                                value={spacesAssumption}
+                                setter={setSpacesAssumption}
+                            />
+                            <InputField
+                                label="Belief about the VALUE you create"
+                                tooltip="What must be true about what your customers and channels truly value and are willing to pay for?"
+                                placeholder="e.g., VPs of Eng will pay a premium for a predictive solution over their 'good enough' reactive tool."
+                                value={valueAssumption}
+                                setter={setValueAssumption}
+                            />
+                            <InputField
+                                label="Belief about your CAPABILITIES"
+                                tooltip="What must be true about your unique ability to execute and your relative costs vs. competitors?"
+                                placeholder="e.g., We can maintain our ML model's predictive lead against larger competitors."
+                                value={capabilitiesAssumption}
+                                setter={setCapabilitiesAssumption}
+                            />
+                            <InputField
+                                label="Belief about competitor REACTION"
+                                tooltip="What must be true about how your competitors will (or will not) react to your strategy?"
+                                placeholder="e.g., Incumbents like Datadog will be too slow to replicate our architecture."
+                                value={reactionAssumption}
+                                setter={setReactionAssumption}
+                            />
+                        </div>
+                        
+                        {/* Radio Button Selection */}
+                        <div className="mt-8">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-2">Select Your Single Riskiest Assumption</h3>
+                            <p className="text-gray-600 text-sm mb-4">
+                                Review your four core beliefs. Which one worries you the most? If this one belief is wrong, the entire strategy fails.
+                            </p>
+                            
+                            <div className="space-y-3">
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="spaces"
+                                        checked={selectedRiskiestKey === 'spaces'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!spacesAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">SPACE Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {spacesAssumption.trim() || 'Complete the SPACE belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="value"
+                                        checked={selectedRiskiestKey === 'value'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!valueAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">VALUE Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {valueAssumption.trim() || 'Complete the VALUE belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="capabilities"
+                                        checked={selectedRiskiestKey === 'capabilities'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!capabilitiesAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">CAPABILITIES Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {capabilitiesAssumption.trim() || 'Complete the CAPABILITIES belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                                
+                                <label className="flex items-start gap-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50 cursor-pointer">
+                                    <input
+                                        type="radio"
+                                        name="riskiestAssumption"
+                                        value="reaction"
+                                        checked={selectedRiskiestKey === 'reaction'}
+                                        onChange={(e) => setSelectedRiskiestKey(e.target.value)}
+                                        disabled={!reactionAssumption.trim()}
+                                        className="mt-1 text-orange-500"
+                                    />
+                                    <div className="flex-1">
+                                        <div className="font-medium text-gray-700">REACTION Assumption</div>
+                                        <div className="text-sm text-gray-600 mt-1">
+                                            {reactionAssumption.trim() || 'Complete the REACTION belief field to select this option'}
+                                        </div>
+                                    </div>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        {/* Part B: Test Design (Conditional) */}
+                        {selectedRiskiestKey && (
+                            <div className="border-t mt-6 pt-6">
+                                <div className="flex items-center gap-2 mb-4">
+                                    <span className="text-2xl">🔬</span>
+                                    <h3 className="text-lg font-semibold text-gray-800">Design Your Test</h3>
+                                </div>
+                                <p className="text-gray-600 text-sm mb-6">
+                                    Now, let's turn your riskiest assumption into a testable hypothesis. A great strategy is built on evidence, not just hope.
+                                </p>
+                                
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                    {/* The Risk (Read-only) */}
+                                    <div className="md:col-span-2">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                                            The Risk (Your Selected Assumption)
+                                        </label>
+                                        <textarea
+                                            readOnly
+                                            value={
+                                                selectedRiskiestKey === 'spaces' ? spacesAssumption :
+                                                selectedRiskiestKey === 'value' ? valueAssumption :
+                                                selectedRiskiestKey === 'capabilities' ? capabilitiesAssumption :
+                                                selectedRiskiestKey === 'reaction' ? reactionAssumption : ''
+                                            }
+                                            className="w-full p-3 border border-gray-300 rounded-lg text-sm bg-gray-50 resize-none h-20"
+                                        />
+                                    </div>
+                                    
+                                    <InputField
+                                        label="Test Objective"
+                                        tooltip="What, specifically, do you need to confirm to de-risk this assumption?"
+                                        placeholder="e.g., Confirm that customers perceive enough value to justify a >$50k/year price."
+                                        value={testObjective}
+                                        setter={setTestObjective}
+                                    />
+                                    
+                                    <InputField
+                                        label="The Test"
+                                        tooltip="What specific, low-cost test will give you confidence (e.g., interviews, landing page, pricing survey)?"
+                                        placeholder="e.g., Conduct 25 value-prop interviews with VPs of Engineering using an ROI model."
+                                        value={theTest}
+                                        setter={setTheTest}
+                                    />
+                                    
+                                    <div className="md:col-span-2">
+                                        <InputField
+                                            label="The Metric (Measure of Proof)"
+                                            tooltip="What is your quantitative success metric? This makes the result undeniable."
+                                            placeholder="e.g., At least 60% of interviewees state a willingness-to-pay within our target range."
+                                            value={theMetric}
+                                            setter={setTheMetric}
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Auto-Summary Footer */}
+                    <div className="bg-gray-50 rounded-lg border border-gray-200 p-6 mb-6">
+                        <h3 className="text-lg font-semibold text-gray-800 mb-4">Preview: Your Strategic Choice</h3>
+                        <div className="space-y-3">
+                            <p className="text-gray-700">
+                                <strong>Where we play:</strong> We play in <span className="text-orange-600">{targetSegment || '[Target Segment]'}</span>, for <span className="text-orange-600">{specificBuyer || '[Specific Buyer]'}</span>, who have <span className="text-orange-600">{urgentProblem || '[Urgent Problem]'}</span>.
+                            </p>
+                            <p className="text-gray-700">
+                                <strong>Where we won't play:</strong> To win, we will explicitly not serve <span className="text-orange-600">{whereNotToPlay || '[your defined trade-off]'}</span>.
+                            </p>
+                            <p className="text-gray-700">
+                                <strong>How we win:</strong> We win by delivering <span className="text-orange-600">{value1 || '[Value #1]'}</span> through <span className="text-orange-600">{capability1 || '[Capability #1]'}</span>, <span className="text-orange-600">{value2 || '[Value #2]'}</span> through <span className="text-orange-600">{capability2 || '[Capability #2]'}</span>, and <span className="text-orange-600">{value3 || '[Value #3]'}</span> through <span className="text-orange-600">{capability3 || '[Capability #3]'}</span>.
+                            </p>
+                        </div>
+                        
+                        <div className="mt-4 pt-4 border-t border-gray-200">
+                            <p className="text-gray-700">
+                                <strong>⚠️ Riskiest Assumption:</strong> <span className="text-orange-600">
+                                    {selectedRiskiestKey ? 
+                                        (selectedRiskiestKey === 'spaces' ? spacesAssumption :
+                                         selectedRiskiestKey === 'value' ? valueAssumption :
+                                         selectedRiskiestKey === 'capabilities' ? capabilitiesAssumption :
+                                         selectedRiskiestKey === 'reaction' ? reactionAssumption : '') 
+                                        : '[Select an assumption]'
+                                    }
+                                </span>
+                            </p>
+                            <p className="text-gray-700 mt-1">
+                                <strong>✅ Test Metric:</strong> <span className="text-orange-600">{theMetric || '[Define a success metric]'}</span>
+                            </p>
+                        </div>
+                        
+                        <p className="text-sm text-gray-600 mt-4">Keep these sentences clear—they'll be copied directly into your Competitive Strategy Blueprint.</p>
+                    </div>
+
+                    {/* Export Section */}
+                    {showExportSection && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mb-6 animate-fadeIn">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Play & Win Choices</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Your strategic choices have been formatted as a professional markdown report for easy sharing and documentation.
+                            </p>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Activity Summary" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                                >
+                                    📋 Copy Activity Summary
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Activity-Specific Action Buttons */}
+                    <div className="flex justify-center items-center mt-8 gap-4">
+                        <button
+                            onClick={resetActivity}
+                            className="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600 transition-colors font-medium"
+                        >
+                            Reset Activity
+                        </button>
+                        
+                        <button
+                            onClick={() => {
+                                if (!showExportSection && activityComplete) {
+                                    setShowExportSection(true);
+                                }
+                            }}
+                            className={`px-4 py-2 rounded-lg font-medium transition-colors ${
+                                showExportSection 
+                                    ? 'bg-gray-500 text-white hover:bg-gray-600' 
+                                    : activityComplete 
+                                        ? 'bg-green-500 text-white hover:bg-green-600'
+                                        : 'bg-gray-400 text-gray-200 cursor-not-allowed'
+                            }`}
+                            disabled={!activityComplete}
+                        >
+                            {showExportSection ? 'Export Complete' : 'Generate Report'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const BlueprintActivity = ({ 
+            criticalCapabilities, setCriticalCapabilities,
+            requiredSystems, setRequiredSystems,
+            valueMetric, setValueMetric,
+            earlySignals, setEarlySignals,
+            keyRisks, setKeyRisks,
+            counterMoves, setCounterMoves,
+            firstTests, setFirstTests,
+            activityComplete,
+            resetActivity,
+            // All Activity 1 & 2 data for cross-activity integration
+            selectedForces,
+            substitutes,
+            targetSegment,
+            specificBuyer,
+            urgentProblem,
+            value1,
+            capability1,
+            value2,
+            capability2,
+            value3,
+            capability3
+        }) => {
+            // Process and transform data from Activities 1 & 2 for display
+            const topForcesText = (selectedForces || []).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+            const keySubstitutesText = substitutes || '';
+            const whereToPlayText = `We play in ${targetSegment || '[segment]'}, for ${specificBuyer || '[buyer]'}, who have ${urgentProblem || '[problem]'}.`;
+            const howToWinText = `We win by delivering ${value1 || '[value 1]'} through ${capability1 || '[capability 1]'}, ${value2 || '[value 2]'} through ${capability2 || '[capability 2]'}, and ${value3 || '[value 3]'} through ${capability3 || '[capability 3]'}.`;
+            
+            // Internal wizard navigation state (kept in component)
+            const [currentStep, setCurrentStep] = useState(1);
+            
+            // UI-specific state (kept in component)
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+            const [showExportSection, setShowExportSection] = useState(false);
+
+            // Step completion validation
+            const isStep2Complete = useMemo(() => criticalCapabilities && requiredSystems && valueMetric && earlySignals, [criticalCapabilities, requiredSystems, valueMetric, earlySignals]);
+            const isStep3Complete = useMemo(() => keyRisks && counterMoves && firstTests, [keyRisks, counterMoves, firstTests]);
+            
+            // Step-based progress calculation
+            const progress = useMemo(() => {
+                if(currentStep === 1) return 33;
+                if(currentStep === 2) return isStep2Complete ? 66 : 33;
+                if(currentStep === 3) return isStep3Complete ? 100 : 66;
+                return 33;
+            }, [currentStep, isStep2Complete, isStep3Complete]);
+
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            // Navigation functions for internal wizard
+            const goToNextStep = () => {
+                if (currentStep < 3) {
+                    setCurrentStep(currentStep + 1);
+                }
+            };
+
+            const goToPrevStep = () => {
+                if (currentStep > 1) {
+                    setCurrentStep(currentStep - 1);
+                }
+            };
+
+            // Navigation validation
+            const canContinueFromStep2 = isStep2Complete;
+            const canCompleteFromStep3 = isStep3Complete;
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const data = {
+                        criticalCapabilities: "1. Proprietary machine learning models for predictive failure detection. 2. Seamless 10-minute onboarding process across all major cloud platforms. 3. Real-time automated incident resolution capabilities.",
+                        requiredSystems: "1. Unified data analytics platform to process multi-cloud API telemetry. 2. Automated customer value-reporting engine. 3. ML model training and deployment infrastructure.",
+                        valueMetric: "Reduction in API incident resolution time (MTTR) by 50%+",
+                        earlySignals: "1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured within the first week. 3. Reduction in P1/P2 incidents reported by customers.",
+                        keyRisks: "1. A major competitor (e.g., Datadog) launches a similar, low-cost predictive feature. 2. Our ML model for predictions is not accurate enough in diverse real-world environments.",
+                        counterMoves: "1. If competitor launches, we will double down on our 'setup-in-minutes' value prop and our superior customer support. 2. We will build a 'model tuning' feature to allow customers to improve accuracy for their specific use case.",
+                        firstTests: "1. Test pricing model with 10 new prospects to confirm value perception. (Owner: Sarah, by Aug 29). 2. Onboard 3 design partners to validate the accuracy of predictive alerts. (Owner: Tom, by Sep 5)."
+                    };
+                    setCriticalCapabilities(data.criticalCapabilities);
+                    setRequiredSystems(data.requiredSystems);
+                    setValueMetric(data.valueMetric);
+                    setEarlySignals(data.earlySignals); 
+                    setKeyRisks(data.keyRisks); 
+                    setCounterMoves(data.counterMoves);
+                    setFirstTests(data.firstTests);
+                    setCurrentStep(3); // Move to final step to show completed state
+                    console.log('✅ Dev data loaded successfully');
+                } catch (e) { 
+                    console.error('❌ Failed to load dev data:', e); 
+                } finally { 
+                    setDevFillLoading(false); 
+                }
+            };
+            
+            const generateMarkdownSummary = () => {
+                return `# Competitive Strategy: 1-Page Blueprint
+
+### 🚀 Our Strategic Foundation
+* **Top Two Forces:** ${topForcesText || '[Not provided]'}
+* **Key Substitutes:** ${keySubstitutesText || '[Not provided]'}
+
+### 🎯 Where We Play
+> ${whereToPlayText || '[Not provided]'}
+
+### 🏆 How We Win
+> ${howToWinText || '[Not provided]'}
+
+---
+
+### 🛠️ Our Advantage & Measures
+
+**Critical Capabilities:**
+${criticalCapabilities || '[Not provided]'}
+
+**Required Systems:**
+${requiredSystems || '[Not provided]'}
+
+**Value Metric:**
+${valueMetric || '[Not provided]'}
+
+**Early Signals:**
+${earlySignals || '[Not provided]'}
+
+---
+
+### 🧪 Our Action Plan
+
+**Key Risks:**
+${keyRisks || '[Not provided]'}
+
+**Counter-Moves:**
+${counterMoves || '[Not provided]'}
+
+**First Tests:**
+${firstTests || '[Not provided]'}
+`;
+            };
+
+            const handleCopyToClipboard = () => {
+                const markdown = generateMarkdownSummary();
+                navigator.clipboard.writeText(markdown).then(() => {
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                    notification.textContent = '✅ Blueprint copied to clipboard!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => {
+                        notification.style.transition = 'opacity 0.5s';
+                        notification.style.opacity = '0';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 3000);
+                });
+            };
+
+            const BlueprintTable = () => (
+                <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg sticky-blueprint">
+                    <h3 className="text-xl font-bold text-gray-800 p-4 border-b-2 border-gray-200">Your 1-Page Blueprint</h3>
+                    <table className="w-full text-sm blueprint-table">
+                        <tbody>
+                            <tr><td className="w-1/3 blueprint-label">Top Two Forces (Now)</td><td>{topForcesText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Where We Play</td><td>{whereToPlayText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">How We Win</td><td>{howToWinText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Substitutes</td><td>{keySubstitutesText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Critical Capabilities</td><td>{criticalCapabilities || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Required Systems</td><td>{requiredSystems || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Value Metric</td><td>{valueMetric || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Early Signals (2–3)</td><td>{earlySignals || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Risks</td><td>{keyRisks || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Counter-Moves</td><td>{counterMoves || '...'}</td></tr>
+                            <tr><td className="blueprint-label">First Tests</td><td>{firstTests || '...'}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            );
+
+            return (
+                <div className="max-w-7xl mx-auto p-4 md:p-8">
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                         <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">← Back to Workshop</a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">All GTM Workshops ↑</a>
+                        </div>
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 onDoubleClick={toggleDevMode} className={`text-2xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                                Activity 3: Assemble Your Blueprint {devMode && '🔧'}
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">Combine your insights into a single, actionable strategy document.</p>
+                             {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button onClick={devFillData} disabled={devFillLoading} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50">
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+                        </div>
+                    </div>
+                    
+                    <WizardStepIndicator 
+                        currentStep={currentStep} 
+                        isStep2Complete={isStep2Complete} 
+                        isStep3Complete={isStep3Complete} 
+                    />
+                    
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Blueprint Progress</span>
+                            <span className="text-sm font-semibold text-gray-800">{progress}% Complete</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div className="bg-orange-500 h-2.5 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
+                        </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div> {/* Left Column for Inputs */}
+                            
+                            {/* Step 1: Review Your Foundation */}
+                            {currentStep === 1 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 1: Review Your Foundation</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Review your key strategic choices from Activities 1 and 2.</p>
+                                    
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your Top Two Forces (from Activity 1)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {topForcesText || "Data from Activity 1 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your "Where to Play" Statement (from Activity 2)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {whereToPlayText || "Data from Activity 2 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your "How to Win" Strategy (from Activity 2)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {howToWinText || "Data from Activity 2 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Key Substitutes (from Activity 1)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {keySubstitutesText || "Data from Activity 1 will appear here."}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 2: Define Your Advantage & Measures */}
+                            {currentStep === 2 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 2: Define Your Advantage & Measures</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Define the capabilities and systems you need, plus how you'll measure success.</p>
+                                    
+                                    <InputField
+                                        label="Critical Capabilities"
+                                        tooltip="To deliver your 'How to Win', what 2-3 activities must your company perform flawlessly?"
+                                        value={criticalCapabilities}
+                                        setter={setCriticalCapabilities}
+                                        placeholder="e.g., 1. Proprietary ML model development. 2. Seamless 10-minute customer onboarding."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Required Systems"
+                                        tooltip="What management systems, tools, or infrastructure are required to support those critical capabilities?"
+                                        value={requiredSystems}
+                                        setter={setRequiredSystems}
+                                        placeholder="e.g., 1. Unified data analytics platform. 2. Automated value-reporting engine for customers."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Value Metric"
+                                        tooltip="How does your customer measure the value you deliver? This should be an outcome, not a feature."
+                                        value={valueMetric}
+                                        setter={setValueMetric}
+                                        placeholder="e.g., Reduction in API incident resolution time (MTTR) by 50%+"
+                                        rows={2}
+                                    />
+                                    
+                                    <InputField
+                                        label="Early Signals (2-3)"
+                                        tooltip="What leading indicators prove your strategy is working? These should predict the Value Metric."
+                                        value={earlySignals}
+                                        setter={setEarlySignals}
+                                        placeholder="e.g., 1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured."
+                                        rows={3}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Step 3: Plan Your Action */}
+                            {currentStep === 3 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 3: Plan Your Action</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Identify additional risks and plan concrete next steps to test your strategy.</p>
+                                    
+                                    <InputField
+                                        label="Other Key Risks"
+                                        tooltip="You already identified your single riskiest assumption in Activity 2. What are 1-2 other key risks that could break your strategy?"
+                                        value={keyRisks}
+                                        setter={setKeyRisks}
+                                        placeholder="e.g., 1. A major competitor launches a similar 'good enough' predictive feature."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Counter-Moves"
+                                        tooltip="If the risks you identified happen, what is your pre-planned response?"
+                                        value={counterMoves}
+                                        setter={setCounterMoves}
+                                        placeholder="e.g., If competitor launches, double down on our 'setup-in-minutes' value prop and superior support."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="First Tests"
+                                        tooltip="Based on the test you designed in Activity 2, what are two more concrete tests for the next 30 days? Assign an owner and a date."
+                                        value={firstTests}
+                                        setter={setFirstTests}
+                                        placeholder="e.g., 1. Test pricing model with 10 new prospects (Owner: Sarah, by Aug 29)."
+                                        rows={3}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Navigation Buttons */}
+                            <div className="flex justify-between items-center mt-8">
+                                {/* Back Button */}
+                                <button
+                                    onClick={goToPrevStep}
+                                    disabled={currentStep === 1}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                        currentStep === 1 
+                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                            : 'bg-gray-500 text-white hover:bg-gray-600'
+                                    }`}
+                                >
+                                    ← Back
+                                </button>
+
+                                {/* Reset Button */}
+                                <button 
+                                    onClick={resetActivity} 
+                                    className="bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors"
+                                >
+                                    Reset Activity
+                                </button>
+
+                                {/* Continue/Complete Button */}
+                                {currentStep < 3 ? (
+                                    <button
+                                        onClick={goToNextStep}
+                                        disabled={currentStep === 2 && !canContinueFromStep2}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            (currentStep === 2 && !canContinueFromStep2)
+                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-orange-500 text-white hover:bg-orange-600'
+                                        }`}
+                                    >
+                                        Continue →
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => setShowExportSection(true)}
+                                        disabled={!canCompleteFromStep3}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            !canCompleteFromStep3
+                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-green-500 text-white hover:bg-green-600'
+                                        }`}
+                                    >
+                                        Generate Report
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div> {/* Right Column for Blueprint */}
+                            <BlueprintTable />
+                        </div>
+                    </div>
+                    
+                    {showExportSection && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Strategy Blueprint</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Your complete competitive strategy blueprint has been formatted as a professional markdown report for easy sharing and documentation.
+                            </p>
+                            
+                            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
+                                <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
+                                <ol className="text-sm text-blue-700 space-y-1">
+                                    <li>1. Click "Copy Strategy Blueprint" below</li>
+                                    <li>2. Open Google Docs and create a new document</li>
+                                    <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
+                                    <li>4. Your report will appear with proper formatting!</li>
+                                </ol>
+                                <p className="text-xs text-blue-600 mt-2">
+                                    💡 <strong>Tip:</strong> "Paste from markdown" preserves all formatting including headers and sections.
+                                </p>
+                            </div>
+
+                            <textarea
+                                id="markdownSummary"
+                                readOnly
+                                className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                value={generateMarkdownSummary()}
+                            />
+                            
+                            <div className="flex flex-col items-center">
+                                <button
+                                    onClick={handleCopyToClipboard}
+                                    className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
+                                >
+                                    📋 Copy Strategy Blueprint
+                                </button>
+                                <div id="copyStatus"></div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        // Step Indicator Component
+        const StepIndicator = ({ currentStep }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    {[1, 2, 3].map(step => (
+                        <div key={step} className="flex items-center">
+                            <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold transition-colors ${
+                                step === currentStep ? 'bg-orange-500 text-white' :
+                                step < currentStep ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
+                            }`}>
+                                {step < currentStep ? '✓' : step}
+                            </div>
+                            <div className="ml-3">
+                                <h4 className={`font-semibold transition-colors ${
+                                    step === currentStep ? 'text-orange-600' :
+                                    step < currentStep ? 'text-green-600' : 'text-gray-700'
+                                }`}>
+                                    {step === 1 ? 'Competitive Forces' :
+                                     step === 2 ? 'Play & Win Strategy' : 'Strategy Blueprint'}
+                                </h4>
+                            </div>
+                            {step < 3 && (
+                                <div className={`flex-1 h-0.5 mx-4 transition-colors ${
+                                    step < currentStep ? 'bg-green-500' : 'bg-gray-200'
+                                }`}></div>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // Main Workshop App Component
+        const WorkshopApp = () => {
+            // Initialize currentStep from URL parameter
+            const getInitialStep = () => {
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlStep = urlParams.get('step');
+                const parsedStep = parseInt(urlStep);
+                return (parsedStep >= 1 && parsedStep <= 3) ? parsedStep : 1;
+            };
+
+            const [currentStep, setCurrentStep] = useState(getInitialStep);
+
+            // Activity 1 State Management - Lifted from CompetitiveSnapshotActivity
+            const [customers, setCustomers] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).customers || '');
+            const [competitors, setCompetitors] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).competitors || '');
+            const [substitutes, setSubstitutes] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).substitutes || '');
+            const [suppliers, setSuppliers] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).suppliers || '');
+            const [newEntrants, setNewEntrants] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).newEntrants || '');
+            const [selectedForces, setSelectedForces] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).selectedForces || []);
+
+            // Activity 2 State Management - Lifted from PlayWinChoicesActivity
+            // Step 1: Where to Play fields
+            const [targetSegment, setTargetSegment] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).targetSegment || '');
+            const [specificBuyer, setSpecificBuyer] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).specificBuyer || '');
+            const [urgentProblem, setUrgentProblem] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).urgentProblem || '');
+            const [whereNotToPlay, setWhereNotToPlay] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).whereNotToPlay || '');
+            
+            // Step 2: How to Win fields - Value/Capability pairs
+            const [value1, setValue1] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).value1 || '');
+            const [capability1, setCapability1] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capability1 || '');
+            const [value2, setValue2] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).value2 || '');
+            const [capability2, setCapability2] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capability2 || '');
+            const [value3, setValue3] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).value3 || '');
+            const [capability3, setCapability3] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capability3 || '');
+            
+            // Step 3: Riskiest Assumption - SPACES Framework
+            const [spacesAssumption, setSpacesAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).spacesAssumption || '');
+            const [valueAssumption, setValueAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).valueAssumption || '');
+            const [capabilitiesAssumption, setCapabilitiesAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).capabilitiesAssumption || '');
+            const [reactionAssumption, setReactionAssumption] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).reactionAssumption || '');
+            const [selectedRiskiestKey, setSelectedRiskiestKey] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).selectedRiskiestKey || '');
+            
+            // Step 3B: Test Design
+            const [testObjective, setTestObjective] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).testObjective || '');
+            const [theTest, setTheTest] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).theTest || '');
+            const [theMetric, setTheMetric] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).theMetric || '');
+
+            // Activity 3 State Management - Lifted from BlueprintActivity
+            // Step 2: Define Your Advantage & Measures
+            const [criticalCapabilities, setCriticalCapabilities] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).criticalCapabilities || '');
+            const [requiredSystems, setRequiredSystems] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).requiredSystems || '');
+            const [valueMetric, setValueMetric] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).valueMetric || '');
+            const [earlySignals, setEarlySignals] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).earlySignals || '');
+            
+            // Step 3: Plan Your Action
+            const [keyRisks, setKeyRisks] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).keyRisks || '');
+            const [counterMoves, setCounterMoves] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).counterMoves || '');
+            const [firstTests, setFirstTests] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).firstTests || '');
+
+            // Activity completion states
+            const [activity1Complete, setActivity1Complete] = useState(false);
+            const [activity2Complete, setActivity2Complete] = useState(false);
+            const [activity3Complete, setActivity3Complete] = useState(false);
+
+            // Auto-save all activities state to localStorage whenever any form data changes
+            useEffect(() => {
+                const currentState = {
+                    // Activity 1 state
+                    customers,
+                    competitors,
+                    substitutes,
+                    suppliers,
+                    newEntrants,
+                    selectedForces,
+                    // Activity 2 state
+                    targetSegment,
+                    specificBuyer,
+                    urgentProblem,
+                    whereNotToPlay,
+                    value1,
+                    capability1,
+                    value2,
+                    capability2,
+                    value3,
+                    capability3,
+                    spacesAssumption,
+                    valueAssumption,
+                    capabilitiesAssumption,
+                    reactionAssumption,
+                    selectedRiskiestKey,
+                    testObjective,
+                    theTest,
+                    theMetric,
+                    // Activity 3 state
+                    criticalCapabilities,
+                    requiredSystems,
+                    valueMetric,
+                    earlySignals,
+                    keyRisks,
+                    counterMoves,
+                    firstTests
+                };
+                saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
+            }, [customers, competitors, substitutes, suppliers, newEntrants, selectedForces, targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, spacesAssumption, valueAssumption, capabilitiesAssumption, reactionAssumption, selectedRiskiestKey, testObjective, theTest, theMetric, criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests]);
+
+            // Check Activity 1 completion
+            useEffect(() => {
+                setActivity1Complete(selectedForces.length === 2);
+            }, [selectedForces]);
+
+            // Check Activity 2 completion - all 17 fields must have meaningful content (>3 characters)
+            useEffect(() => {
+                const getFilledFieldsCount = () => {
+                    let count = 0;
+                    if (targetSegment.trim().length > 3) count++;
+                    if (specificBuyer.trim().length > 3) count++;
+                    if (urgentProblem.trim().length > 3) count++;
+                    if (whereNotToPlay.trim().length > 3) count++;
+                    if (value1.trim().length > 3) count++;
+                    if (capability1.trim().length > 3) count++;
+                    if (value2.trim().length > 3) count++;
+                    if (capability2.trim().length > 3) count++;
+                    if (value3.trim().length > 3) count++;
+                    if (capability3.trim().length > 3) count++;
+                    if (spacesAssumption.trim().length > 3) count++;
+                    if (valueAssumption.trim().length > 3) count++;
+                    if (capabilitiesAssumption.trim().length > 3) count++;
+                    if (reactionAssumption.trim().length > 3) count++;
+                    if (testObjective.trim().length > 3) count++;
+                    if (theTest.trim().length > 3) count++;
+                    if (theMetric.trim().length > 3) count++;
+                    return count;
+                };
+                
+                const allFieldsFilled = getFilledFieldsCount() === 17;
+                setActivity2Complete(allFieldsFilled);
+            }, [targetSegment, specificBuyer, urgentProblem, whereNotToPlay, value1, capability1, value2, capability2, value3, capability3, spacesAssumption, valueAssumption, capabilitiesAssumption, reactionAssumption, testObjective, theTest, theMetric]);
+
+            // Check Activity 3 completion - all 7 fields must have meaningful content
+            useEffect(() => {
+                const activity3FieldsFilled = criticalCapabilities.trim().length > 0 && 
+                                             requiredSystems.trim().length > 0 && 
+                                             valueMetric.trim().length > 0 && 
+                                             earlySignals.trim().length > 0 && 
+                                             keyRisks.trim().length > 0 && 
+                                             counterMoves.trim().length > 0 && 
+                                             firstTests.trim().length > 0;
+                setActivity3Complete(activity3FieldsFilled);
+            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests]);
+
+            // Reset Activity 1 function
+            const resetActivity1 = () => {
+                setCustomers('');
+                setCompetitors('');
+                setSubstitutes('');
+                setSuppliers('');
+                setNewEntrants('');
+                setSelectedForces([]);
+                setActivity1Complete(false);
+                
+                // Clear localStorage data for Activity 1
+                const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
+                const resetState = {
+                    ...currentState,
+                    customers: '',
+                    competitors: '',
+                    substitutes: '',
+                    suppliers: '',
+                    newEntrants: '',
+                    selectedForces: []
+                };
+                saveWorkshopState(resetState, WORKSHOP_STORAGE_KEY);
+            };
+
+            // Reset Activity 2 function
+            const resetActivity2 = () => {
+                setTargetSegment('');
+                setSpecificBuyer('');
+                setUrgentProblem('');
+                setWhereNotToPlay('');
+                setValue1('');
+                setCapability1('');
+                setValue2('');
+                setCapability2('');
+                setValue3('');
+                setCapability3('');
+                setSpacesAssumption('');
+                setValueAssumption('');
+                setCapabilitiesAssumption('');
+                setReactionAssumption('');
+                setSelectedRiskiestKey('');
+                setTestObjective('');
+                setTheTest('');
+                setTheMetric('');
+                setActivity2Complete(false);
+                
+                // Clear localStorage data for Activity 2
+                const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
+                const resetState = {
+                    ...currentState,
+                    targetSegment: '',
+                    specificBuyer: '',
+                    urgentProblem: '',
+                    whereNotToPlay: '',
+                    value1: '',
+                    capability1: '',
+                    value2: '',
+                    capability2: '',
+                    value3: '',
+                    capability3: '',
+                    spacesAssumption: '',
+                    valueAssumption: '',
+                    capabilitiesAssumption: '',
+                    reactionAssumption: '',
+                    selectedRiskiestKey: '',
+                    testObjective: '',
+                    theTest: '',
+                    theMetric: ''
+                };
+                saveWorkshopState(resetState, WORKSHOP_STORAGE_KEY);
+            };
+
+            // Reset Activity 3 function
+            const resetActivity3 = () => {
+                setCriticalCapabilities('');
+                setRequiredSystems('');
+                setValueMetric('');
+                setEarlySignals('');
+                setKeyRisks('');
+                setCounterMoves('');
+                setFirstTests('');
+                setActivity3Complete(false);
+                
+                // Clear localStorage data for Activity 3
+                const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
+                const resetState = {
+                    ...currentState,
+                    criticalCapabilities: '',
+                    requiredSystems: '',
+                    valueMetric: '',
+                    earlySignals: '',
+                    keyRisks: '',
+                    counterMoves: '',
+                    firstTests: ''
+                };
+                saveWorkshopState(resetState, WORKSHOP_STORAGE_KEY);
+            };
+
+            // Update URL when step changes
+            const updateURL = (step) => {
+                const url = new URL(window.location);
+                url.searchParams.set('step', step);
+                window.history.pushState({ step }, '', url);
+            };
+
+            // Handle navigation
+            const goToPrevStep = () => {
+                if (currentStep > 1) {
+                    const newStep = currentStep - 1;
+                    setCurrentStep(newStep);
+                    updateURL(newStep);
+                }
+            };
+
+            const goToNextStep = () => {
+                if (currentStep < 3) {
+                    const newStep = currentStep + 1;
+                    setCurrentStep(newStep);
+                    updateURL(newStep);
+                }
+            };
+
+            // Handle browser back/forward buttons
+            useEffect(() => {
+                const handlePopState = (event) => {
+                    const step = event.state?.step || getInitialStep();
+                    setCurrentStep(step);
+                };
+                
+                window.addEventListener('popstate', handlePopState);
+                return () => window.removeEventListener('popstate', handlePopState);
+            }, []);
+
+            // Render the appropriate activity component
+            const renderActivityComponent = () => {
+                switch (currentStep) {
+                    case 1:
+                        return <CompetitiveSnapshotActivity 
+                            customers={customers}
+                            setCustomers={setCustomers}
+                            competitors={competitors}
+                            setCompetitors={setCompetitors}
+                            substitutes={substitutes}
+                            setSubstitutes={setSubstitutes}
+                            suppliers={suppliers}
+                            setSuppliers={setSuppliers}
+                            newEntrants={newEntrants}
+                            setNewEntrants={setNewEntrants}
+                            selectedForces={selectedForces}
+                            setSelectedForces={setSelectedForces}
+                            activityComplete={activity1Complete}
+                            resetActivity={resetActivity1}
+                        />;
+                    case 2:
+                        return <PlayWinChoicesActivity 
+                            targetSegment={targetSegment}
+                            setTargetSegment={setTargetSegment}
+                            specificBuyer={specificBuyer}
+                            setSpecificBuyer={setSpecificBuyer}
+                            urgentProblem={urgentProblem}
+                            setUrgentProblem={setUrgentProblem}
+                            whereNotToPlay={whereNotToPlay}
+                            setWhereNotToPlay={setWhereNotToPlay}
+                            value1={value1}
+                            setValue1={setValue1}
+                            capability1={capability1}
+                            setCapability1={setCapability1}
+                            value2={value2}
+                            setValue2={setValue2}
+                            capability2={capability2}
+                            setCapability2={setCapability2}
+                            value3={value3}
+                            setValue3={setValue3}
+                            capability3={capability3}
+                            setCapability3={setCapability3}
+                            spacesAssumption={spacesAssumption}
+                            setSpacesAssumption={setSpacesAssumption}
+                            valueAssumption={valueAssumption}
+                            setValueAssumption={setValueAssumption}
+                            capabilitiesAssumption={capabilitiesAssumption}
+                            setCapabilitiesAssumption={setCapabilitiesAssumption}
+                            reactionAssumption={reactionAssumption}
+                            setReactionAssumption={setReactionAssumption}
+                            selectedRiskiestKey={selectedRiskiestKey}
+                            setSelectedRiskiestKey={setSelectedRiskiestKey}
+                            testObjective={testObjective}
+                            setTestObjective={setTestObjective}
+                            theTest={theTest}
+                            setTheTest={setTheTest}
+                            theMetric={theMetric}
+                            setTheMetric={setTheMetric}
+                            activityComplete={activity2Complete}
+                            resetActivity={resetActivity2}
+                        />;
+                    case 3:
+                        return <BlueprintActivity
+                            // Activity 3 state variables and setters
+                            criticalCapabilities={criticalCapabilities}
+                            setCriticalCapabilities={setCriticalCapabilities}
+                            requiredSystems={requiredSystems}
+                            setRequiredSystems={setRequiredSystems}
+                            valueMetric={valueMetric}
+                            setValueMetric={setValueMetric}
+                            earlySignals={earlySignals}
+                            setEarlySignals={setEarlySignals}
+                            keyRisks={keyRisks}
+                            setKeyRisks={setKeyRisks}
+                            counterMoves={counterMoves}
+                            setCounterMoves={setCounterMoves}
+                            firstTests={firstTests}
+                            setFirstTests={setFirstTests}
+                            
+                            // Activity completion and reset
+                            activityComplete={activity3Complete}
+                            resetActivity={resetActivity3}
+                            
+                            // Data from Activities 1 & 2 for cross-activity integration
+                            selectedForces={selectedForces}
+                            substitutes={substitutes}
+                            targetSegment={targetSegment}
+                            specificBuyer={specificBuyer}
+                            urgentProblem={urgentProblem}
+                            value1={value1}
+                            capability1={capability1}
+                            value2={value2}
+                            capability2={capability2}
+                            value3={value3}
+                            capability3={capability3}
+                        />;
+                    default:
+                        return <CompetitiveSnapshotActivity 
+                            customers={customers}
+                            setCustomers={setCustomers}
+                            competitors={competitors}
+                            setCompetitors={setCompetitors}
+                            substitutes={substitutes}
+                            setSubstitutes={setSubstitutes}
+                            suppliers={suppliers}
+                            setSuppliers={setSuppliers}
+                            newEntrants={newEntrants}
+                            setNewEntrants={setNewEntrants}
+                            selectedForces={selectedForces}
+                            setSelectedForces={setSelectedForces}
+                            activityComplete={activity1Complete}
+                            resetActivity={resetActivity1}
+                        />;
+                }
+            };
+
+            return (
+                <div className="max-w-6xl mx-auto p-4 md:p-8" style={{backgroundColor: '#fafafa', minHeight: '100vh'}}>
+                    {/* Header Navigation */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">← Back to Workshop</a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">All GTM Workshops ↑</a>
+                        </div>
+                        <div className="border-t border-gray-200 mt-3 pt-4">
+                            <h1 className="text-2xl font-bold text-gray-800">
+                                Competitive Strategy Workshop
+                            </h1>
+                            <p className="text-gray-600 text-sm mt-1">
+                                Build your competitive strategy through market analysis, strategic positioning, and action planning.
+                            </p>
+                        </div>
+                    </div>
+
+                    {/* Step Indicator */}
+                    <StepIndicator currentStep={currentStep} />
+
+                    {/* Progress Bar */}
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
+                        <div className="flex items-center justify-between mb-2">
+                            <span className="text-sm font-medium text-gray-700">Workshop Progress</span>
+                            <span className="text-sm text-gray-600">Step {currentStep} of 3</span>
+                        </div>
+                        <div className="w-full bg-gray-200 rounded-full h-2">
+                            <div className="bg-orange-500 h-2 rounded-full transition-all duration-300" style={{width: `${(currentStep / 3) * 100}%`}}></div>
+                        </div>
+                    </div>
+
+                    {/* Main Activity Content */}
+                    <div className="animate-fadeIn">
+                        {renderActivityComponent()}
+                    </div>
+
+                    {/* Navigation Buttons */}
+                    <div className="flex justify-between items-center mt-8 gap-4">
+                        <button
+                            onClick={goToPrevStep}
+                            disabled={currentStep === 1}
+                            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                currentStep === 1 
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                    : 'bg-gray-500 text-white hover:bg-gray-600'
+                            }`}
+                        >
+                            ← Back
+                        </button>
+
+                        <div className="text-center">
+                            <span className="text-sm text-gray-500">
+                                Activity {currentStep}: {
+                                    currentStep === 1 ? 'Competitive Field Snapshot' :
+                                    currentStep === 2 ? 'Play & Win Choices' : 'Strategy Blueprint'
+                                }
+                            </span>
+                        </div>
+
+                        <button
+                            onClick={goToNextStep}
+                            disabled={currentStep === 3}
+                            className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                currentStep === 3 
+                                    ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                    : 'bg-orange-500 text-white hover:bg-orange-600'
+                            }`}
+                        >
+                            Continue →
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        // Render the app
+        const container = document.getElementById('root');
+        const root = ReactDOM.createRoot(container);
+        root.render(<WorkshopApp />);
+    </script>
+</body>
+</html>
