@@ -132,6 +132,14 @@
             );
         };
 
+        const PrivacyNote = () => (
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-lg p-3 my-4">
+                <p>
+                    <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
+                </p>
+            </div>
+        );
+
         // ForceBox component
         const ForceBox = ({ id, title, question, tooltip, placeholder, value, setter, selectedForces, handleForceSelection }) => {
             const isSelected = selectedForces.includes(id);
@@ -362,6 +370,7 @@
                                 Activity 1: Competitive Field Snapshot {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Identify the pressures shaping your market, then select the <strong>top two forces</strong> that matter most to your startup right now.</p>
+                            <PrivacyNote />
                              {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
@@ -544,6 +553,7 @@
                                 Activity 2: Play & Win Choices {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Define your strategic positioning and identify your riskiest assumption to test.</p>
+                            <PrivacyNote />
                              {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
@@ -815,6 +825,7 @@
                                 Activity 3: Assemble Your Blueprint {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Combine your insights into a single, actionable strategy document.</p>
+                            <PrivacyNote />
                              {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
@@ -1569,6 +1580,14 @@ ${firstTests || '[Not defined]'}
                              'Complete Activity 3'}
                         </button>
                     </div>
+                    <footer className="max-w-6xl mx-auto text-center text-xs text-gray-500 mt-12 pb-8">
+                        <p>
+                            <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
+                        </p>
+                        <p className="font-semibold mt-1">
+                            ⚠️ Important: Do not clear your browser data before copying your final blueprint, as all your work will be permanently deleted.
+                        </p>
+                    </footer>
                 </div>
             );
         };
