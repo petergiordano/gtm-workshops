@@ -3,696 +3,571 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Competitive Response Planning - Competitive Strategy</title>
+    <title>Activity 3: Competitive Strategy Blueprint</title>
     <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700&family=Raleway:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body {
             font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #fafafa;
         }
-        .response-card {
-            border: 2px solid #e5e7eb;
-            border-radius: 16px;
-            padding: 24px;
-            background: white;
-            transition: all 0.3s ease;
-        }
-        .response-card:hover {
-            border-color: #FF9000;
-            box-shadow: 0 8px 24px rgba(255, 144, 0, 0.12);
-        }
-        .animate-fadeIn {
-            animation: fadeIn 0.3s ease-in;
-        }
+        .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        textarea {
-            resize: vertical;
-            min-height: 80px;
-        }
-        textarea:focus {
-            outline: none;
-            border-color: #FF9000;
-            box-shadow: 0 0 0 3px rgba(255, 144, 0, 0.1);
-        }
-        .section-title {
-            color: #FF9000;
-            font-weight: 600;
-            font-size: 1.25rem;
-            margin-bottom: 0.5rem;
-        }
-        .section-description {
-            color: #8a8a8a;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-        }
-        .laptop-textarea {
-            min-height: 80px;
-            max-height: 120px;
-            transition: max-height 0.3s ease;
-            resize: none;
-        }
-        .laptop-textarea:focus {
-            max-height: 200px;
-        }
+        .blueprint-table td { padding: 12px 16px; }
+        .blueprint-table tr:not(:last-child) { border-bottom: 1px solid #e5e7eb; }
+        .blueprint-label { font-weight: 600; color: #4b5563; }
+        .sticky-blueprint { position: sticky; top: 100px; }
     </style>
 </head>
 <body>
     <div id="root"></div>
 
-    <!-- Test Data from test_data/competitive-activity-3A.json -->
     <script type="application/json" id="testData">
     {
-        "riskiestAssumption": "VPs of Engineering at high-growth SaaS companies are willing to pay a premium price (>$50k/year) for predictive API monitoring, even when they already have 'good enough' reactive monitoring tools like Datadog or New Relic",
-        "assumptionTest": "Run 90-day pilots with 5 high-growth SaaS companies to measure actual downtime prevention, MTTR reduction, and engineering time savings compared to their current reactive monitoring solutions",
-        "responseStrategies": [
-            {
-                "threat": "Datadog and New Relic adding predictive features to their platforms",
-                "response": "Position as complementary integration that enhances existing tools rather than replacing them, emphasizing specialized API prediction accuracy",
-                "tactics": "Build native integrations with these platforms and demonstrate superior prediction accuracy through head-to-head comparisons and customer case studies"
-            },
-            {
-                "threat": "Price wars from established APM vendors offering free predictive features",
-                "response": "Focus on total cost of ownership including downtime prevention value and engineering time savings rather than tool licensing costs", 
-                "tactics": "ROI calculator showing cost of prevented downtime ($100K+/hour) and freed engineering capacity for innovation rather than firefighting"
-            },
-            {
-                "threat": "Large cloud providers adding basic predictive monitoring to native tools",
-                "response": "Emphasize cross-platform visibility and vendor-agnostic approach for multi-cloud architectures",
-                "tactics": "Partner with cloud providers as enhanced monitoring layer and highlight limitations of single-vendor solutions for complex microservices"
-            }
-        ],
-        "marketProtectionTactics": [
-            {
-                "tactic": "Proprietary ML model data moats from customer API patterns",
-                "description": "Build increasingly sophisticated predictive models using exclusive customer data that competitors cannot replicate",
-                "timeline": "Ongoing model training and refinement with each new customer implementation"
-            },
-            {
-                "tactic": "Deep integration ecosystem with DevOps and cloud platforms", 
-                "description": "Create comprehensive integration marketplace that makes POSH central to customers' observability stack",
-                "timeline": "Deploy integration partnerships with 10+ major platforms within first 12 months"
-            },
-            {
-                "tactic": "Thought leadership in Predictive API Operations (PredictiveOps) category",
-                "description": "Define and own the shift from reactive to predictive monitoring through industry content, speaking, and analyst relations",
-                "timeline": "12-month category creation campaign with Gartner, Forrester, and key industry publications"
-            }
-        ],
-        "competitiveIntelligence": [
-            {
-                "competitor": "Datadog",
-                "monitoring": "Track their AI/ML feature announcements, predictive capability releases, and pricing changes for APM products",
-                "triggers": "New AI-powered alerting features, predictive analytics product launches, or significant pricing model changes"
-            },
-            {
-                "competitor": "New Relic and Dynatrace",
-                "monitoring": "Watch for predictive monitoring features, API-specific product enhancements, and enterprise customer wins in our target market", 
-                "triggers": "Predictive AI announcements at major conferences, new API monitoring products, or customer case studies in SaaS/microservices space"
-            }
-        ],
-        "currentStep": 3
+        "wedge": "Mid-market B2B SaaS teams (50-500 employees)",
+        "topForces": "High power of Substitutes (DIY scripts); High power of Customers (Buyers) who have many choices.",
+        "whereToPlay": "We play in mid-market B2B SaaS teams who are struggling with unreliable, custom-built API monitoring scripts and cannot afford enterprise-grade observability platforms.",
+        "howToWin": "We win with a monitoring solution that sets up in minutes, provides predictive failure alerts via a proprietary ML model, and has transparent, usage-based pricing.",
+        "keySubstitutes": "In-house Python/Bash scripts, manual log checking by DevOps, basic cloud provider monitoring (e.g., CloudWatch).",
+        "criticalCapabilities": "1. Proprietary machine learning models for predictive failure detection. 2. Seamless 10-minute onboarding process across all major cloud platforms. 3. Real-time automated incident resolution capabilities.",
+        "requiredSystems": "1. Unified data analytics platform to process multi-cloud API telemetry. 2. Automated customer value-reporting engine. 3. ML model training and deployment infrastructure.",
+        "valueMetric": "Reduction in API incident resolution time (MTTR) by 50%+",
+        "earlySignals": "1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured within the first week. 3. Reduction in P1/P2 incidents reported by customers.",
+        "keyRisks": "1. A major competitor (e.g., Datadog) launches a similar, low-cost predictive feature. 2. Our ML model for predictions is not accurate enough in diverse real-world environments.",
+        "counterMoves": "1. If competitor launches, we will double down on our 'setup-in-minutes' value prop and our superior customer support. 2. We will build a 'model tuning' feature to allow customers to improve accuracy for their specific use case.",
+        "firstTests": "1. Test pricing model with 10 new prospects to confirm value perception. (Owner: Sarah, by Aug 29). 2. Onboard 3 design partners to validate the accuracy of predictive alerts. (Owner: Tom, by Sep 5).",
+        "blueprintStep": 3
     }
     </script>
 
     <script type="text/babel">
-        const { useState } = React;
+        const { useState, useEffect, useMemo } = React;
+        const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
 
-        const CompetitiveResponseActivity = () => {
-            // State for competitive response planning
-            const [currentStep, setCurrentStep] = useState(1);
-            const [riskiestAssumption, setRiskiestAssumption] = useState('');
-            const [assumptionTest, setAssumptionTest] = useState('');
-            const [responseStrategies, setResponseStrategies] = useState([
-                { threat: '', response: '', tactics: '' },
-                { threat: '', response: '', tactics: '' },
-                { threat: '', response: '', tactics: '' }
-            ]);
-            const [marketProtectionTactics, setMarketProtectionTactics] = useState([
-                { tactic: '', description: '', timeline: '' },
-                { tactic: '', description: '', timeline: '' },
-                { tactic: '', description: '', timeline: '' }
-            ]);
-            const [competitiveIntelligence, setCompetitiveIntelligence] = useState([
-                { competitor: '', monitoring: '', triggers: '' },
-                { competitor: '', monitoring: '', triggers: '' }
-            ]);
+        /**
+         * Loads the entire workshop state from localStorage using a specific key.
+         * @param {string} storageKey - The unique key for the workshop's state.
+         * @returns {object} The parsed workshop state or an empty object.
+         */
+        const loadWorkshopState = (storageKey) => {
+            try {
+                const savedState = localStorage.getItem(storageKey);
+                return savedState ? JSON.parse(savedState) : {};
+            } catch (error) {
+                console.error("Could not load state from localStorage", error);
+                return {};
+            }
+        };
 
-            // Dev mode state
+        /**
+         * Saves a piece of state by merging it into the existing workshop state.
+         * @param {object} stateToSave - An object containing the key-value pairs to save.
+         * @param {string} storageKey - The unique key for the workshop's state.
+         */
+        const saveWorkshopState = (stateToSave, storageKey) => {
+            try {
+                const currentState = loadWorkshopState(storageKey);
+                const newState = { ...currentState, ...stateToSave };
+                localStorage.setItem(storageKey, JSON.stringify(newState));
+            } catch (error) {
+                console.error("Could not save state to localStorage", error);
+            }
+        };
+
+        // CORRECTED: Helper components are defined OUTSIDE the main component
+        const StepIndicator = ({ step, title, active, completed }) => (
+            <div className="flex items-center">
+                <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${
+                    completed ? 'bg-green-500 text-white' :
+                    active ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-600'
+                }`}>
+                    {completed ? '✓' : step}
+                </div>
+                <div className="ml-3">
+                    <h4 className={`font-semibold ${
+                        completed ? 'text-green-600' :
+                        active ? 'text-orange-600' : 'text-gray-700'
+                    }`}>{title}</h4>
+                </div>
+            </div>
+        );
+
+        const WizardStepIndicator = ({ blueprintStep, isStep2Complete, isStep3Complete }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    <StepIndicator 
+                        step={1} 
+                        title="Review" 
+                        active={blueprintStep === 1} 
+                        completed={blueprintStep > 1}
+                    />
+                    <div className={`flex-1 h-0.5 mx-4 ${blueprintStep > 1 ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <StepIndicator 
+                        step={2} 
+                        title="Define" 
+                        active={blueprintStep === 2} 
+                        completed={blueprintStep > 2 || (blueprintStep === 2 && isStep2Complete)}
+                    />
+                    <div className={`flex-1 h-0.5 mx-4 ${(blueprintStep > 2 || (blueprintStep === 2 && isStep2Complete)) ? 'bg-green-500' : 'bg-gray-200'}`}></div>
+                    <StepIndicator 
+                        step={3} 
+                        title="Plan" 
+                        active={blueprintStep === 3} 
+                        completed={blueprintStep === 3 && isStep3Complete}
+                    />
+                </div>
+            </div>
+        );
+
+        const InputField = ({ label, tooltip, value, setter, placeholder, rows=3 }) => (
+             <div className="mb-6">
+                <label className="block text-base font-semibold text-gray-800 mb-2 relative group">
+                    {label}
+                    <span className="absolute -top-0.5 -right-0.5 text-gray-400 cursor-pointer border border-gray-400 rounded-full w-5 h-5 flex items-center justify-center text-xs">?</span>
+                    <div className="absolute bottom-full left-1/2 -translate-x-1/2 w-64 p-2 bg-gray-700 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none mb-2 z-10">
+                        {tooltip}
+                    </div>
+                </label>
+                <textarea value={value} onChange={(e) => setter(e.target.value)} placeholder={placeholder} rows={rows} className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500" />
+             </div>
+        );
+
+        const BlueprintActivity = () => {
+            // Load read-only data from localStorage (from previous activities)
+            const workshopData = useMemo(() => loadWorkshopState(WORKSHOP_STORAGE_KEY), []);
+            
+            // Process and transform data from Activities 1 & 2 for display
+            const topForcesText = (workshopData.selectedForces || []).map(s => s.charAt(0).toUpperCase() + s.slice(1)).join(', ');
+            const keySubstitutesText = workshopData.substitutes || '';
+            const whereToPlayText = `We play in ${workshopData.targetSegment || '[segment]'}, for ${workshopData.specificBuyer || '[buyer]'}, who have ${workshopData.urgentProblem || '[problem]'}.`;
+            const howToWinText = `We win by delivering ${workshopData.value1 || '[value 1]'} through ${workshopData.capability1 || '[capability 1]'}, ${workshopData.value2 || '[value 2]'} through ${workshopData.capability2 || '[capability 2]'}, and ${workshopData.value3 || '[value 3]'} through ${workshopData.capability3 || '[capability 3]'}.`;
+            
+            // Step 2: Define Your Advantage & Measures state variables
+            const [criticalCapabilities, setCriticalCapabilities] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).criticalCapabilities || '');
+            const [requiredSystems, setRequiredSystems] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).requiredSystems || '');
+            const [valueMetric, setValueMetric] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).valueMetric || '');
+            const [earlySignals, setEarlySignals] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).earlySignals || '');
+            
+            // Step 3: Plan Your Action state variables
+            const [keyRisks, setKeyRisks] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).keyRisks || '');
+            const [counterMoves, setCounterMoves] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).counterMoves || '');
+            const [firstTests, setFirstTests] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).firstTests || '');
+
+            // Wizard navigation state
+            const [blueprintStep, setBlueprintStep] = useState(loadWorkshopState(WORKSHOP_STORAGE_KEY).blueprintStep || 1);
+
+            // App state
             const [devMode, setDevMode] = useState(false);
             const [devFillLoading, setDevFillLoading] = useState(false);
+            const [showExportSection, setShowExportSection] = useState(false);
 
-            // Toggle dev mode
-            const toggleDevMode = () => {
-                setDevMode(!devMode);
-                console.log(devMode ? '🔒 Dev mode disabled' : '🔓 Dev mode enabled');
+            // Step completion validation
+            const isStep2Complete = useMemo(() => criticalCapabilities && requiredSystems && valueMetric && earlySignals, [criticalCapabilities, requiredSystems, valueMetric, earlySignals]);
+            const isStep3Complete = useMemo(() => keyRisks && counterMoves && firstTests, [keyRisks, counterMoves, firstTests]);
+            const activityComplete = isStep2Complete && isStep3Complete;
+            
+            // Step-based progress calculation
+            const progress = useMemo(() => {
+                if(blueprintStep === 1) return 33;
+                if(blueprintStep === 2) return isStep2Complete ? 66 : 33;
+                if(blueprintStep === 3) return isStep3Complete ? 100 : 66;
+                return 33;
+            }, [blueprintStep, isStep2Complete, isStep3Complete]);
+
+            // Auto-save state to localStorage whenever any form data changes
+            useEffect(() => {
+                const currentState = {
+                    criticalCapabilities,
+                    requiredSystems,
+                    valueMetric,
+                    earlySignals,
+                    keyRisks,
+                    counterMoves,
+                    firstTests,
+                    blueprintStep
+                };
+                saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
+            }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests, blueprintStep]);
+
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            // Navigation functions
+            const goToNextStep = () => {
+                if (blueprintStep < 3) {
+                    setBlueprintStep(blueprintStep + 1);
+                }
             };
 
-            // Load test data
+            const goToPrevStep = () => {
+                if (blueprintStep > 1) {
+                    setBlueprintStep(blueprintStep - 1);
+                }
+            };
+
+            // Navigation validation
+            const canContinueFromStep2 = isStep2Complete;
+            const canCompleteFromStep3 = isStep3Complete;
+
             const devFillData = () => {
                 setDevFillLoading(true);
                 try {
-                    const testData = JSON.parse(document.getElementById('testData').textContent);
-                    setRiskiestAssumption(testData.riskiestAssumption);
-                    setAssumptionTest(testData.assumptionTest);
-                    setResponseStrategies(testData.responseStrategies);
-                    setMarketProtectionTactics(testData.marketProtectionTactics);
-                    setCompetitiveIntelligence(testData.competitiveIntelligence);
-                    setCurrentStep(testData.currentStep || 3);
+                    const data = JSON.parse(document.getElementById('testData').textContent);
+                    setCriticalCapabilities(data.criticalCapabilities);
+                    setRequiredSystems(data.requiredSystems);
+                    setValueMetric(data.valueMetric);
+                    setEarlySignals(data.earlySignals); 
+                    setKeyRisks(data.keyRisks); 
+                    setCounterMoves(data.counterMoves);
+                    setFirstTests(data.firstTests);
+                    setBlueprintStep(3); // Move to final step to show completed state
                     console.log('✅ Dev data loaded successfully');
-                } catch (error) {
-                    console.error('❌ Failed to load dev data:', error);
-                } finally {
-                    setDevFillLoading(false);
+                } catch (e) { 
+                    console.error('❌ Failed to load dev data:', e); 
+                } finally { 
+                    setDevFillLoading(false); 
                 }
             };
-
-            // Update response strategy
-            const updateResponseStrategy = (index, field, value) => {
-                const updated = [...responseStrategies];
-                updated[index] = { ...updated[index], [field]: value };
-                setResponseStrategies(updated);
-            };
-
-            // Update protection tactic
-            const updateProtectionTactic = (index, field, value) => {
-                const updated = [...marketProtectionTactics];
-                updated[index] = { ...updated[index], [field]: value };
-                setMarketProtectionTactics(updated);
-            };
-
-            // Update competitive intelligence
-            const updateCompetitiveIntelligence = (index, field, value) => {
-                const updated = [...competitiveIntelligence];
-                updated[index] = { ...updated[index], [field]: value };
-                setCompetitiveIntelligence(updated);
-            };
-
-            // Step validation
-            const isStepComplete = (step) => {
-                switch (step) {
-                    case 1:
-                        return riskiestAssumption.trim().length >= 15 && assumptionTest.trim().length >= 15;
-                    case 2:
-                        return responseStrategies.every(strategy => 
-                            strategy.threat.trim().length >= 10 && 
-                            strategy.response.trim().length >= 15 &&
-                            strategy.tactics.trim().length >= 15
-                        );
-                    case 3:
-                        return marketProtectionTactics.every(tactic => 
-                            tactic.tactic.trim().length >= 10 && 
-                            tactic.description.trim().length >= 15 &&
-                            tactic.timeline.trim().length >= 10
-                        ) && competitiveIntelligence.every(intel => 
-                            intel.competitor.trim().length >= 5 && 
-                            intel.monitoring.trim().length >= 15 &&
-                            intel.triggers.trim().length >= 15
-                        );
-                    default:
-                        return false;
-                }
-            };
-
-            // Word count helper
-            const getWordCount = (text) => {
-                return text.trim().split(/\s+/).filter(w => w.length > 0).length;
-            };
-
-            // Generate markdown summary
-            const generateMarkdownSummary = () => {
-                const timestamp = new Date().toLocaleString();
+            
+            const resetActivity = () => {
+                setCriticalCapabilities('');
+                setRequiredSystems('');
+                setValueMetric('');
+                setEarlySignals('');
+                setKeyRisks('');
+                setCounterMoves('');
+                setFirstTests('');
+                setBlueprintStep(1); // Reset to first step
+                setShowExportSection(false); // Reset export section visibility
                 
-                return `# Competitive Strategy: Response Planning
-Generated: ${timestamp}
+                // Clear localStorage data for this activity's input fields only
+                const currentState = loadWorkshopState(WORKSHOP_STORAGE_KEY);
+                const emptyState = {
+                    ...currentState, // Preserve data from Activities 1 & 2
+                    criticalCapabilities: '',
+                    requiredSystems: '',
+                    valueMetric: '',
+                    earlySignals: '',
+                    keyRisks: '',
+                    counterMoves: '',
+                    firstTests: '',
+                    blueprintStep: 1
+                };
+                saveWorkshopState(emptyState, WORKSHOP_STORAGE_KEY);
+            };
+            
+            const generateMarkdownSummary = () => {
+                return `# Competitive Strategy: 1-Page Blueprint
 
-## Competitive Response Planning
+### 🚀 Our Strategic Foundation
+* **Top Two Forces:** ${topForcesText || '[Not provided]'}
+* **Key Substitutes:** ${keySubstitutesText || '[Not provided]'}
 
-### 🎯 Riskiest Assumption
+### 🎯 Where We Play
+> ${whereToPlayText || '[Not provided]'}
 
-${riskiestAssumption}
-
-### 🧪 Assumption Testing Plan
-
-${assumptionTest}
-
-### ⚔️ Response Strategies
-
-${responseStrategies.map((strategy, i) => `**Threat:** ${strategy.threat}
-**Response:** ${strategy.response}
-**Tactics:** ${strategy.tactics}
-
-`).join('')}
-
-### 🛡️ Market Protection Tactics
-
-${marketProtectionTactics.map((tactic, i) => `**${tactic.tactic}**
-${tactic.description}
-*Timeline:* ${tactic.timeline}
-
-`).join('')}
-
-### 🕵️ Competitive Intelligence Monitoring
-
-${competitiveIntelligence.map((intel, i) => `**${intel.competitor}**
-*Monitoring:* ${intel.monitoring}
-*Trigger Events:* ${intel.triggers}
-
-`).join('')}
+### 🏆 How We Win
+> ${howToWinText || '[Not provided]'}
 
 ---
 
-**Report Generated:** ${timestamp}
-**Workshop:** Competitive Strategy - Response Planning
-**Next Steps:** Implement monitoring systems and response playbooks
+### 🛠️ Our Advantage & Measures
+
+**Critical Capabilities:**
+${criticalCapabilities || '[Not provided]'}
+
+**Required Systems:**
+${requiredSystems || '[Not provided]'}
+
+**Value Metric:**
+${valueMetric || '[Not provided]'}
+
+**Early Signals:**
+${earlySignals || '[Not provided]'}
+
+---
+
+### 🧪 Our Action Plan
+
+**Key Risks:**
+${keyRisks || '[Not provided]'}
+
+**Counter-Moves:**
+${counterMoves || '[Not provided]'}
+
+**First Tests:**
+${firstTests || '[Not provided]'}
 `;
             };
 
-            // Copy to clipboard functionality
             const handleCopyToClipboard = () => {
-                const copyToClipboard = async (text) => {
-                    try {
-                        if (navigator.clipboard && navigator.clipboard.writeText) {
-                            await navigator.clipboard.writeText(text);
-                            return true;
-                        } else {
-                            const textArea = document.createElement('textarea');
-                            textArea.value = text;
-                            textArea.style.position = 'fixed';
-                            textArea.style.left = '-999999px';
-                            document.body.appendChild(textArea);
-                            textArea.select();
-                            const successful = document.execCommand('copy');
-                            document.body.removeChild(textArea);
-                            return successful;
-                        }
-                    } catch (err) {
-                        return false;
-                    }
-                };
-
-                const el = document.getElementById('markdownSummary');
-                const statusDiv = document.getElementById('copyStatus');
-                
-                copyToClipboard(el.value).then((success) => {
-                    if (success) {
-                        statusDiv.innerHTML = `
-                            <div class="mt-2 bg-green-100 border border-green-400 text-green-700 px-4 py-2 rounded-lg">
-                                <p class="font-medium">✅ Copied to Clipboard!</p>
-                                <p class="text-sm mt-1">Now paste in Google Docs: <strong>Edit → Paste special → Paste from markdown</strong></p>
-                            </div>
-                        `;
-                        
-                        const notification = document.createElement('div');
-                        notification.style.cssText = 'position: fixed; top: 20px; right: 20px; background: #22c55e; color: white; padding: 16px 24px; border-radius: 8px; z-index: 9999;';
-                        notification.textContent = '✅ Competitive response plan copied!';
-                        document.body.appendChild(notification);
-                        
-                        setTimeout(() => {
-                            notification.style.transition = 'opacity 0.5s';
-                            notification.style.opacity = '0';
-                            setTimeout(() => notification.remove(), 500);
-                        }, 2500);
-                    }
+                const markdown = generateMarkdownSummary();
+                navigator.clipboard.writeText(markdown).then(() => {
+                    const notification = document.createElement('div');
+                    notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg animate-fadeIn z-50';
+                    notification.textContent = '✅ Blueprint copied to clipboard!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => {
+                        notification.style.transition = 'opacity 0.5s';
+                        notification.style.opacity = '0';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 3000);
                 });
             };
 
+            const BlueprintTable = () => (
+                <div className="bg-white rounded-xl border-2 border-gray-200 shadow-lg sticky-blueprint">
+                    <h3 className="text-xl font-bold text-gray-800 p-4 border-b-2 border-gray-200">Your 1-Page Blueprint</h3>
+                    <table className="w-full text-sm blueprint-table">
+                        <tbody>
+                            <tr><td className="w-1/3 blueprint-label">Top Two Forces (Now)</td><td>{topForcesText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Where We Play</td><td>{whereToPlayText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">How We Win</td><td>{howToWinText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Substitutes</td><td>{keySubstitutesText || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Critical Capabilities</td><td>{criticalCapabilities || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Required Systems</td><td>{requiredSystems || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Value Metric</td><td>{valueMetric || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Early Signals (2–3)</td><td>{earlySignals || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Key Risks</td><td>{keyRisks || '...'}</td></tr>
+                            <tr><td className="blueprint-label">Counter-Moves</td><td>{counterMoves || '...'}</td></tr>
+                            <tr><td className="blueprint-label">First Tests</td><td>{firstTests || '...'}</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            );
+
             return (
-                <div className="max-w-[900px] mx-auto p-4">
-                    {/* Header */}
+                <div className="max-w-7xl mx-auto p-4 md:p-8">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                        <div className="flex justify-between items-center w-full mb-2">
-                            <a href="competitive-activity-2A.html" className="inline-flex items-center text-orange-600 hover:text-orange-700 transition-colors text-sm font-medium">
-                                <span className="mr-1">←</span> Activity 2
-                            </a>
-                            <a href="../index.html" className="inline-flex items-center text-gray-600 hover:text-orange-700 transition-colors text-sm font-medium">
-                                All GTM Workshops <span className="ml-1">↑</span>
-                            </a>
+                         <div className="flex justify-between items-center w-full mb-2">
+                            <a href="index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">← Back to Workshop</a>
+                            <a href="../index.html" className="text-orange-600 hover:text-orange-700 font-medium text-sm">All GTM Workshops ↑</a>
                         </div>
-
                         <div className="border-t border-gray-200 mt-3 pt-4">
-                            <h1 
-                                className={`text-2xl font-bold text-gray-800 ${devMode ? 'text-orange-600' : ''} cursor-pointer select-none`}
-                                onDoubleClick={toggleDevMode}
-                                title="Double-click to toggle dev mode"
-                            >
-                                Activity 3: Competitive Response Planning {devMode && '🔧'}
+                            <h1 onDoubleClick={toggleDevMode} className={`text-2xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                                Activity 3: Assemble Your Blueprint {devMode && '🔧'}
                             </h1>
-                            <p className="text-gray-600 text-sm mt-1">
-                                Plan strategic responses to competitive threats and protect your market position
-                            </p>
-                        </div>
-
-                        {devMode && (
-                            <div className="mt-3 pt-3 border-t border-orange-200">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
-                                    <button
-                                        onClick={devFillData}
-                                        disabled={devFillLoading}
-                                        className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
-                                    >
-                                        {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
-                                    </button>
+                            <p className="text-gray-600 text-sm mt-1">Combine your insights into a single, actionable strategy document.</p>
+                             {devMode && (
+                                <div className="mt-3 pt-3 border-t border-orange-200">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-xs text-orange-600 font-medium">🔧 Dev Mode Active</span>
+                                        <button onClick={devFillData} disabled={devFillLoading} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600 transition-colors disabled:opacity-50">
+                                            {devFillLoading ? '⏳ Loading...' : '📝 Fill Test Data'}
+                                        </button>
+                                    </div>
                                 </div>
-                            </div>
-                        )}
+                            )}
+                        </div>
                     </div>
-
-                    {/* Progress Bar */}
+                    
+                    <WizardStepIndicator 
+                        blueprintStep={blueprintStep} 
+                        isStep2Complete={isStep2Complete} 
+                        isStep3Complete={isStep3Complete} 
+                    />
+                    
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
                         <div className="flex items-center justify-between mb-2">
-                            <span className="text-sm font-medium text-gray-700">Progress</span>
-                            <span className="text-sm text-gray-600">
-                                {currentStep === 3 ? 'Complete' : `Step ${currentStep} of 3`}
-                            </span>
+                            <span className="text-sm font-medium text-gray-700">Blueprint Progress</span>
+                            <span className="text-sm font-semibold text-gray-800">{progress}% Complete</span>
                         </div>
-                        <div className="w-full bg-gray-200 rounded-full h-2">
-                            <div 
-                                className="bg-orange-500 h-2 rounded-full transition-all duration-300" 
-                                style={{width: `${(currentStep / 3) * 100}%`}}
-                            ></div>
+                        <div className="w-full bg-gray-200 rounded-full h-2.5">
+                            <div className="bg-orange-500 h-2.5 rounded-full transition-all duration-500" style={{width: `${progress}%`}}></div>
                         </div>
                     </div>
 
-                    {/* Step 1: Assumption Testing */}
-                    {currentStep >= 1 && (
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            <div className="section-title">Step 1: Assumption Testing</div>
-                            <div className="section-description">
-                                Identify your riskiest business assumption and plan how to test it
-                            </div>
-
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="block text-gray-700 font-medium mb-2">
-                                        Riskiest Assumption <span className="text-xs text-gray-500">(3+ words)</span>
-                                    </label>
-                                    <textarea
-                                        value={riskiestAssumption}
-                                        onChange={(e) => setRiskiestAssumption(e.target.value)}
-                                        placeholder="e.g., VPs of Engineering will pay a premium for predictive API monitoring vs 'good enough' reactive tools..."
-                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                    />
-                                    <div className="flex justify-end mt-1">
-                                        <span className={`text-sm ${getWordCount(riskiestAssumption) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                            {getWordCount(riskiestAssumption)} words
-                                        </span>
-                                    </div>
-                                </div>
-
-                                <div>
-                                    <label className="block text-gray-700 font-medium mb-2">
-                                        Testing Plan <span className="text-xs text-gray-500">(3+ words)</span>
-                                    </label>
-                                    <textarea
-                                        value={assumptionTest}
-                                        onChange={(e) => setAssumptionTest(e.target.value)}
-                                        placeholder="e.g., Run 90-day pilots with 5 high-growth SaaS companies to measure downtime prevention and MTTR reduction..."
-                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                    />
-                                    <div className="flex justify-end mt-1">
-                                        <span className={`text-sm ${getWordCount(assumptionTest) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                            {getWordCount(assumptionTest)} words
-                                        </span>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {currentStep === 1 && (
-                                <div className="flex justify-center mt-6">
-                                    <button
-                                        onClick={() => setCurrentStep(2)}
-                                        disabled={!isStepComplete(1)}
-                                        className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-                                    >
-                                        Continue to Step 2
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Step 2: Response Strategies */}
-                    {currentStep >= 2 && (
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            <div className="section-title">Step 2: Response Strategies</div>
-                            <div className="section-description">
-                                Plan strategic responses to key competitive threats
-                            </div>
-
-                            {responseStrategies.map((strategy, index) => (
-                                <div key={index} className="response-card mb-4">
-                                    <div className="grid md:grid-cols-1 gap-4">
-                                        <div>
-                                            <label className="block text-gray-700 font-medium mb-2">
-                                                Competitive Threat {index + 1} <span className="text-xs text-gray-500">(3+ words)</span>
-                                            </label>
-                                            <input
-                                                type="text"
-                                                value={strategy.threat}
-                                                onChange={(e) => updateResponseStrategy(index, 'threat', e.target.value)}
-                                                placeholder="e.g., Datadog and New Relic adding predictive features to their platforms"
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                            />
-                                            <div className="flex justify-end mt-1">
-                                                <span className={`text-sm ${getWordCount(strategy.threat) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                    {getWordCount(strategy.threat)} words
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-gray-700 font-medium mb-2">
-                                                Strategic Response <span className="text-xs text-gray-500">(3+ words)</span>
-                                            </label>
-                                            <textarea
-                                                value={strategy.response}
-                                                onChange={(e) => updateResponseStrategy(index, 'response', e.target.value)}
-                                                placeholder="e.g., Position as complementary integration that enhances existing tools rather than replacing them..."
-                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                            />
-                                            <div className="flex justify-end mt-1">
-                                                <span className={`text-sm ${getWordCount(strategy.response) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                    {getWordCount(strategy.response)} words
-                                                </span>
-                                            </div>
-                                        </div>
-
-                                        <div>
-                                            <label className="block text-gray-700 font-medium mb-2">
-                                                Tactical Implementation <span className="text-xs text-gray-500">(3+ words)</span>
-                                            </label>
-                                            <textarea
-                                                value={strategy.tactics}
-                                                onChange={(e) => updateResponseStrategy(index, 'tactics', e.target.value)}
-                                                placeholder="e.g., Build native integrations and demonstrate superior prediction accuracy through head-to-head comparisons..."
-                                                className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                            />
-                                            <div className="flex justify-end mt-1">
-                                                <span className={`text-sm ${getWordCount(strategy.tactics) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                    {getWordCount(strategy.tactics)} words
-                                                </span>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            ))}
-
-                            {currentStep === 2 && (
-                                <div className="flex justify-between mt-6">
-                                    <button
-                                        onClick={() => setCurrentStep(1)}
-                                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
-                                    >
-                                        ← Back
-                                    </button>
-                                    <button
-                                        onClick={() => setCurrentStep(3)}
-                                        disabled={!isStepComplete(2)}
-                                        className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed font-semibold"
-                                    >
-                                        Continue to Step 3
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Step 3: Protection & Intelligence */}
-                    {currentStep >= 3 && (
-                        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                            <div className="section-title">Step 3: Protection & Intelligence</div>
-                            <div className="section-description">
-                                Plan market protection tactics and competitive intelligence monitoring
-                            </div>
-
-                            <div className="space-y-6">
-                                <div>
-                                    <h4 className="font-semibold text-gray-800 mb-4">Market Protection Tactics</h4>
-                                    {marketProtectionTactics.map((tactic, index) => (
-                                        <div key={index} className="response-card mb-4">
-                                            <div className="grid md:grid-cols-3 gap-4">
-                                                <div>
-                                                    <label className="block text-gray-700 font-medium mb-2">
-                                                        Tactic <span className="text-xs text-gray-500">(3+ words)</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={tactic.tactic}
-                                                        onChange={(e) => updateProtectionTactic(index, 'tactic', e.target.value)}
-                                                        placeholder="e.g., Proprietary ML model data moats from customer API patterns"
-                                                        className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                                    />
-                                                    <div className="flex justify-end mt-1">
-                                                        <span className={`text-sm ${getWordCount(tactic.tactic) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                            {getWordCount(tactic.tactic)} words
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-gray-700 font-medium mb-2">
-                                                        Description <span className="text-xs text-gray-500">(3+ words)</span>
-                                                    </label>
-                                                    <textarea
-                                                        value={tactic.description}
-                                                        onChange={(e) => updateProtectionTactic(index, 'description', e.target.value)}
-                                                        placeholder="e.g., Build increasingly sophisticated predictive models using exclusive customer data that competitors cannot replicate..."
-                                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                                    />
-                                                    <div className="flex justify-end mt-1">
-                                                        <span className={`text-sm ${getWordCount(tactic.description) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                            {getWordCount(tactic.description)} words
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-gray-700 font-medium mb-2">
-                                                        Timeline <span className="text-xs text-gray-500">(3+ words)</span>
-                                                    </label>
-                                                    <textarea
-                                                        value={tactic.timeline}
-                                                        onChange={(e) => updateProtectionTactic(index, 'timeline', e.target.value)}
-                                                        placeholder="e.g., Ongoing model training and refinement with each new customer implementation"
-                                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                                    />
-                                                    <div className="flex justify-end mt-1">
-                                                        <span className={`text-sm ${getWordCount(tactic.timeline) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                            {getWordCount(tactic.timeline)} words
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-
-                                <div>
-                                    <h4 className="font-semibold text-gray-800 mb-4">Competitive Intelligence Monitoring</h4>
-                                    {competitiveIntelligence.map((intel, index) => (
-                                        <div key={index} className="response-card mb-4">
-                                            <div className="grid md:grid-cols-3 gap-4">
-                                                <div>
-                                                    <label className="block text-gray-700 font-medium mb-2">
-                                                        Competitor <span className="text-xs text-gray-500">(2+ words)</span>
-                                                    </label>
-                                                    <input
-                                                        type="text"
-                                                        value={intel.competitor}
-                                                        onChange={(e) => updateCompetitiveIntelligence(index, 'competitor', e.target.value)}
-                                                        placeholder="e.g., Datadog or New Relic and Dynatrace"
-                                                        className="w-full p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                                    />
-                                                    <div className="flex justify-end mt-1">
-                                                        <span className={`text-sm ${getWordCount(intel.competitor) >= 2 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                            {getWordCount(intel.competitor)} words
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-gray-700 font-medium mb-2">
-                                                        Monitoring Focus <span className="text-xs text-gray-500">(3+ words)</span>
-                                                    </label>
-                                                    <textarea
-                                                        value={intel.monitoring}
-                                                        onChange={(e) => updateCompetitiveIntelligence(index, 'monitoring', e.target.value)}
-                                                        placeholder="e.g., Track their AI/ML feature announcements, predictive capability releases, and pricing changes for APM products..."
-                                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                                    />
-                                                    <div className="flex justify-end mt-1">
-                                                        <span className={`text-sm ${getWordCount(intel.monitoring) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                            {getWordCount(intel.monitoring)} words
-                                                        </span>
-                                                    </div>
-                                                </div>
-
-                                                <div>
-                                                    <label className="block text-gray-700 font-medium mb-2">
-                                                        Trigger Events <span className="text-xs text-gray-500">(3+ words)</span>
-                                                    </label>
-                                                    <textarea
-                                                        value={intel.triggers}
-                                                        onChange={(e) => updateCompetitiveIntelligence(index, 'triggers', e.target.value)}
-                                                        placeholder="e.g., New AI-powered alerting features, predictive analytics product launches, or significant pricing model changes..."
-                                                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg focus:border-orange-500 focus:ring-2 focus:ring-orange-200"
-                                                    />
-                                                    <div className="flex justify-end mt-1">
-                                                        <span className={`text-sm ${getWordCount(intel.triggers) >= 3 ? 'text-green-600' : 'text-gray-500'}`}>
-                                                            {getWordCount(intel.triggers)} words
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-
-                            {currentStep === 3 && isStepComplete(3) && (
-                                <div className="flex justify-between mt-6">
-                                    <button
-                                        onClick={() => setCurrentStep(2)}
-                                        className="bg-gray-500 text-white px-6 py-2 rounded-lg hover:bg-gray-600"
-                                    >
-                                        ← Back
-                                    </button>
-                                    <button
-                                        onClick={() => window.location.href = 'index.html'}
-                                        className="bg-orange-500 text-white px-8 py-3 rounded-lg hover:bg-orange-600 font-semibold"
-                                    >
-                                        Complete Workshop
-                                    </button>
-                                </div>
-                            )}
-                        </div>
-                    )}
-
-                    {/* Professional Export Section */}
-                    {currentStep === 3 && isStepComplete(3) && (
-                        <div className="bg-white border border-gray-300 rounded-lg p-4 mb-6">
-                            <div className="flex items-center mb-3">
-                                <h4 className="font-semibold text-gray-800">📄 Export Professional Report</h4>
-                            </div>
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div> {/* Left Column for Inputs */}
                             
-                            <p className="text-sm text-gray-600 mb-3">
-                                Your competitive response plan has been formatted as a professional markdown report for easy sharing and documentation.
-                            </p>
+                            {/* Step 1: Review Your Foundation */}
+                            {blueprintStep === 1 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 1: Review Your Foundation</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Review your key strategic choices from Activities 1 and 2.</p>
+                                    
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your Top Two Forces (from Activity 1)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {topForcesText || "Data from Activity 1 will appear here."}
+                                        </p>
+                                    </div>
 
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your "Where to Play" Statement (from Activity 2)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {whereToPlayText || "Data from Activity 2 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Your "How to Win" Strategy (from Activity 2)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {howToWinText || "Data from Activity 2 will appear here."}
+                                        </p>
+                                    </div>
+
+                                    <div className="mb-4">
+                                        <h4 className="text-sm font-semibold text-gray-600">Key Substitutes (from Activity 1)</h4>
+                                        <p className="mt-1 text-sm text-gray-800 bg-gray-50 p-3 rounded-md">
+                                            {keySubstitutesText || "Data from Activity 1 will appear here."}
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Step 2: Define Your Advantage & Measures */}
+                            {blueprintStep === 2 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 2: Define Your Advantage & Measures</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Define the capabilities and systems you need, plus how you'll measure success.</p>
+                                    
+                                    <InputField
+                                        label="Critical Capabilities"
+                                        tooltip="To deliver your 'How to Win', what 2-3 activities must your company perform flawlessly?"
+                                        value={criticalCapabilities}
+                                        setter={setCriticalCapabilities}
+                                        placeholder="e.g., 1. Proprietary ML model development. 2. Seamless 10-minute customer onboarding."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Required Systems"
+                                        tooltip="What management systems, tools, or infrastructure are required to support those critical capabilities?"
+                                        value={requiredSystems}
+                                        setter={setRequiredSystems}
+                                        placeholder="e.g., 1. Unified data analytics platform. 2. Automated value-reporting engine for customers."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Value Metric"
+                                        tooltip="How does your customer measure the value you deliver? This should be an outcome, not a feature."
+                                        value={valueMetric}
+                                        setter={setValueMetric}
+                                        placeholder="e.g., Reduction in API incident resolution time (MTTR) by 50%+"
+                                        rows={2}
+                                    />
+                                    
+                                    <InputField
+                                        label="Early Signals (2-3)"
+                                        tooltip="What leading indicators prove your strategy is working? These should predict the Value Metric."
+                                        value={earlySignals}
+                                        setter={setEarlySignals}
+                                        placeholder="e.g., 1. Weekly active users per account > 3. 2. At least 5 predictive alerts configured."
+                                        rows={3}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Step 3: Plan Your Action */}
+                            {blueprintStep === 3 && (
+                                <div className="mb-8">
+                                    <h2 className="text-xl font-bold mb-4">Step 3: Plan Your Action</h2>
+                                    <p className="text-sm text-gray-600 mb-6">Identify additional risks and plan concrete next steps to test your strategy.</p>
+                                    
+                                    <InputField
+                                        label="Other Key Risks"
+                                        tooltip="You already identified your single riskiest assumption in Activity 2. What are 1-2 other key risks that could break your strategy?"
+                                        value={keyRisks}
+                                        setter={setKeyRisks}
+                                        placeholder="e.g., 1. A major competitor launches a similar 'good enough' predictive feature."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="Counter-Moves"
+                                        tooltip="If the risks you identified happen, what is your pre-planned response?"
+                                        value={counterMoves}
+                                        setter={setCounterMoves}
+                                        placeholder="e.g., If competitor launches, double down on our 'setup-in-minutes' value prop and superior support."
+                                        rows={3}
+                                    />
+                                    
+                                    <InputField
+                                        label="First Tests"
+                                        tooltip="Based on the test you designed in Activity 2, what are two more concrete tests for the next 30 days? Assign an owner and a date."
+                                        value={firstTests}
+                                        setter={setFirstTests}
+                                        placeholder="e.g., 1. Test pricing model with 10 new prospects (Owner: Sarah, by Aug 29)."
+                                        rows={3}
+                                    />
+                                </div>
+                            )}
+
+                            {/* Navigation Buttons */}
+                            <div className="flex justify-between items-center mt-8">
+                                {/* Back Button */}
+                                <button
+                                    onClick={goToPrevStep}
+                                    disabled={blueprintStep === 1}
+                                    className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                        blueprintStep === 1 
+                                            ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                            : 'bg-gray-500 text-white hover:bg-gray-600'
+                                    }`}
+                                >
+                                    ← Back
+                                </button>
+
+                                {/* Reset Button */}
+                                <button 
+                                    onClick={resetActivity} 
+                                    className="bg-red-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-red-600 transition-colors"
+                                >
+                                    Reset Activity
+                                </button>
+
+                                {/* Continue/Complete Button */}
+                                {blueprintStep < 3 ? (
+                                    <button
+                                        onClick={goToNextStep}
+                                        disabled={blueprintStep === 2 && !canContinueFromStep2}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            (blueprintStep === 2 && !canContinueFromStep2)
+                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-orange-500 text-white hover:bg-orange-600'
+                                        }`}
+                                    >
+                                        Continue →
+                                    </button>
+                                ) : (
+                                    <button
+                                        onClick={() => setShowExportSection(true)}
+                                        disabled={!canCompleteFromStep3}
+                                        className={`px-6 py-2 rounded-lg font-medium transition-colors ${
+                                            !canCompleteFromStep3
+                                                ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
+                                                : 'bg-green-500 text-white hover:bg-green-600'
+                                        }`}
+                                    >
+                                        Generate Report
+                                    </button>
+                                )}
+                            </div>
+                        </div>
+
+                        <div> {/* Right Column for Blueprint */}
+                            <BlueprintTable />
+                        </div>
+                    </div>
+                    
+                    {showExportSection && (
+                        <div className="bg-gray-50 rounded-xl p-6 border border-gray-200 mt-8 animate-fadeIn">
+                            <h3 className="text-lg font-semibold text-gray-800 mb-3">📄 Export Your Strategy Blueprint</h3>
+                            <p className="text-sm text-gray-600 mb-4">
+                                Your complete competitive strategy blueprint has been formatted as a professional markdown report for easy sharing and documentation.
+                            </p>
+                            
                             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4">
                                 <h5 className="font-medium text-blue-800 mb-2">📌 Google Docs Instructions:</h5>
                                 <ol className="text-sm text-blue-700 space-y-1">
-                                    <li>1. Click "Copy Activity Summary" below</li>
+                                    <li>1. Click "Copy Strategy Blueprint" below</li>
                                     <li>2. Open Google Docs and create a new document</li>
                                     <li>3. Go to <strong>Edit → Paste special → Paste from markdown</strong></li>
                                     <li>4. Your report will appear with proper formatting!</li>
@@ -712,9 +587,9 @@ ${competitiveIntelligence.map((intel, i) => `**${intel.competitor}**
                             <div className="flex flex-col items-center">
                                 <button
                                     onClick={handleCopyToClipboard}
-                                    className="bg-orange-500 text-white px-4 py-2 rounded-lg hover:bg-orange-600 text-sm font-medium"
+                                    className="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-medium hover:bg-orange-600 transition-colors"
                                 >
-                                    📋 Copy Activity Summary
+                                    📋 Copy Strategy Blueprint
                                 </button>
                                 <div id="copyStatus"></div>
                             </div>
@@ -724,10 +599,9 @@ ${competitiveIntelligence.map((intel, i) => `**${intel.competitor}**
             );
         };
 
-        // React 18 rendering
         const container = document.getElementById('root');
         const root = ReactDOM.createRoot(container);
-        root.render(<CompetitiveResponseActivity />);
+        root.render(<BlueprintActivity />);
     </script>
 </body>
 </html>
