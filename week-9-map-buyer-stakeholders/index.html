@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Map Buyer Stakeholders - Week 9</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 40px; /* Keep original padding */
+            background: #f8f9fa; /* Changed background to light gray */
+            min-height: 100vh;
+            color: #333; /* Changed text color to dark gray */
+        }
+        
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px; /* Keep original border radius */
+            /* backdrop-filter: blur(10px); Removed as container is now solid */
+            /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); Replaced with new shadow */
+            background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid #e9ecef; /* Changed container background, added shadow and border */
+        }
+        
+        .back-link {
+            display: inline-block;
+            margin-bottom: 20px;
+            color: #FF9000; /* Orange color */
+            text-decoration: none;
+            opacity: 0.8; /* Keep original opacity */
+            transition: opacity 0.3s ease;
+        }
+        
+        .back-link:hover {
+            opacity: 1;
+        }
+        
+        h1 {
+            margin-bottom: 10px;
+            font-size: 2.2em;
+            font-weight: 300;
+        }
+        
+        .workshop-info {
+            margin-bottom: 30px;
+            opacity: 0.9;
+        }
+        
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .activity-item {
+            background: linear-gradient(135deg, #FF9000 0%, #FFB000 100%); /* Orange gradient */
+            margin-bottom: 15px;
+            border-radius: 10px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        } /* Keep original transition */
+        
+        .activity-item:hover {
+            background: linear-gradient(135deg, #FF8000 0%, #FFA000 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(255, 144, 0, 0.25);
+        }
+        
+        .activity-link {
+            display: block;
+            padding: 20px;
+            color: white; /* Keep text color white for contrast on orange */
+            text-decoration: none;
+        }
+        
+        .activity-title {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+        
+        .activity-description {
+            font-size: 0.9em;
+            opacity: 0.8;
+        }
+        
+        .coming-soon {
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .available {
+            border-left: 4px solid #F1C232;
+        }
+        
+        /* Activity Numbering Styles */
+        .activity-title {
+            display: flex;
+            align-items: center;
+        }
+        
+        .activity-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            color: #FF9000;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+        
+        .mt-8 { margin-top: 2rem; }
+        .flex { display: flex; }
+        .items-center { align-items: center; }
+        .justify-center { justify-content: center; }
+        .text-gray-800 { color: #1f2937; }
+        .font-semibold { font-weight: 600; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="../index.html" class="back-link">← Back to All Workshops</a>
+        
+        <h1>How to Map Buying Stakeholders</h1>
+        
+        <div class="workshop-info">
+            <p>This workshop provides a structured process for identifying the key players in a complex B2B sales motion. You will learn to move beyond job titles to understand the motivations, challenges, and buying personas of each stakeholder, and build an actionable plan to drive consensus and close deals.</p>
+        </div>
+
+        <p class="text-center text-sm text-gray-600 mb-6" style="max-width: 500px; margin-left: auto; margin-right: auto;">
+            <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
+        </p>
+        
+        <ul class="activity-list">
+            <li class="activity-item">
+                <a href="activity-unified.html?step=1" class="activity-link">
+                    <div class="activity-title">
+                        <span>1</span>
+                        Map the Buying Jobs
+                    </div>
+                    <div class="activity-description">Identify the 2-3 most critical and difficult 'jobs' your customer must complete to make a purchase.</div>
+                </a>
+            </li>
+            
+            <li class="activity-item">
+                <a href="activity-unified.html?step=2" class="activity-link">
+                    <div class="activity-title">
+                        <span>2</span>
+                        Assign Personas to Roles
+                    </div>
+                    <div class="activity-description">Build a detailed map of the buying group, defining each stakeholder's functional role, buying persona, and key motivations.</div>
+                </a>
+            </li>
+            
+            <li class="activity-item">
+                <a href="activity-unified.html?step=3" class="activity-link">
+                    <div class="activity-title">
+                        <span>3</span>
+                        Develop a Buyer Enablement Plan
+                    </div>
+                    <div class="activity-description">Translate your map into action. Create 'prescriptions' to help your champion overcome objections and build consensus.</div>
+                </a>
+            </li>
+        </ul>
+
+        <div class="mt-8 flex items-center justify-center">
+            <a href="#" target="_blank" class="flex items-center" style="text-decoration: none; opacity: 0.5; pointer-events: none;">
+                <img src="../icons/Google_Slides_Logo_512px.png" alt="Google Slides Logo" style="width: 24px; height: 24px; margin-right: 8px; object-fit: contain;">
+                <span class="text-gray-800 font-semibold" style="font-size: 20px;">Workshop Slides (Coming Soon)</span>
+            </a>
+        </div>
+    </div>
+</body>
+</html>
