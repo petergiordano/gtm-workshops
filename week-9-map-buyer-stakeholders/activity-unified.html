@@ -307,9 +307,19 @@
             }, [stakeholders, minStakeholders]);
             
             const activity3Complete = useMemo(() => {
-                const stakeholdersWithArtifacts = stakeholders.filter(s => 
-                    s.enablementArtifact && s.enablementArtifact.trim().split(/\s+/).filter(w => w.length > 0).length >= 10
-                );
+                const stakeholdersWithArtifacts = stakeholders.filter(s => {
+                    if (!s.enablementArtifact || !s.enablementArtifact.trim()) return false;
+                    const wordCount = s.enablementArtifact.trim().split(/\s+/).filter(w => w.length > 0).length;
+                    return wordCount >= 10;
+                });
+                console.log('Activity 3 validation:', {
+                    totalStakeholders: stakeholders.length,
+                    stakeholdersWithArtifacts: stakeholdersWithArtifacts.length,
+                    artifactWordCounts: stakeholders.map((s, i) => ({
+                        index: i,
+                        wordCount: s.enablementArtifact ? s.enablementArtifact.trim().split(/\s+/).filter(w => w.length > 0).length : 0
+                    }))
+                });
                 return stakeholdersWithArtifacts.length >= 2;
             }, [stakeholders]);
 
@@ -1163,14 +1173,16 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                                 disabled={
                                     (currentStep === 1 && !activity1Complete) ||
                                     (currentStep === 2 && !activity2Complete) ||
-                                    (currentStep === 3)
+                                    (currentStep === 3 && !activity3Complete)
                                 }
                                 className={`px-6 py-2 rounded-lg font-medium transition-colors ${
                                     (currentStep === 1 && !activity1Complete) ||
                                     (currentStep === 2 && !activity2Complete) ||
-                                    (currentStep === 3)
+                                    (currentStep === 3 && !activity3Complete)
                                         ? 'bg-gray-200 text-gray-400 cursor-not-allowed' 
-                                        : 'bg-orange-500 text-white hover:bg-orange-600'
+                                        : (currentStep === 3 && activity3Complete) 
+                                            ? 'bg-green-500 text-white hover:bg-green-600'
+                                            : 'bg-orange-500 text-white hover:bg-orange-600'
                                 }`}
                             >
                                 {currentStep === 3 ? 'Workshop Complete' : 'Continue →'}
