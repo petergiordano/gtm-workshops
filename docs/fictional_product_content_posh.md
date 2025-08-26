@@ -468,3 +468,66 @@ We will conduct a series of 25 in-depth, structured value-proposition interviews
 The test will be considered successful if:
 * **Primary Metric:** At least 60% (15 out of 25) of the interviewees validate the ROI model as compelling and state a willingness-to-pay that falls within our target range of $50k-$75k ARR.
 * **Secondary Metric:** At least 40% (10 out of 25) of participants agree to a follow-up meeting to discuss a paid pilot program.
+
+---
+## **10. Fictional Product Example: How to Map the Buying Stakeholders for Posh AMP**
+---
+
+This section applies the frameworks from the "How to Map and Align Stakeholders in a Top-Down B2B Sale v3" presentation to the Posh AMP product. The goal is to identify the typical buying group, understand their roles and motivations, and provide a practical map for the Posh AMP sales team.
+
+### **The Posh AMP Buying Group: Roles & Personas**
+
+In a typical top-down B2B sale for Posh AMP, the sales team is not selling to an individual but to a "buying group" of 6-10 people. Each member has a company role (their title) and at least one buying persona (their role in the purchase decision). For Posh AMP, the buying group is complex because it involves technical users, strategic decision-makers, and financial approvers, which increases sales friction.
+
+Here is a breakdown of the key stakeholder roles involved in a Posh AMP purchase, based on the Decision Making Unit (DMU) framework.
+
+| Buying Role  | Description  | Influence  | Example Title(s)  | How to Identify  |
+| :--- | :--- | :--- | :--- | :--- |
+| **Initiator**  | Identifies the acute pain of API downtime and the limitations of reactive monitoring tools, starting the buying process. | Initiates the search but may not have final say. | DevOps Engineer, Senior API Developer | Ask: "Who first recognized that reactive monitoring was no longer sufficient for your API reliability needs?"  |
+| **End User**  | Directly uses Posh AMP to monitor APIs, respond to predictive alerts, and avoid firefighting. | Provides critical feedback on usability and practical application, which heavily influences the Decision Maker and Champion. | DevOps Team, Lead Engineer | Ask: "Who will be the primary day-to-day users of this platform?"  |
+| **Champion / Influencer**  | A stakeholder with a strong belief in the value of PredictiveOps and a vested interest in the solution's success. They advocate internally. | Influences others' opinions and can advocate for or against the purchase. | Director of Technology, Head of DevOps | Ask: "Who are the key people influencing this decision, both for and against?"  |
+| **Decision Maker**  | Holds the ultimate authority to make the final "yes" or "no" purchasing decision. | Makes the final decision on the purchase. | VP of Engineering, Chief Technology Officer (CTO) | Ask: "Who has the final say in making this type of technology purchase?"  |
+| **Economic Buyer**  | Controls the budget and assesses the financial implications, focusing on ROI and the high cost of downtime. | Assesses cost-effectiveness and ROI. The CFO is a common blocker if the business case isn't solid. | Chief Financial Officer (CFO), Finance Director | Ask: "Who oversees the budget and will be responsible for approving the financial case for this purchase?"  |
+| **Technical Evaluator**  | Focuses on technical specifications, operational compatibility, security (SOC2), and integration with existing tools (e.g., Datadog, AWS). | Evaluates the product for technical and operational fit and can block the sale on these grounds. | Director of IT, Head of Security, Operations Manager | Ask: "Who will evaluate the technical aspects, security compliance, and operational integration of Posh AMP?"  |
+| **Blocker**  | An individual who can stop or delay the sale due to budget concerns, technical reservations, or a preference for an alternative (like an in-house solution). | Can directly oppose or impede the sale by raising concerns that halt progress. | CFO, IT Manager, Lead Engineer preferring a competitor | Ask: "Who might have reservations about bringing in a new predictive monitoring platform?"  |
+| **Legal / Compliance**  | Ensures the purchase complies with legal and regulatory standards, such as data privacy and security (SOC2). | Can delay or block the purchase based on legal or compliance factors. | Legal Counsel, Compliance Officer | Ask: "Who is responsible for ensuring legal and compliance standards are met for new software vendors?"  |
+
+### **Posh AMP Stakeholder Map**
+
+The following map helps sellers build credibility by understanding each stakeholder's unique context. It details their goals, current methods, and challenges, allowing for a more tailored engagement.
+
+| Functional Role  | **DevOps Engineer / Lead**  | **VP of Engineering / CTO**  | **CFO**  |
+| :--- | :--- | :--- | :--- |
+| **Titles**  | Lead DevOps Engineer, Senior SRE, API Platform Lead  | VP of Engineering, Chief Technology Officer, Head of Platform  | Chief Financial Officer, VP of Finance  |
+| **Stakeholder Type**  | End User / Entry Point  | Decision Maker / Champion  | Economic Buyer / Blocker  |
+| **Key Goals / Motivation**  | Prevent API failures before they wake him/her up at 2 AM; reduce manual troubleshooting and firefighting; ensure API performance and uptime. | Implement a reliable system health strategy across all platforms; improve team efficiency; link engineering metrics (like MTTR) to business outcomes. | Achieve cost savings and justify every dollar of technology spend with a clear ROI; reduce financial risk associated with costly downtime. |
+| **Current Approach**  | Reactive monitoring with tools like Datadog or New Relic; manual troubleshooting scripts; reliance on threshold-based alerts. | Ad-hoc solutions built by internal teams; limited automation for incident response; reliance on multiple, fragmented monitoring platforms. | Manual approval for new tool purchases; periodic budget reviews based on departmental requests; tracking downtime costs reactively. |
+| **Challenges**  | Only finds out about problems after customers complain; constantly pulled away from development to fix outages; alert fatigue from non-critical issues; limited automation. | High operational costs due to engineering time spent on firefighting; fragmented visibility across platforms; difficulty proving the business value of reliability investments. | High and unpredictable costs associated with API downtime ($100k+/hr); inefficient budget allocation to reactive tools; lack of a clear financial case for new monitoring solutions. |
+
+### **Using Discovery Questions to Map the Buying Group**
+
+A Posh AMP seller can use the discovery questions from the "6 Buying Jobs" framework to systematically uncover and map the buying group. It is critical to pay attention to the different priorities expressed by each stakeholder.
+
+**1. Problem Identification ("We need to do something.")** 
+* **To the DevOps Lead:** "Besides your team, who else sees the constant firefighting from API failures as an urgent problem?" 
+* **To the VP of Engineering:** "Who is involved in calculating the cost/benefit or ROI of reducing downtime by, say, 50%?" 
+
+**2. Solution Exploration ("What’s out there to solve our problem?")** 
+* **To the VP of Engineering:** "As you consider a predictive approach, who else in the organization is proposing alternative solutions, like building a tool in-house or expanding your use of Datadog?" 
+* **To the DevOps Lead:** "Who will help us understand how a solution like Posh AMP would fit into your existing CI/CD pipeline and monitoring stack?" 
+
+**3. Requirements Building ("What exactly do we need?")** 
+* **To the Champion:** "Who is responsible for formally building the list of requirements for a new monitoring solution?"  This often uncovers the Technical Evaluator.
+
+**4. Supplier Selection ("Does this do what we want?")** 
+* **To the Decision Maker:** "Who will be involved in comparing Posh AMP against other alternatives or running a bake-off?" 
+
+**5. Validation ("We need to be sure.")** 
+* **To the Decision Maker:** "Who will be responsible for checking references and consulting third-party reviews to validate our claims?" 
+* **To the End User:** "Who will be responsible for confirming during a POC that the solution is working as needed and preventing failures as we claim?" 
+
+**6. Consensus Creation ("We need to get everyone on board.")** 
+* **To the Champion:** "Who owns the budget for this project?"  (Identifies Economic Buyer)
+* **To the Champion:** "Who will need to build the final business case to secure that budget?" 
+* **To the Champion:** "Who will need to educate potential blockers, like the security or finance teams, to get their buy-in?" 
+
