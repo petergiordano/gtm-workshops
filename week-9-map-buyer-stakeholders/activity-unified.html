@@ -62,28 +62,37 @@
     <script type="application/json" id="testData">
     {
         "selectedBuyingJobs": ["Consensus Creation", "Validation", "Supplier Selection"],
-        "buyingJobsJustification": "Our ICP struggles most with getting their multiple departments (Engineering, Finance, Security) to agree on the need for a new tool, validating that a predictive solution will actually work, and selecting it over expanding their current tools.",
+        "jobJustifications": {
+            "Consensus Creation": "This is the hardest part because the purchase involves three departments (Engineering, Finance, Security) with conflicting priorities and budgets. Getting them all to agree on a timeline is where our deals stall the most.",
+            "Validation": "Our champions struggle to prove the ROI of a *predictive* tool versus their 'good enough' reactive tools. They need concrete proof that our solution will work in their specific environment before going to the CFO.",
+            "Supplier Selection": "The customer often defaults to just expanding their contract with an incumbent like Datadog, even if it doesn't solve the core problem, because it's the path of least resistance internally."
+        },
+        "buyingGroupType": "Type4",
         "stakeholders": [
             {
                 "functionalRole": "Head of DevOps",
+                "commonTitles": "Lead DevOps Engineer, Senior SRE",
                 "stakeholderPersona": "End User",
                 "keyGoals": "Reduce time spent firefighting reactive alerts. Prevent being woken up at 2 AM for P1 incidents. Improve system reliability and automate manual toil.",
                 "challenges": "Constantly pulled away from strategic projects to fix outages. Alert fatigue from current tools is high. Lacks the ability to get ahead of problems before they impact customers."
             },
             {
                 "functionalRole": "VP of Engineering",
+                "commonTitles": "VP of Engineering, CTO, Head of Platform",
                 "stakeholderPersona": "Decision Maker",
                 "keyGoals": "Improve team efficiency and focus on innovation. Link engineering reliability metrics (MTTR, MTBF) to business outcomes. Implement a resilient and scalable system architecture.",
                 "challenges": "High operational costs due to engineering time spent on reactive problem-solving. Fragmented visibility across different platforms. Difficulty proving the business value of new infrastructure investments."
             },
             {
                 "functionalRole": "Chief Financial Officer",
+                "commonTitles": "CFO, VP of Finance",
                 "stakeholderPersona": "Economic Buyer",
                 "keyGoals": "Justify all technology spend with clear ROI. Reduce financial risk associated with costly downtime. Ensure budget predictability and achieve cost savings.",
                 "challenges": "API downtime is expensive ($100k+/hr), but it's a reactive, unpredictable cost. It's difficult to approve a new, proactive expense without a clear financial case showing it's cheaper than the current pain."
             },
             {
                 "functionalRole": "Director of IT Security",
+                "commonTitles": "Director of Security, CISO",
                 "stakeholderPersona": "Blocker",
                 "keyGoals": "Ensure all new vendors are SOC2 compliant. Prevent new tools from introducing security vulnerabilities. Maintain data integrity and governance across all systems.",
                 "challenges": "Every new tool is a potential security risk. The vendor onboarding process is long and requires extensive documentation on data handling, security, and compliance."
@@ -216,6 +225,8 @@
             // Dev mode functionality
             const [devMode, setDevMode] = useState(false);
             const [devFillLoading, setDevFillLoading] = useState(false);
+            const [glossaryOpen, setGlossaryOpen] = useState(false);
+            const [jobsGlossaryOpen, setJobsGlossaryOpen] = useState(false);
 
             // Toggle dev mode
             const toggleDevMode = () => {
@@ -231,9 +242,10 @@
                     
                     // Activity 1 state variables
                     setSelectedBuyingJobs(testData.selectedBuyingJobs || []);
-                    setBuyingJobsJustification(testData.buyingJobsJustification || '');
+                    setJobJustifications(testData.jobJustifications || {});
                     
                     // Activity 2 state variables
+                    setBuyingGroupType(testData.buyingGroupType || 'Type3');
                     setStakeholders(testData.stakeholders || []);
                     
                     // Activity 3 state variables
@@ -255,28 +267,51 @@
             
             // Activity 1: Map the Buying Jobs
             const [selectedBuyingJobs, setSelectedBuyingJobs] = useState(savedState.selectedBuyingJobs || []);
-            const [buyingJobsJustification, setBuyingJobsJustification] = useState(savedState.buyingJobsJustification || '');
+            const [jobJustifications, setJobJustifications] = useState(savedState.jobJustifications || {});
             
             // Activity 2: Assign Personas to Roles (Dynamic array of stakeholders)
+            const [buyingGroupType, setBuyingGroupType] = useState(savedState.buyingGroupType || 'Type3');
             const [stakeholders, setStakeholders] = useState(savedState.stakeholders || []);
             
             // Activity 3: Develop a Buyer Enablement Plan (Dynamic array of prescriptions)
             const [prescriptions, setPrescriptions] = useState(savedState.prescriptions || []);
 
+            // Dynamic minimum stakeholder calculation based on buying group type
+            const minStakeholders = useMemo(() => {
+                if (buyingGroupType === 'Type1') return 1;
+                if (buyingGroupType === 'Type2') return 2;
+                return 3; // Type3 and Type4 both require 3+
+            }, [buyingGroupType]);
+
+            // Dynamic help text based on buying group type
+            const stakeholderHelpText = useMemo(() => {
+                const helpTexts = {
+                    Type1: 'Map your single key player. In this model, one person holds all the key roles.',
+                    Type2: 'Map at least 2 key players in the buying committee.',
+                    Type3: 'Map at least 3 key players in the buying committee.',
+                    Type4: 'Map at least 3-5 key players in the buying committee.'
+                };
+                return helpTexts[buyingGroupType] || helpTexts.Type3;
+            }, [buyingGroupType]);
+
             // Activity completion logic
             const activity1Complete = useMemo(() => {
                 return selectedBuyingJobs.length >= 2 && selectedBuyingJobs.length <= 3 && 
-                       buyingJobsJustification.trim().split(/\s+/).filter(w => w.length > 0).length >= 15;
-            }, [selectedBuyingJobs, buyingJobsJustification]);
+                       selectedBuyingJobs.every(job => {
+                           const justification = jobJustifications[job] || '';
+                           return justification.trim().split(/\s+/).filter(w => w.length > 0).length >= 5;
+                       });
+            }, [selectedBuyingJobs, jobJustifications]);
             
             const activity2Complete = useMemo(() => {
-                return stakeholders.length >= 3 && stakeholders.every(s => 
+                return stakeholders.length >= minStakeholders && stakeholders.every(s => 
                     s.functionalRole && s.functionalRole.trim().split(/\s+/).filter(w => w.length > 0).length >= 3 &&
+                    s.commonTitles && s.commonTitles.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 &&
                     s.stakeholderPersona &&
-                    s.keyGoals && s.keyGoals.trim().split(/\s+/).filter(w => w.length > 0).length >= 10 &&
-                    s.challenges && s.challenges.trim().split(/\s+/).filter(w => w.length > 0).length >= 10
+                    s.keyGoals && s.keyGoals.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
+                    s.challenges && s.challenges.trim().split(/\s+/).filter(w => w.length > 0).length >= 5
                 );
-            }, [stakeholders]);
+            }, [stakeholders, minStakeholders]);
             
             const activity3Complete = useMemo(() => {
                 return prescriptions.length >= 2 && prescriptions.every(p =>
@@ -290,13 +325,14 @@
             useEffect(() => {
                 const currentState = {
                     selectedBuyingJobs,
-                    buyingJobsJustification,
+                    jobJustifications,
+                    buyingGroupType,
                     stakeholders,
                     prescriptions,
                     currentStep
                 };
                 saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
-            }, [selectedBuyingJobs, buyingJobsJustification, stakeholders, prescriptions, currentStep]);
+            }, [selectedBuyingJobs, jobJustifications, buyingGroupType, stakeholders, prescriptions, currentStep]);
 
             // Navigation functions
             const goToNextStep = () => {
@@ -315,7 +351,8 @@
                 if (confirm('Are you sure you want to reset all your progress? This cannot be undone.')) {
                     // Clear component state
                     setSelectedBuyingJobs([]);
-                    setBuyingJobsJustification('');
+                    setJobJustifications({});
+                    setBuyingGroupType('Type3');
                     setStakeholders([]);
                     setPrescriptions([]);
                     setCurrentStep(1);
@@ -323,7 +360,8 @@
                     // Clear localStorage data
                     const emptyState = {
                         selectedBuyingJobs: [],
-                        buyingJobsJustification: '',
+                        jobJustifications: {},
+                        buyingGroupType: 'Type3',
                         stakeholders: [],
                         prescriptions: [],
                         currentStep: 1
@@ -383,9 +421,32 @@
                                     <h2 className="text-xl font-bold text-gray-800 mb-4">
                                         Activity 1: Map the Buying Jobs
                                     </h2>
-                                    <p className="text-gray-600 mb-6">
-                                        The B2B buying process isn't a simple funnel; it's a complex journey where customers must complete six distinct "jobs" to reach a decision. In this activity, you will analyze your customer's journey to identify the 2-3 jobs that are the most difficult or create the most friction. This crucial first step forces you to see the deal from your customer's perspective and identifies the exact points of leverage where your sales process can add the most value.
+                                    <p className="text-gray-600 mb-4">
+                                        The B2B buying process isn't a linear funnel; it's a journey where customers complete six distinct 'jobs' to make a decision. Your task is to identify the 2-3 jobs that create the most friction for your customer.
                                     </p>
+                                    <p className="text-gray-600 mb-6">
+                                        This crucial first step helps you see the deal from their perspective and pinpoint exactly where your sales process can add the most value.
+                                    </p>
+                                    
+                                    <div className="border-t border-b border-gray-200 py-3 my-6">
+                                        <button
+                                            onClick={() => setJobsGlossaryOpen(!jobsGlossaryOpen)}
+                                            className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900"
+                                        >
+                                            <span>View Buying Job Definitions</span>
+                                            <span className={`transform transition-transform ${jobsGlossaryOpen ? 'rotate-180' : ''}`}>▼</span>
+                                        </button>
+                                        {jobsGlossaryOpen && (
+                                            <div className="mt-4 pl-4 border-l-2 border-orange-500 text-sm text-gray-600 space-y-3">
+                                                <p><strong>Problem Identification:</strong> The buyer realizes, "We need to do something."</p>
+                                                <p><strong>Solution Exploration:</strong> The buyer asks, "What's out there to solve our problem?"</p>
+                                                <p><strong>Requirements Building:</strong> The buyer determines, "What exactly do we need the purchase to do?"</p>
+                                                <p><strong>Supplier Selection:</strong> The buyer asks, "Does this specific solution do what we want it to do?"</p>
+                                                <p><strong>Validation:</strong> The buyer confirms, "We think we know the right answer, but we need to be sure."</p>
+                                                <p><strong>Consensus Creation:</strong> The buyer concludes, "We need to get everyone on board with this decision."</p>
+                                            </div>
+                                        )}
+                                    </div>
                                     
                                     {/* Buying Jobs Selection */}
                                     <div className="mb-6">
@@ -397,32 +458,38 @@
                                         
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                                             {[
-                                                'Problem Identification',
-                                                'Solution Exploration', 
-                                                'Requirements Building',
-                                                'Supplier Selection',
-                                                'Validation',
-                                                'Consensus Creation'
+                                                { name: 'Problem Identification', tooltip: "The buyer's thought: 'We need to do something.'" },
+                                                { name: 'Solution Exploration', tooltip: "The buyer's thought: 'What's out there to solve our problem?'" }, 
+                                                { name: 'Requirements Building', tooltip: "The buyer's thought: 'What exactly do we need the purchase to do?'" },
+                                                { name: 'Supplier Selection', tooltip: "The buyer's thought: 'Does this do what we want it to do?'" },
+                                                { name: 'Validation', tooltip: "The buyer's thought: 'We think we know the right answer, but we need to be sure.'" },
+                                                { name: 'Consensus Creation', tooltip: "The buyer's thought: 'We need to get everyone on board.'" }
                                             ].map((job) => (
-                                                <div key={job} className="flex items-center">
+                                                <div key={job.name} className="flex items-center">
                                                     <input
                                                         type="checkbox"
-                                                        id={job}
-                                                        checked={selectedBuyingJobs.includes(job)}
+                                                        id={job.name}
+                                                        checked={selectedBuyingJobs.includes(job.name)}
                                                         onChange={(e) => {
                                                             if (e.target.checked) {
                                                                 if (selectedBuyingJobs.length < 3) {
-                                                                    setSelectedBuyingJobs([...selectedBuyingJobs, job]);
+                                                                    setSelectedBuyingJobs([...selectedBuyingJobs, job.name]);
                                                                 }
                                                             } else {
-                                                                setSelectedBuyingJobs(selectedBuyingJobs.filter(j => j !== job));
+                                                                setSelectedBuyingJobs(selectedBuyingJobs.filter(j => j !== job.name));
                                                             }
                                                         }}
                                                         className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
-                                                        disabled={!selectedBuyingJobs.includes(job) && selectedBuyingJobs.length >= 3}
+                                                        disabled={!selectedBuyingJobs.includes(job.name) && selectedBuyingJobs.length >= 3}
                                                     />
-                                                    <label htmlFor={job} className="ml-2 text-sm text-gray-700">
-                                                        {job}
+                                                    <label htmlFor={job.name} className="ml-2 text-sm text-gray-700 flex items-center">
+                                                        {job.name}
+                                                        <span 
+                                                            className="ml-1 text-xs text-gray-400 cursor-help" 
+                                                            title={job.tooltip}
+                                                        >
+                                                            (?)
+                                                        </span>
                                                     </label>
                                                 </div>
                                             ))}
@@ -436,24 +503,42 @@
                                         </div>
                                     </div>
 
-                                    {/* Buying Jobs Justification */}
-                                    <div className="mb-6">
-                                        <label htmlFor="buyingJobsJustification" className="block text-sm font-medium text-gray-700 mb-2">
-                                            Why are these jobs the most difficult for your customer?
-                                            <span className="text-red-500">*</span>
-                                        </label>
-                                        <textarea
-                                            id="buyingJobsJustification"
-                                            value={buyingJobsJustification}
-                                            onChange={(e) => setBuyingJobsJustification(e.target.value)}
-                                            placeholder="e.g., Our customers struggle most with Consensus Creation because the purchase involves three departments (Engineering, Finance, Security) with conflicting priorities. Getting them to agree on a budget and a timeline is where deals stall."
-                                            className="laptop-textarea w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
-                                        />
-                                        <WordCountFeedback text={buyingJobsJustification} minWords={15} />
-                                        <p className="text-xs text-gray-500 mt-1">
-                                            Think about where your deals get stuck. Is it identifying the problem, or getting 10 stakeholders to agree? This is the friction your sales process must solve.
-                                        </p>
-                                    </div>
+                                    {/* Individual Job Justifications */}
+                                    {selectedBuyingJobs.length > 0 && (
+                                        <div className="mb-6">
+                                            <h3 className="text-lg font-medium text-gray-800 mb-4">
+                                                Explain Each Difficult Job
+                                            </h3>
+                                            <p className="text-xs text-gray-500 mb-4">
+                                                For each selected buying job, explain why it's particularly difficult for your customer.
+                                            </p>
+                                            
+                                            {selectedBuyingJobs.map((job, index) => (
+                                                <div key={job} className="mb-4">
+                                                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                                                        Why is <strong>{job}</strong> a difficult job for your customer?
+                                                        <span className="text-red-500">*</span>
+                                                    </label>
+                                                    <textarea
+                                                        value={jobJustifications[job] || ''}
+                                                        onChange={(e) => {
+                                                            setJobJustifications(prev => ({
+                                                                ...prev,
+                                                                [job]: e.target.value
+                                                            }));
+                                                        }}
+                                                        placeholder={`e.g., Our customers struggle with ${job} because...`}
+                                                        className="laptop-textarea w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                    />
+                                                    <WordCountFeedback text={jobJustifications[job] || ''} minWords={5} />
+                                                </div>
+                                            ))}
+                                            
+                                            <p className="text-xs text-gray-500 mt-2">
+                                                Think about where your deals get stuck. Is it identifying the problem, or getting 10 stakeholders to agree? This is the friction your sales process must solve.
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             )}
 
@@ -462,21 +547,132 @@
                                     <h2 className="text-xl font-bold text-gray-800 mb-4">
                                         Activity 2: Assign Personas to Roles
                                     </h2>
-                                    <p className="text-gray-600 mb-6">
-                                        You are never selling to one person; you are selling to a committee of 6-10 people with different motivations and priorities. This activity moves beyond simple org charts to build a sophisticated stakeholder map. You will identify the key players, distinguish their company role from their "buying persona" (e.g., Champion, Blocker, Economic Buyer), and articulate the specific goals and challenges that drive their decision-making process.
+                                    
+                                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4 mb-6">
+                                        <h3 className="text-sm font-semibold text-amber-800 mb-2">Context from Activity 1: The Most Difficult Buying Jobs</h3>
+                                        <ul className="list-disc list-inside">
+                                            {selectedBuyingJobs.map(job => (
+                                                <li key={job} className="text-sm text-amber-700">{job}</li>
+                                            ))}
+                                        </ul>
+                                        <p className="text-xs text-amber-700 mt-3">
+                                            Keep these difficult jobs in mind as you map each stakeholder. How do these challenges shape their individual goals and motivations?
+                                        </p>
+                                    </div>
+
+                                    {/* Buying Group Type Selection */}
+                                    <div className="mb-6 p-4 border rounded-lg bg-gray-50">
+                                        <label className="block text-sm font-medium text-gray-700 mb-3">
+                                            First, select the Buying Group Type that best matches your current sales motion:
+                                        </label>
+                                        <div className="space-y-3">
+                                            {/* Type 1 Option */}
+                                            <div className="flex items-start">
+                                                <input 
+                                                    id="type1" 
+                                                    name="buyingGroupType" 
+                                                    type="radio" 
+                                                    value="Type1" 
+                                                    checked={buyingGroupType === 'Type1'} 
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                />
+                                                <div className="ml-3 text-sm">
+                                                    <label htmlFor="type1" className="font-medium text-gray-900">Type 1: Singular</label>
+                                                    <p className="text-gray-500">One person holds all roles (User, Buyer, Decision Maker). Common for PLG or in very small companies.</p>
+                                                </div>
+                                            </div>
+                                            {/* Type 2 Option */}
+                                            <div className="flex items-start">
+                                                <input 
+                                                    id="type2" 
+                                                    name="buyingGroupType" 
+                                                    type="radio" 
+                                                    value="Type2" 
+                                                    checked={buyingGroupType === 'Type2'} 
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                />
+                                                <div className="ml-3 text-sm">
+                                                    <label htmlFor="type2" className="font-medium text-gray-900">Type 2: Limited Multi-Role</label>
+                                                    <p className="text-gray-500">Two people are involved (e.g., a manager as the Buyer/Decision Maker and an employee as the End User).</p>
+                                                </div>
+                                            </div>
+                                            {/* Type 3 Option */}
+                                            <div className="flex items-start">
+                                                <input 
+                                                    id="type3" 
+                                                    name="buyingGroupType" 
+                                                    type="radio" 
+                                                    value="Type3" 
+                                                    checked={buyingGroupType === 'Type3'} 
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                />
+                                                <div className="ml-3 text-sm">
+                                                    <label htmlFor="type3" className="font-medium text-gray-900">Type 3: Diversified (Within Dept)</label>
+                                                    <p className="text-gray-500">At least three distinct roles (e.g., End User, Economic Buyer, Decision Maker) exist within the same department.</p>
+                                                </div>
+                                            </div>
+                                            {/* Type 4 Option */}
+                                            <div className="flex items-start">
+                                                <input 
+                                                    id="type4" 
+                                                    name="buyingGroupType" 
+                                                    type="radio" 
+                                                    value="Type4" 
+                                                    checked={buyingGroupType === 'Type4'} 
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                />
+                                                <div className="ml-3 text-sm">
+                                                    <label htmlFor="type4" className="font-medium text-gray-900">Type 4: Cross-Departmental</label>
+                                                    <p className="text-gray-500">The buying group involves multiple departments (e.g., Engineering, Finance, Legal) and is highly complex.</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <p className="text-gray-600 mb-4">
+                                        You are never selling to just one person; you're selling to a committee with diverse motivations. This activity moves beyond org charts to build a true stakeholder map.
                                     </p>
+                                    <p className="text-gray-600 mb-6">
+                                        Your task is to identify the key players and define their role, buying persona (e.g., Champion, Blocker), and the specific goals and challenges that drive their decisions.
+                                    </p>
+                                    
+                                    <div className="border-t border-b border-gray-200 py-3 my-6">
+                                        <button
+                                            onClick={() => setGlossaryOpen(!glossaryOpen)}
+                                            className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900"
+                                        >
+                                            <span>View Buying Persona Definitions</span>
+                                            <span className={`transform transition-transform ${glossaryOpen ? 'rotate-180' : ''}`}>▼</span>
+                                        </button>
+                                        {glossaryOpen && (
+                                            <div className="mt-4 pl-4 border-l-2 border-orange-500 text-sm text-gray-600 space-y-3">
+                                                <p><strong>Champion:</strong> An internal advocate who actively promotes your solution and has a vested interest in its success.</p>
+                                                <p><strong>Economic Buyer:</strong> The person who owns the budget and provides the final financial sign-off for the purchase.</p>
+                                                <p><strong>Technical Buyer:</strong> Evaluates the solution for technical fit, security, integrations, and operational compatibility.</p>
+                                                <p><strong>Decision Maker:</strong> The individual with the ultimate authority to make the final "yes" or "no" purchasing decision.</p>
+                                                <p><strong>End User:</strong> The person or team who will use your product day-to-day. Their practical feedback heavily influences the decision.</p>
+                                                <p><strong>Blocker:</strong> An individual who can stop or significantly delay the sales process due to budget concerns, technical reservations, or other objections.</p>
+                                                <p><strong>Influencer:</strong> A person who can influence the decision based on their expertise, relationships, or credibility, even without formal authority.</p>
+                                            </div>
+                                        )}
+                                    </div>
                                     
                                     {/* Stakeholders Array */}
                                     <div className="mb-6">
                                         <div className="flex justify-between items-center mb-4">
                                             <h3 className="text-lg font-medium text-gray-800">
-                                                Key Stakeholders ({stakeholders.length})
+                                                Key Stakeholders Mapped: ({stakeholders.length} of {minStakeholders}+)
                                                 <span className="text-red-500">*</span>
                                             </h3>
                                             <button
                                                 onClick={() => {
                                                     const newStakeholder = {
                                                         functionalRole: '',
+                                                        commonTitles: '',
                                                         stakeholderPersona: '',
                                                         keyGoals: '',
                                                         challenges: ''
@@ -489,7 +685,7 @@
                                             </button>
                                         </div>
                                         
-                                        <p className="text-xs text-gray-500 mb-4">Add 3-5 key players in the buying committee.</p>
+                                        <p className="text-xs text-gray-500 mb-4">{stakeholderHelpText}</p>
                                         
                                         {stakeholders.map((stakeholder, index) => (
                                             <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
@@ -505,11 +701,18 @@
                                                     </button>
                                                 </div>
                                                 
+                                                {/* Top row: Functional Role and Common Titles */}
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                                                     {/* Functional Role */}
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                                             Functional Role <span className="text-red-500">*</span>
+                                                            <span 
+                                                                className="ml-1 text-xs text-gray-400 cursor-help" 
+                                                                title="Describe the person's job function and level of seniority, not just their title. e.g., 'Head of Platform Engineering' or 'Senior DevOps Lead'."
+                                                            >
+                                                                (?)
+                                                            </span>
                                                         </label>
                                                         <input
                                                             type="text"
@@ -525,10 +728,44 @@
                                                         <p className="text-xs text-gray-500 mt-1">The person's function, not their specific title</p>
                                                     </div>
                                                     
+                                                    {/* Common Titles */}
+                                                    <div>
+                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                                                            Common Titles <span className="text-red-500">*</span>
+                                                            <span 
+                                                                className="ml-1 text-xs text-gray-400 cursor-help" 
+                                                                title="The specific job titles this person might have in your target accounts. This helps with prospecting on platforms like LinkedIn."
+                                                            >
+                                                                (?)
+                                                            </span>
+                                                        </label>
+                                                        <input
+                                                            type="text"
+                                                            value={stakeholder.commonTitles}
+                                                            onChange={(e) => {
+                                                                const updated = [...stakeholders];
+                                                                updated[index].commonTitles = e.target.value;
+                                                                setStakeholders(updated);
+                                                            }}
+                                                            placeholder="e.g., VP of Engineering, CTO, Director"
+                                                            className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                        />
+                                                        <p className="text-xs text-gray-500 mt-1">Specific job titles for prospecting</p>
+                                                    </div>
+                                                </div>
+                                                
+                                                {/* Second row: Buying Persona */}
+                                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-3">
                                                     {/* Stakeholder Persona */}
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                                             Buying Persona <span className="text-red-500">*</span>
+                                                            <span 
+                                                                className="ml-1 text-xs text-gray-400 cursor-help" 
+                                                                title="This is the role they play in THIS specific deal. A 'VP of Engineering' could be a 'Decision Maker' in one deal and a 'Blocker' in another if they prefer a competitor."
+                                                            >
+                                                                (?)
+                                                            </span>
                                                         </label>
                                                         <select
                                                             value={stakeholder.stakeholderPersona}
@@ -557,6 +794,12 @@
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                                             Key Goals & Motivations <span className="text-red-500">*</span>
+                                                            <span 
+                                                                className="ml-1 text-xs text-gray-400 cursor-help" 
+                                                                title="What does this person need to achieve to be successful in their job? Think about their KPIs. e.g., A CFO is motivated by ROI and cost savings; a DevOps engineer is motivated by uptime and reducing manual work."
+                                                            >
+                                                                (?)
+                                                            </span>
                                                         </label>
                                                         <textarea
                                                             value={stakeholder.keyGoals}
@@ -568,7 +811,7 @@
                                                             placeholder="e.g., Reduce P1 incidents by 50%, improve team efficiency, link engineering metrics to business outcomes."
                                                             className="laptop-textarea w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
                                                         />
-                                                        <WordCountFeedback text={stakeholder.keyGoals} minWords={10} />
+                                                        <WordCountFeedback text={stakeholder.keyGoals} minWords={5} />
                                                         <p className="text-xs text-gray-500 mt-1">Use the buyer's language, focus on business outcomes</p>
                                                     </div>
                                                     
@@ -576,6 +819,12 @@
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                                             Challenges & Pains <span className="text-red-500">*</span>
+                                                            <span 
+                                                                className="ml-1 text-xs text-gray-400 cursor-help" 
+                                                                title="What specific problems are preventing them from achieving their goals? Use quantifiable pain where possible. e.g., 'Spends 10+ hours per week on manual troubleshooting' or 'Loses $100k in revenue for every hour of API downtime'."
+                                                            >
+                                                                (?)
+                                                            </span>
                                                         </label>
                                                         <textarea
                                                             value={stakeholder.challenges}
@@ -587,7 +836,7 @@
                                                             placeholder="e.g., Spends 10+ hours a week firefighting reactive alerts. Constantly pulled away from core development to fix outages."
                                                             className="laptop-textarea w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
                                                         />
-                                                        <WordCountFeedback text={stakeholder.challenges} minWords={10} />
+                                                        <WordCountFeedback text={stakeholder.challenges} minWords={5} />
                                                         <p className="text-xs text-gray-500 mt-1">Focus on pain points that can be tied to ROI</p>
                                                     </div>
                                                 </div>
@@ -602,9 +851,9 @@
                                         )}
                                         
                                         <div className="mt-2 text-sm">
-                                            <span className={stakeholders.length >= 3 ? 'text-green-600' : 'text-gray-500'}>
-                                                {stakeholders.length} of 3+ stakeholders required
-                                                {stakeholders.length >= 3 && <span className="ml-1">✓</span>}
+                                            <span className={stakeholders.length >= minStakeholders ? 'text-green-600' : 'text-red-500'}>
+                                                {stakeholders.length} of {minStakeholders}+ stakeholders required
+                                                {stakeholders.length >= minStakeholders && <span className="ml-1">✓</span>}
                                             </span>
                                         </div>
                                     </div>
@@ -760,6 +1009,13 @@
                                     readOnly
                                     className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
                                     value={(() => {
+                                        const buyingGroupTypeLabels = {
+                                            Type1: 'Type 1: Singular',
+                                            Type2: 'Type 2: Limited Multi-Role', 
+                                            Type3: 'Type 3: Diversified (Within Dept)',
+                                            Type4: 'Type 4: Cross-Departmental'
+                                        };
+
                                         let markdown = `# Buyer Stakeholder Map & Enablement Plan
 
 *This document outlines the key stakeholders, buying jobs, and a strategic enablement plan for a target customer account. Generated via the GTM Workshop.*
@@ -771,17 +1027,20 @@
 **The ${selectedBuyingJobs.length} most difficult buying jobs for our customer are:**
 ${selectedBuyingJobs.map(job => `- ${job}`).join('\n')}
 
-**Justification:**
-${buyingJobsJustification}
+**Why These Jobs Are Most Difficult:**
+${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No justification provided'}`).join('')}
 
 ---
 
 ## 2. The Stakeholder Map
+
+**Buying Group Type:** ${buyingGroupTypeLabels[buyingGroupType] || buyingGroupType}
 `;
 
                                         stakeholders.forEach((stakeholder, index) => {
                                             markdown += `
 ### **Stakeholder ${index + 1}: ${stakeholder.functionalRole}**
+- **Common Titles:** ${stakeholder.commonTitles}
 - **Persona:** ${stakeholder.stakeholderPersona}
 - **Key Goals:** ${stakeholder.keyGoals}
 - **Challenges:** ${stakeholder.challenges}
