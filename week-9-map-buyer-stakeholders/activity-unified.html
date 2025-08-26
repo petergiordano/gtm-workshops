@@ -74,40 +74,32 @@
                 "commonTitles": "Lead DevOps Engineer, Senior SRE",
                 "stakeholderPersona": "End User",
                 "keyGoals": "Reduce time spent firefighting reactive alerts. Prevent being woken up at 2 AM for P1 incidents. Improve system reliability and automate manual toil.",
-                "challenges": "Constantly pulled away from strategic projects to fix outages. Alert fatigue from current tools is high. Lacks the ability to get ahead of problems before they impact customers."
+                "challenges": "Constantly pulled away from strategic projects to fix outages. Alert fatigue from current tools is high. Lacks the ability to get ahead of problems before they impact customers.",
+                "enablementArtifact": "Create a '2-week POC guide' showing how to set up POSH AMP in their staging environment to demonstrate predictive alerting on their actual data without disrupting production systems."
             },
             {
                 "functionalRole": "VP of Engineering",
                 "commonTitles": "VP of Engineering, CTO, Head of Platform",
                 "stakeholderPersona": "Decision Maker",
                 "keyGoals": "Improve team efficiency and focus on innovation. Link engineering reliability metrics (MTTR, MTBF) to business outcomes. Implement a resilient and scalable system architecture.",
-                "challenges": "High operational costs due to engineering time spent on reactive problem-solving. Fragmented visibility across different platforms. Difficulty proving the business value of new infrastructure investments."
+                "challenges": "High operational costs due to engineering time spent on reactive problem-solving. Fragmented visibility across different platforms. Difficulty proving the business value of new infrastructure investments.",
+                "enablementArtifact": "Engineering Efficiency Report template showing before/after metrics: time saved per engineer, reduction in P1 incidents, and correlation between system reliability and feature delivery velocity."
             },
             {
                 "functionalRole": "Chief Financial Officer",
                 "commonTitles": "CFO, VP of Finance",
                 "stakeholderPersona": "Economic Buyer",
                 "keyGoals": "Justify all technology spend with clear ROI. Reduce financial risk associated with costly downtime. Ensure budget predictability and achieve cost savings.",
-                "challenges": "API downtime is expensive ($100k+/hr), but it's a reactive, unpredictable cost. It's difficult to approve a new, proactive expense without a clear financial case showing it's cheaper than the current pain."
+                "challenges": "API downtime is expensive ($100k+/hr), but it's a reactive, unpredictable cost. It's difficult to approve a new, proactive expense without a clear financial case showing it's cheaper than the current pain.",
+                "enablementArtifact": "1-page ROI calculator with their actual downtime costs from last 6 months, showing 6-month payback period and projected 3-year savings of $2.1M in prevented outages and engineering efficiency."
             },
             {
                 "functionalRole": "Director of IT Security",
                 "commonTitles": "Director of Security, CISO",
                 "stakeholderPersona": "Blocker",
-                "keyGoals": "Ensure all new vendors are SOC2 compliant. Prevent new tools from introducing security vulnerabilities. Maintain data integrity and governance across all systems.",
-                "challenges": "Every new tool is a potential security risk. The vendor onboarding process is long and requires extensive documentation on data handling, security, and compliance."
-            }
-        ],
-        "prescriptions": [
-            {
-                "targetStakeholder": "Chief Financial Officer",
-                "primaryBarrier": "Believes existing monitoring tools are a 'good enough' sunk cost and doesn't see a clear financial case for a new, premium-priced predictive solution.",
-                "enablementArtifact": "Provide our champion (VP of Eng) with a 1-page ROI model and a business case template. It will quantify the cost of their last 3 major outages and project a 6-month payback period for Posh AMP."
-            },
-            {
-                "targetStakeholder": "Director of IT Security",
-                "primaryBarrier": "Concerned that our platform will require excessive permissions and access to sensitive data, posing a security risk.",
-                "enablementArtifact": "Create a 'Security & Compliance Packet' for our champion to share. It will include our SOC2 Type II report, a data processing agreement, and a technical brief on our platform's security architecture and minimal data access requirements."
+                "keyGoals": "Ensure all new vendors are SOC2 compliant. Prevent new tools from introducing security vulnerabilities. Maintain data integrity and governance all systems.",
+                "challenges": "Every new tool is a potential security risk. The vendor onboarding process is long and requires extensive documentation on data handling, security, and compliance.",
+                "enablementArtifact": "Security & Compliance packet: SOC2 Type II report, data processing agreement, technical brief on minimal read-only access requirements, and compliance roadmap showing GDPR/CCPA readiness."
             }
         ],
         "currentStep": 3
@@ -181,7 +173,7 @@
             const steps = [
                 { number: 1, title: "Map Buying Jobs", desc: "Identify the most difficult buying jobs", complete: activity1Complete },
                 { number: 2, title: "Assign Personas", desc: "Map stakeholders to roles", complete: activity2Complete },
-                { number: 3, title: "Enablement Plan", desc: "Create buyer prescriptions", complete: activity3Complete }
+                { number: 3, title: "Assemble Your Map", desc: "Create buyer prescriptions", complete: activity3Complete }
             ];
 
             return (
@@ -246,10 +238,14 @@
                     
                     // Activity 2 state variables
                     setBuyingGroupType(testData.buyingGroupType || 'Type3');
-                    setStakeholders(testData.stakeholders || []);
                     
-                    // Activity 3 state variables
-                    setPrescriptions(testData.prescriptions || []);
+                    // Load stakeholders and add enablementArtifact from testData if not present
+                    const loadedStakeholders = testData.stakeholders || [];
+                    const stakeholdersWithArtifacts = loadedStakeholders.map(s => ({
+                        ...s,
+                        enablementArtifact: s.enablementArtifact || ''
+                    }));
+                    setStakeholders(stakeholdersWithArtifacts);
                     
                     // Set current step
                     setCurrentStep(testData.currentStep || 3);
@@ -272,9 +268,6 @@
             // Activity 2: Assign Personas to Roles (Dynamic array of stakeholders)
             const [buyingGroupType, setBuyingGroupType] = useState(savedState.buyingGroupType || 'Type3');
             const [stakeholders, setStakeholders] = useState(savedState.stakeholders || []);
-            
-            // Activity 3: Develop a Buyer Enablement Plan (Dynamic array of prescriptions)
-            const [prescriptions, setPrescriptions] = useState(savedState.prescriptions || []);
 
             // Dynamic minimum stakeholder calculation based on buying group type
             const minStakeholders = useMemo(() => {
@@ -314,12 +307,11 @@
             }, [stakeholders, minStakeholders]);
             
             const activity3Complete = useMemo(() => {
-                return prescriptions.length >= 2 && prescriptions.every(p =>
-                    p.targetStakeholder &&
-                    p.primaryBarrier && p.primaryBarrier.trim().split(/\s+/).filter(w => w.length > 0).length >= 10 &&
-                    p.enablementArtifact && p.enablementArtifact.trim().split(/\s+/).filter(w => w.length > 0).length >= 10
+                const stakeholdersWithArtifacts = stakeholders.filter(s => 
+                    s.enablementArtifact && s.enablementArtifact.trim().split(/\s+/).filter(w => w.length > 0).length >= 10
                 );
-            }, [prescriptions]);
+                return stakeholdersWithArtifacts.length >= 2;
+            }, [stakeholders]);
 
             // Auto-save state to localStorage whenever any form data changes
             useEffect(() => {
@@ -328,11 +320,10 @@
                     jobJustifications,
                     buyingGroupType,
                     stakeholders,
-                    prescriptions,
                     currentStep
                 };
                 saveWorkshopState(currentState, WORKSHOP_STORAGE_KEY);
-            }, [selectedBuyingJobs, jobJustifications, buyingGroupType, stakeholders, prescriptions, currentStep]);
+            }, [selectedBuyingJobs, jobJustifications, buyingGroupType, stakeholders, currentStep]);
 
             // Navigation functions
             const goToNextStep = () => {
@@ -354,7 +345,6 @@
                     setJobJustifications({});
                     setBuyingGroupType('Type3');
                     setStakeholders([]);
-                    setPrescriptions([]);
                     setCurrentStep(1);
                     
                     // Clear localStorage data
@@ -363,7 +353,6 @@
                         jobJustifications: {},
                         buyingGroupType: 'Type3',
                         stakeholders: [],
-                        prescriptions: [],
                         currentStep: 1
                     };
                     saveWorkshopState(emptyState, WORKSHOP_STORAGE_KEY);
@@ -675,7 +664,8 @@
                                                         commonTitles: '',
                                                         stakeholderPersona: '',
                                                         keyGoals: '',
-                                                        challenges: ''
+                                                        challenges: '',
+                                                        enablementArtifact: ''
                                                     };
                                                     setStakeholders([...stakeholders, newStakeholder]);
                                                 }}
@@ -864,133 +854,122 @@
                             {currentStep === 3 && (
                                 <div className="animate-fadeIn">
                                     <h2 className="text-xl font-bold text-gray-800 mb-4">
-                                        Activity 3: Develop a Buyer Enablement Plan
+                                        Activity 3: Assemble Your Stakeholder Map
                                     </h2>
+                                    <p className="text-gray-600 mb-4">
+                                        This final activity brings everything together into a single, actionable stakeholder map. It synthesizes the stakeholder profiles from Activity 2 with a concrete plan to enable your champion.
+                                    </p>
                                     <p className="text-gray-600 mb-6">
-                                        A staggering 83% of the buying process happens when you are not in the room. Your success depends on your ability to arm your internal champion to sell on your behalf. In this final activity, you will translate your stakeholder map into an actionable plan. You will create specific "prescriptions"—tangible assets like an ROI calculator or a security brief—designed to help your champion overcome objections and build consensus within the buying group.
+                                        For each key stakeholder, review the discovery questions that can help you validate your assumptions, and define the single most important "prescription"—a tool or piece of content—to help your champion win them over.
                                     </p>
                                     
-                                    {/* Prescriptions Array */}
-                                    <div className="mb-6">
-                                        <div className="flex justify-between items-center mb-4">
-                                            <h3 className="text-lg font-medium text-gray-800">
-                                                Buyer Enablement Prescriptions ({prescriptions.length})
+                                    {/* Dynamic Stakeholder Map */}
+                                    {stakeholders.length > 0 ? (
+                                        <div className="mb-6">
+                                            <h3 className="text-lg font-medium text-gray-800 mb-4">
+                                                Your Complete Stakeholder Map
                                                 <span className="text-red-500">*</span>
                                             </h3>
-                                            <button
-                                                onClick={() => {
-                                                    const newPrescription = {
-                                                        targetStakeholder: '',
-                                                        primaryBarrier: '',
-                                                        enablementArtifact: ''
-                                                    };
-                                                    setPrescriptions([...prescriptions, newPrescription]);
-                                                }}
-                                                className="bg-orange-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-orange-600 transition-colors"
-                                            >
-                                                + Add Prescription
-                                            </button>
-                                        </div>
-                                        
-                                        <p className="text-xs text-gray-500 mb-4">Add at least 2 specific 'prescriptions' to arm your champion.</p>
-                                        
-                                        {prescriptions.map((prescription, index) => (
-                                            <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
-                                                <div className="flex justify-between items-center mb-3">
-                                                    <h4 className="font-medium text-gray-700">Prescription {index + 1}</h4>
-                                                    <button
-                                                        onClick={() => {
-                                                            setPrescriptions(prescriptions.filter((_, i) => i !== index));
-                                                        }}
-                                                        className="text-red-500 hover:text-red-700 text-sm"
-                                                    >
-                                                        Remove
-                                                    </button>
-                                                </div>
-                                                
-                                                {/* Target Stakeholder Dropdown */}
-                                                <div className="mb-4">
-                                                    <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                        Target Stakeholder <span className="text-red-500">*</span>
-                                                    </label>
-                                                    <select
-                                                        value={prescription.targetStakeholder}
-                                                        onChange={(e) => {
-                                                            const updated = [...prescriptions];
-                                                            updated[index].targetStakeholder = e.target.value;
-                                                            setPrescriptions(updated);
-                                                        }}
-                                                        className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
-                                                    >
-                                                        <option value="">Select stakeholder...</option>
-                                                        {stakeholders.map((stakeholder, idx) => (
-                                                            <option key={idx} value={stakeholder.functionalRole}>
-                                                                {stakeholder.functionalRole} {stakeholder.stakeholderPersona && `(${stakeholder.stakeholderPersona})`}
-                                                            </option>
-                                                        ))}
-                                                    </select>
-                                                    <p className="text-xs text-gray-500 mt-1">Who does your champion need to convince? This list is pulled from Activity 2.</p>
-                                                    {stakeholders.length === 0 && (
-                                                        <p className="text-xs text-orange-600 mt-1">⚠️ Complete Activity 2 first to populate stakeholder options.</p>
-                                                    )}
-                                                </div>
-                                                
-                                                <div className="grid grid-cols-1 gap-4">
-                                                    {/* Primary Barrier */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                            Primary Barrier / Objection <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <textarea
-                                                            value={prescription.primaryBarrier}
-                                                            onChange={(e) => {
-                                                                const updated = [...prescriptions];
-                                                                updated[index].primaryBarrier = e.target.value;
-                                                                setPrescriptions(updated);
-                                                            }}
-                                                            placeholder="e.g., The CFO believes our existing monitoring tools are 'good enough' and doesn't see the ROI of a predictive solution."
-                                                            className="laptop-textarea w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
-                                                        />
-                                                        <WordCountFeedback text={prescription.primaryBarrier} minWords={10} />
-                                                        <p className="text-xs text-gray-500 mt-1">What is the single biggest reason this person would say 'no' or delay the deal?</p>
-                                                    </div>
-                                                    
-                                                    {/* Enablement Artifact */}
-                                                    <div>
-                                                        <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                            Enablement Artifact (Your 'Prescription') <span className="text-red-500">*</span>
-                                                        </label>
-                                                        <textarea
-                                                            value={prescription.enablementArtifact}
-                                                            onChange={(e) => {
-                                                                const updated = [...prescriptions];
-                                                                updated[index].enablementArtifact = e.target.value;
-                                                                setPrescriptions(updated);
-                                                            }}
-                                                            placeholder="e.g., A 1-page ROI calculator showing a 6-month payback period. Arm our champion with this for their budget meeting."
-                                                            className="laptop-textarea w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
-                                                        />
-                                                        <WordCountFeedback text={prescription.enablementArtifact} minWords={10} />
-                                                        <p className="text-xs text-gray-500 mt-1">What specific, tangible asset can you create to help your champion overcome this barrier?</p>
-                                                    </div>
-                                                </div>
+                                            <p className="text-xs text-gray-500 mb-4">
+                                                Complete the enablement artifacts for at least 2 stakeholders. Scroll horizontally to see all columns.
+                                            </p>
+                                            
+                                            {/* Horizontal-scrolling table */}
+                                            <div className="overflow-x-auto border border-gray-200 rounded-lg">
+                                                <table className="min-w-full text-sm text-left">
+                                                    <thead className="bg-gray-50">
+                                                        <tr>
+                                                            <th scope="col" className="sticky left-0 bg-gray-50 px-3 py-3 font-semibold text-gray-900 w-48 z-10">Attribute</th>
+                                                            {stakeholders.map((stakeholder, index) => (
+                                                                <th key={index} scope="col" className="px-3 py-3 font-semibold text-gray-900 min-w-[280px]">
+                                                                    {stakeholder.functionalRole || `Stakeholder ${index + 1}`}
+                                                                </th>
+                                                            ))}
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody className="bg-white">
+                                                        {/* Row for Buying Persona (Read-only) */}
+                                                        <tr>
+                                                            <td className="sticky left-0 bg-white px-3 py-4 font-medium text-gray-900 z-10">Buying Persona</td>
+                                                            {stakeholders.map((s, i) => (
+                                                                <td key={i} className="px-3 py-4 text-gray-700 border-t">{s.stakeholderPersona || 'Not set'}</td>
+                                                            ))}
+                                                        </tr>
+
+                                                        {/* Row for Common Titles (Read-only) */}
+                                                        <tr>
+                                                            <td className="sticky left-0 bg-white px-3 py-4 font-medium text-gray-900 z-10">Common Titles</td>
+                                                            {stakeholders.map((s, i) => (
+                                                                <td key={i} className="px-3 py-4 text-gray-700 border-t">{s.commonTitles || 'Not set'}</td>
+                                                            ))}
+                                                        </tr>
+
+                                                        {/* Row for Key Discovery Question (Dynamic & Read-only) */}
+                                                        <tr>
+                                                            <td className="sticky left-0 bg-white px-3 py-4 font-medium text-gray-900 z-10">Key Discovery Question</td>
+                                                            {stakeholders.map((s, i) => {
+                                                                const questionMap = {
+                                                                    'Champion': 'Ask: "Who are the key people influencing this decision, both for and against?"',
+                                                                    'Economic Buyer': 'Ask: "Who oversees the budget for this type of purchase?"',
+                                                                    'Technical Buyer': 'Ask: "Who will evaluate the technical aspects and operational integration of this product/service?"',
+                                                                    'Decision Maker': 'Ask: "Who has the final say in making this type of purchase?"',
+                                                                    'End User': 'Ask: "Who will be the end-users of this product/service and what are their needs and feedback?"',
+                                                                    'Blocker': 'Ask: "Who might have reservations about this product/service, or has veto power?"',
+                                                                    'Influencer': 'Ask: "Besides the formal team, who else\'s opinion is important for this decision?"'
+                                                                };
+                                                                return (
+                                                                    <td key={i} className="px-3 py-4 text-gray-700 border-t italic bg-gray-50">{questionMap[s.stakeholderPersona] || 'N/A'}</td>
+                                                                );
+                                                            })}
+                                                        </tr>
+
+                                                        {/* Row for Enablement Artifact (Editable Textarea) */}
+                                                        <tr className="align-top">
+                                                            <td className="sticky left-0 bg-white px-3 py-4 font-medium text-gray-900 z-10">
+                                                                Enablement Artifact <span className="text-red-500">*</span>
+                                                                <p className="text-xs font-normal text-gray-500 mt-1">What asset will you give your champion to win this person over?</p>
+                                                            </td>
+                                                            {stakeholders.map((stakeholder, index) => (
+                                                                <td key={index} className="px-3 py-4 border-t">
+                                                                    <textarea
+                                                                        value={stakeholder.enablementArtifact || ''}
+                                                                        onChange={(e) => {
+                                                                            const updated = [...stakeholders];
+                                                                            updated[index].enablementArtifact = e.target.value;
+                                                                            setStakeholders(updated);
+                                                                        }}
+                                                                        placeholder="e.g., ROI calculator, technical brief..."
+                                                                        className="w-full h-32 p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                                    />
+                                                                    <WordCountFeedback text={stakeholder.enablementArtifact || ''} minWords={10} />
+                                                                </td>
+                                                            ))}
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
                                             </div>
-                                        ))}
-                                        
-                                        {prescriptions.length === 0 && (
-                                            <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
-                                                <p>No prescriptions added yet.</p>
-                                                <p className="text-sm mt-1">Click "Add Prescription" to get started.</p>
+                                            
+                                            {/* Status indicator */}
+                                            <div className="mt-4 text-sm">
+                                                {(() => {
+                                                    const completedCount = stakeholders.filter(s => 
+                                                        s.enablementArtifact && s.enablementArtifact.trim().split(/\s+/).filter(w => w.length > 0).length >= 10
+                                                    ).length;
+                                                    return (
+                                                        <span className={completedCount >= 2 ? 'text-green-600' : 'text-gray-500'}>
+                                                            {completedCount} of 2+ stakeholders have enablement artifacts
+                                                            {completedCount >= 2 && <span className="ml-1">✓</span>}
+                                                        </span>
+                                                    );
+                                                })()}
                                             </div>
-                                        )}
-                                        
-                                        <div className="mt-2 text-sm">
-                                            <span className={prescriptions.length >= 2 ? 'text-green-600' : 'text-gray-500'}>
-                                                {prescriptions.length} of 2+ prescriptions required
-                                                {prescriptions.length >= 2 && <span className="ml-1">✓</span>}
-                                            </span>
                                         </div>
-                                    </div>
+                                    ) : (
+                                        <div className="text-center py-8 text-gray-500 border-2 border-dashed border-gray-300 rounded-lg">
+                                            <p>No stakeholders available.</p>
+                                            <p className="text-sm mt-1">Complete Activity 2 first to populate your stakeholder map.</p>
+                                        </div>
+                                    )}
                                 </div>
                             )}
                         </div>
@@ -1017,9 +996,19 @@
                                             Type4: 'Type 4: Cross-Departmental'
                                         };
 
-                                        let markdown = `# Buyer Stakeholder Map & Enablement Plan
+                                        const questionMap = {
+                                            'Champion': 'Ask: "Who are the key people influencing this decision, both for and against?"',
+                                            'Economic Buyer': 'Ask: "Who oversees the budget for this type of purchase?"',
+                                            'Technical Buyer': 'Ask: "Who will evaluate the technical aspects and operational integration of this product/service?"',
+                                            'Decision Maker': 'Ask: "Who has the final say in making this type of purchase?"',
+                                            'End User': 'Ask: "Who will be the end-users of this product/service and what are their needs and feedback?"',
+                                            'Blocker': 'Ask: "Who might have reservations about this product/service, or has veto power?"',
+                                            'Influencer': 'Ask: "Besides the formal team, who else\'s opinion is important for this decision?"'
+                                        };
 
-*This document outlines the key stakeholders, buying jobs, and a strategic enablement plan for a target customer account. Generated via the GTM Workshop.*
+                                        let markdown = `# Complete Buyer Stakeholder Map
+
+*This comprehensive stakeholder map combines buying job analysis, detailed stakeholder profiles, and enablement artifacts to arm your champion for success. Generated via the GTM Workshop.*
 
 ---
 
@@ -1033,34 +1022,50 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
 
 ---
 
-## 2. The Stakeholder Map
+## 2. Complete Stakeholder Profiles
 
 **Buying Group Type:** ${buyingGroupTypeLabels[buyingGroupType] || buyingGroupType}
+
 `;
 
                                         stakeholders.forEach((stakeholder, index) => {
+                                            const discoveryQuestion = questionMap[stakeholder.stakeholderPersona] || 'Ask: "What role does this person play in purchasing decisions?"';
+                                            
                                             markdown += `
 ### **Stakeholder ${index + 1}: ${stakeholder.functionalRole}**
-- **Common Titles:** ${stakeholder.commonTitles}
-- **Persona:** ${stakeholder.stakeholderPersona}
-- **Key Goals:** ${stakeholder.keyGoals}
-- **Challenges:** ${stakeholder.challenges}
+
+| Attribute | Details |
+| :--- | :--- |
+| **Common Titles** | ${stakeholder.commonTitles || ''} |
+| **Buying Persona** | ${stakeholder.stakeholderPersona || ''} |
+| **Key Goals** | ${stakeholder.keyGoals || ''} |
+| **Challenges & Pains** | ${stakeholder.challenges || ''} |
+| **Discovery Question** | *${discoveryQuestion}* |
+| **Enablement Artifact** | ${stakeholder.enablementArtifact || 'Not specified'} |
+
 `;
                                         });
 
                                         markdown += `
 ---
 
-## 3. Buyer Enablement Plan (Prescriptions)
-`;
+## 3. Action Plan Summary
 
-                                        prescriptions.forEach((prescription, index) => {
-                                            markdown += `
-### **Prescription ${index + 1}: For the ${prescription.targetStakeholder}**
-- **Primary Barrier:** ${prescription.primaryBarrier}
-- **Enablement Artifact:** ${prescription.enablementArtifact}
-`;
-                                        });
+**Next Steps:**
+1. Use the discovery questions above to validate your assumptions about each stakeholder
+2. Create the specified enablement artifacts to arm your champion
+3. Practice your champion enablement conversation using this map as a guide
+4. Track which artifacts are most effective for future deals
+
+**Key Metrics to Track:**
+- Champion confidence level (1-10 scale)
+- Stakeholder objections successfully addressed
+- Timeline acceleration from enablement artifacts
+- Deal progression velocity improvements
+
+---
+
+*Remember: 83% of the buying process happens when you're not in the room. Your success depends on how well you enable your champion to sell on your behalf.*`;
 
                                         return markdown;
                                     })()}
