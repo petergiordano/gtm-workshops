@@ -72,7 +72,7 @@
             {
                 "functionalRole": "Head of DevOps",
                 "commonTitles": "Lead DevOps Engineer, Senior SRE",
-                "stakeholderPersona": "End User",
+                "buyingRole": "End User",
                 "keyGoals": "Reduce time spent firefighting reactive alerts. Prevent being woken up at 2 AM for P1 incidents. Improve system reliability and automate manual toil.",
                 "challenges": "Constantly pulled away from strategic projects to fix outages. Alert fatigue from current tools is high. Lacks the ability to get ahead of problems before they impact customers.",
                 "enablementArtifact": "Create a '2-week POC guide' showing how to set up POSH AMP in their staging environment to demonstrate predictive alerting on their actual data without disrupting production systems."
@@ -80,7 +80,7 @@
             {
                 "functionalRole": "VP of Engineering",
                 "commonTitles": "VP of Engineering, CTO, Head of Platform",
-                "stakeholderPersona": "Decision Maker",
+                "buyingRole": "Decision Maker",
                 "keyGoals": "Improve team efficiency and focus on innovation. Link engineering reliability metrics (MTTR, MTBF) to business outcomes. Implement a resilient and scalable system architecture.",
                 "challenges": "High operational costs due to engineering time spent on reactive problem-solving. Fragmented visibility across different platforms. Difficulty proving the business value of new infrastructure investments.",
                 "enablementArtifact": "Engineering Efficiency Report template showing before/after metrics: time saved per engineer, reduction in P1 incidents, and correlation between system reliability and feature delivery velocity."
@@ -88,7 +88,7 @@
             {
                 "functionalRole": "Chief Financial Officer",
                 "commonTitles": "CFO, VP of Finance",
-                "stakeholderPersona": "Economic Buyer",
+                "buyingRole": "Economic Buyer",
                 "keyGoals": "Justify all technology spend with clear ROI. Reduce financial risk associated with costly downtime. Ensure budget predictability and achieve cost savings.",
                 "challenges": "API downtime is expensive ($100k+/hr), but it's a reactive, unpredictable cost. It's difficult to approve a new, proactive expense without a clear financial case showing it's cheaper than the current pain.",
                 "enablementArtifact": "1-page ROI calculator with their actual downtime costs from last 6 months, showing 6-month payback period and projected 3-year savings of $2.1M in prevented outages and engineering efficiency."
@@ -96,7 +96,7 @@
             {
                 "functionalRole": "Director of IT Security",
                 "commonTitles": "Director of Security, CISO",
-                "stakeholderPersona": "Blocker",
+                "buyingRole": "Blocker",
                 "keyGoals": "Ensure all new vendors are SOC2 compliant. Prevent new tools from introducing security vulnerabilities. Maintain data integrity and governance all systems.",
                 "challenges": "Every new tool is a potential security risk. The vendor onboarding process is long and requires extensive documentation on data handling, security, and compliance.",
                 "enablementArtifact": "Security & Compliance packet: SOC2 Type II report, data processing agreement, technical brief on minimal read-only access requirements, and compliance roadmap showing GDPR/CCPA readiness."
@@ -267,7 +267,42 @@
             
             // Activity 2: Assign Personas to Roles (Dynamic array of stakeholders)
             const [buyingGroupType, setBuyingGroupType] = useState(savedState.buyingGroupType || 'Type3');
-            const [stakeholders, setStakeholders] = useState(savedState.stakeholders || []);
+            
+            // Pre-populate with required stakeholders if empty
+            const getInitialStakeholders = () => {
+                if (savedState.stakeholders && savedState.stakeholders.length > 0) {
+                    return savedState.stakeholders;
+                }
+                // Pre-populate with 3 required buying roles
+                return [
+                    {
+                        functionalRole: '',
+                        commonTitles: '',
+                        buyingRole: 'Decision Maker',
+                        keyGoals: '',
+                        challenges: '',
+                        enablementArtifact: ''
+                    },
+                    {
+                        functionalRole: '',
+                        commonTitles: '',
+                        buyingRole: 'Economic Buyer',
+                        keyGoals: '',
+                        challenges: '',
+                        enablementArtifact: ''
+                    },
+                    {
+                        functionalRole: '',
+                        commonTitles: '',
+                        buyingRole: 'End User',
+                        keyGoals: '',
+                        challenges: '',
+                        enablementArtifact: ''
+                    }
+                ];
+            };
+            
+            const [stakeholders, setStakeholders] = useState(getInitialStakeholders());
 
             // Dynamic minimum stakeholder calculation based on buying group type
             const minStakeholders = useMemo(() => {
@@ -300,7 +335,7 @@
                 return stakeholders.length >= minStakeholders && stakeholders.every(s => 
                     s.functionalRole && s.functionalRole.trim().split(/\s+/).filter(w => w.length > 0).length >= 3 &&
                     s.commonTitles && s.commonTitles.trim().split(/\s+/).filter(w => w.length > 0).length >= 2 &&
-                    s.stakeholderPersona &&
+                    s.buyingRole &&
                     s.keyGoals && s.keyGoals.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
                     s.challenges && s.challenges.trim().split(/\s+/).filter(w => w.length > 0).length >= 5
                 );
@@ -636,7 +671,7 @@
                                         You are never selling to just one person; you're selling to a committee with diverse motivations. This activity moves beyond org charts to build a true stakeholder map.
                                     </p>
                                     <p className="text-gray-600 mb-6">
-                                        Your task is to identify the key players and define their role, buying persona (e.g., Champion, Blocker), and the specific goals and challenges that drive their decisions.
+                                        Your task is to identify the key players and define their functional role, buying role (e.g., Champion, Blocker), and the specific goals and challenges that drive their decisions.
                                     </p>
                                     
                                     <div className="border-t border-b border-gray-200 py-3 my-6">
@@ -644,7 +679,7 @@
                                             onClick={() => setGlossaryOpen(!glossaryOpen)}
                                             className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900"
                                         >
-                                            <span>View Buying Persona Definitions</span>
+                                            <span>View Buying Role Definitions</span>
                                             <span className={`transform transition-transform ${glossaryOpen ? 'rotate-180' : ''}`}>▼</span>
                                         </button>
                                         {glossaryOpen && (
@@ -672,7 +707,7 @@
                                                     const newStakeholder = {
                                                         functionalRole: '',
                                                         commonTitles: '',
-                                                        stakeholderPersona: '',
+                                                        buyingRole: '',
                                                         keyGoals: '',
                                                         challenges: '',
                                                         enablementArtifact: ''
@@ -685,20 +720,29 @@
                                             </button>
                                         </div>
                                         
-                                        <p className="text-xs text-gray-500 mb-4">{stakeholderHelpText}</p>
+                                        <p className="text-xs text-gray-500 mb-2">{stakeholderHelpText}</p>
+                                        <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded mb-4">
+                                            <strong>Note:</strong> The minimum 3 stakeholders required are: Decision Maker, Economic Buyer, and End User. 
+                                            These critical buying roles are pre-populated below. You may add additional stakeholders as needed.
+                                        </p>
                                         
                                         {stakeholders.map((stakeholder, index) => (
                                             <div key={index} className="border border-gray-200 rounded-lg p-4 mb-4 bg-gray-50">
                                                 <div className="flex justify-between items-center mb-3">
-                                                    <h4 className="font-medium text-gray-700">Stakeholder {index + 1}</h4>
-                                                    <button
-                                                        onClick={() => {
-                                                            setStakeholders(stakeholders.filter((_, i) => i !== index));
-                                                        }}
-                                                        className="text-red-500 hover:text-red-700 text-sm"
-                                                    >
-                                                        Remove
-                                                    </button>
+                                                    <h4 className="font-medium text-gray-700">
+                                                        Stakeholder {index + 1}
+                                                        {index < 3 && <span className="text-xs text-gray-500 ml-2">(Required)</span>}
+                                                    </h4>
+                                                    {index >= 3 && (
+                                                        <button
+                                                            onClick={() => {
+                                                                setStakeholders(stakeholders.filter((_, i) => i !== index));
+                                                            }}
+                                                            className="text-red-500 hover:text-red-700 text-sm"
+                                                        >
+                                                            Remove
+                                                        </button>
+                                                    )}
                                                 </div>
                                                 
                                                 {/* Top row: Functional Role and Common Titles */}
@@ -760,7 +804,7 @@
                                                     {/* Stakeholder Persona */}
                                                     <div>
                                                         <label className="block text-sm font-medium text-gray-700 mb-1">
-                                                            Buying Persona <span className="text-red-500">*</span>
+                                                            Buying Role <span className="text-red-500">*</span>
                                                             <span 
                                                                 className="ml-1 text-xs text-gray-400 cursor-help" 
                                                                 title="This is the role they play in THIS specific deal. A 'VP of Engineering' could be a 'Decision Maker' in one deal and a 'Blocker' in another if they prefer a competitor."
@@ -769,15 +813,15 @@
                                                             </span>
                                                         </label>
                                                         <select
-                                                            value={stakeholder.stakeholderPersona}
+                                                            value={stakeholder.buyingRole}
                                                             onChange={(e) => {
                                                                 const updated = [...stakeholders];
-                                                                updated[index].stakeholderPersona = e.target.value;
+                                                                updated[index].buyingRole = e.target.value;
                                                                 setStakeholders(updated);
                                                             }}
                                                             className="w-full p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
                                                         >
-                                                            <option value="">Select persona...</option>
+                                                            <option value="">Select role...</option>
                                                             <option value="Champion">Champion</option>
                                                             <option value="Economic Buyer">Economic Buyer</option>
                                                             <option value="Technical Buyer">Technical Buyer</option>
@@ -851,7 +895,29 @@
                                             </div>
                                         )}
                                         
-                                        <div className="mt-2 text-sm">
+                                        {/* Add second Add Stakeholder button at bottom */}
+                                        {stakeholders.length > 0 && (
+                                            <div className="flex justify-center mt-4">
+                                                <button
+                                                    onClick={() => {
+                                                        const newStakeholder = {
+                                                            functionalRole: '',
+                                                            commonTitles: '',
+                                                            buyingRole: '',
+                                                            keyGoals: '',
+                                                            challenges: '',
+                                                            enablementArtifact: ''
+                                                        };
+                                                        setStakeholders([...stakeholders, newStakeholder]);
+                                                    }}
+                                                    className="bg-orange-500 text-white px-3 py-1 text-sm rounded-lg hover:bg-orange-600 transition-colors"
+                                                >
+                                                    + Add Another Stakeholder
+                                                </button>
+                                            </div>
+                                        )}
+                                        
+                                        <div className="mt-4 text-sm">
                                             <span className={stakeholders.length >= minStakeholders ? 'text-green-600' : 'text-red-500'}>
                                                 {stakeholders.length} of {minStakeholders}+ stakeholders required
                                                 {stakeholders.length >= minStakeholders && <span className="ml-1">✓</span>}
@@ -898,11 +964,11 @@
                                                         </tr>
                                                     </thead>
                                                     <tbody className="bg-white">
-                                                        {/* Row for Buying Persona (Read-only) */}
+                                                        {/* Row for Buying Role (Read-only) */}
                                                         <tr>
-                                                            <td className="sticky left-0 bg-white px-3 py-4 font-medium text-gray-900 z-10">Buying Persona</td>
+                                                            <td className="sticky left-0 bg-white px-3 py-4 font-medium text-gray-900 z-10">Buying Role</td>
                                                             {stakeholders.map((s, i) => (
-                                                                <td key={i} className="px-3 py-4 text-gray-700 border-t">{s.stakeholderPersona || 'Not set'}</td>
+                                                                <td key={i} className="px-3 py-4 text-gray-700 border-t">{s.buyingRole || 'Not set'}</td>
                                                             ))}
                                                         </tr>
 
@@ -928,7 +994,7 @@
                                                                     'Influencer': 'Ask: "Besides the formal team, who else\'s opinion is important for this decision?"'
                                                                 };
                                                                 return (
-                                                                    <td key={i} className="px-3 py-4 text-gray-700 border-t italic bg-gray-50">{questionMap[s.stakeholderPersona] || 'N/A'}</td>
+                                                                    <td key={i} className="px-3 py-4 text-gray-700 border-t italic bg-gray-50">{questionMap[s.buyingRole] || 'N/A'}</td>
                                                                 );
                                                             })}
                                                         </tr>
@@ -986,7 +1052,7 @@
 
                         {/* Markdown Export - Show when workshop is complete */}
                         {activity1Complete && activity2Complete && activity3Complete && (
-                            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                            <div id="markdownExport" className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                                 <h2 className="text-xl font-bold text-gray-800 mb-4">
                                     📋 Your Buyer Stakeholder Map & Enablement Plan
                                 </h2>
@@ -1039,7 +1105,7 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
 `;
 
                                         stakeholders.forEach((stakeholder, index) => {
-                                            const discoveryQuestion = questionMap[stakeholder.stakeholderPersona] || 'Ask: "What role does this person play in purchasing decisions?"';
+                                            const discoveryQuestion = questionMap[stakeholder.buyingRole] || 'Ask: "What role does this person play in purchasing decisions?"';
                                             
                                             markdown += `
 ### **Stakeholder ${index + 1}: ${stakeholder.functionalRole}**
@@ -1047,7 +1113,7 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
 | Attribute | Details |
 | :--- | :--- |
 | **Common Titles** | ${stakeholder.commonTitles || ''} |
-| **Buying Persona** | ${stakeholder.stakeholderPersona || ''} |
+| **Buying Role** | ${stakeholder.buyingRole || ''} |
 | **Key Goals** | ${stakeholder.keyGoals || ''} |
 | **Challenges & Pains** | ${stakeholder.challenges || ''} |
 | **Discovery Question** | *${discoveryQuestion}* |
@@ -1169,7 +1235,17 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                             </button>
 
                             <button
-                                onClick={goToNextStep}
+                                onClick={() => {
+                                    if (currentStep === 3 && activity3Complete) {
+                                        // Scroll to markdown export section
+                                        const exportSection = document.getElementById('markdownExport');
+                                        if (exportSection) {
+                                            exportSection.scrollIntoView({ behavior: 'smooth' });
+                                        }
+                                    } else {
+                                        goToNextStep();
+                                    }
+                                }}
                                 disabled={
                                     (currentStep === 1 && !activity1Complete) ||
                                     (currentStep === 2 && !activity2Complete) ||
@@ -1185,7 +1261,7 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                                             : 'bg-orange-500 text-white hover:bg-orange-600'
                                 }`}
                             >
-                                {currentStep === 3 ? 'Workshop Complete' : 'Continue →'}
+                                {currentStep === 3 && activity3Complete ? 'View Summary ↓' : currentStep === 3 ? 'Workshop Complete' : 'Continue →'}
                             </button>
                         </div>
 
@@ -1197,6 +1273,24 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                                 ⚠️ Important: Do not clear your browser data before copying your final summary, as all your work will be permanently deleted.
                             </p>
                         </footer>
+                        
+                        {/* Bottom Navigation Buttons */}
+                        <div className="max-w-[900px] mx-auto px-4 pb-8">
+                            <div className="flex justify-between items-center">
+                                <a 
+                                    href="index.html" 
+                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors inline-flex items-center"
+                                >
+                                    ← Back to Workshop
+                                </a>
+                                <a 
+                                    href="../index.html" 
+                                    className="bg-gray-500 text-white px-4 py-2 rounded-lg font-medium hover:bg-gray-600 transition-colors inline-flex items-center"
+                                >
+                                    All GTM Workshops ↑
+                                </a>
+                            </div>
+                        </div>
                     </div>
                 </div>
             );
