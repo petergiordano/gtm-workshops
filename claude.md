@@ -6,6 +6,33 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 GTM-Workshops is a static web application for Go-To-Market workshops, built entirely with client-side technologies. No build process, backend, or dependencies required.
 
+### Workshop Directory Structure
+```
+gtm-workshops/
+├── index.html                          # Main landing page
+├── test_data/                          # Centralized test data (JSON files)
+├── docs/                               # Detailed specifications
+│   ├── activity_standards.md          # Complete design specs
+│   ├── dev-mode-spec.md               # Dev mode implementation guide
+│   └── design-specifications.md       # Visual design standards
+├── finding_your_early_customers/       # Day 2-1 (3 activities)
+├── positioning_basics/                 # Day 2-2 (3 activities)
+├── problems_worth_solving/             # Day 1 (3 activities)
+├── market_entry_readiness/             # Day 3 (3 activities)
+├── week-4-customer-value-mapping/      # Week 4 (3 activities)
+├── week-5-pricing-monetization/        # Week 5 (3 activities)
+├── week-6-messaging-storytelling/      # Week 6 (3 activities)
+├── week-7-gtm-channels-buyer-journey/  # Week 7 (3 activities)
+├── week-8-competitive-strategy/        # Week 8 (unified activity)
+├── week-9-map-buyer-stakeholders/      # Week 9 (unified activity)
+└── week-x-strategic-partnerships/      # Strategic Partnerships (3 activities)
+```
+
+**Activity Naming Patterns:**
+- **A-Version (Standard)**: `[topic]-activity-[1-3]A.html` - Most workshops use this pattern
+- **Unified (Advanced)**: `activity-unified.html` - Weeks 8-9 use this for multi-activity workflows
+- **Test Data**: All test data stored centrally in `test_data/[topic]-activity-[number]A.json`
+
 ## Commands
 
 Since this is a static site with no build process:
@@ -65,12 +92,19 @@ Create realistic test data in the `test_data/` directory:
 ```json
 // test_data/pricing-activity-1A.json
 {
-  "coreValueMetric": "API calls monitored + incident prevention rate",
-  "customerSegments": ["High-growth SaaS", "Large Enterprises", "Midsize Tech"],
-  "pricingModel": "hybrid",
-  "currentStep": 3  // Show completed state
+  "selectedMetric": "B",
+  "rationale": "Our customers process millions of API calls daily...",
+  "problemSolved": "Eliminates the need for complex infrastructure scaling...",
+  "pricePerUnit": "0.001",
+  "currentStep": 3  // Jump to completion screen
 }
 ```
+
+**Test Data Guidelines:**
+- Use realistic business scenarios (based on actual SaaS companies)
+- Include all form fields that the activity collects
+- Set `currentStep` to 3 to show the completion/export view
+- Match field names exactly to component state variables
 
 ### 3. Required Technical Updates
 
@@ -293,6 +327,15 @@ Since there's no test framework:
 4. **Cross-browser**: Test in Chrome, Firefox, Safari
 5. **Mobile**: Verify responsive behavior on smaller screens
 
+## Additional Documentation
+
+For detailed specifications and implementation guides, refer to:
+- **`docs/activity_standards.md`**: Complete component patterns and design specifications
+- **`docs/dev-mode-spec.md`**: Dev mode implementation details and patterns
+- **`docs/design-specifications.md`**: Visual design standards and laptop optimization
+- **`docs/TODO.md`**: Current project status and pending tasks
+- **`README.md`**: User-facing documentation and quick start guide
+
 ## Important Guidelines
 
 1. **Maintain Simplicity**: No build tools. Keep everything browser-compatible.
@@ -327,9 +370,22 @@ Since there's no test framework:
 
 ## Current Project Status
 
-✅ **All 12 core activities implemented** with embedded test data system  
-✅ **Complete A-version pattern** established and documented  
-✅ **Dev mode functionality** across all activities  
-✅ **Professional markdown export** with Google Docs integration  
+✅ **All 12 core activities implemented** with embedded test data system
+✅ **Complete A-version pattern** established and documented
+✅ **Dev mode functionality** across all activities
+✅ **Professional markdown export** with Google Docs integration
+✅ **Weeks 4-7 implemented** with A-version pattern (3 activities each)
+✅ **Weeks 8-9 implemented** with unified activity pattern
+
+**Workshop Count:** 11+ workshops with 30+ individual activities
+
+## Best Practices for Claude Code
+
+1. **Always check existing activities first** - Copy patterns from similar activities rather than starting from scratch
+2. **Test data is mandatory** - Every activity must have corresponding test data in `test_data/`
+3. **Dev mode is critical** - Always implement dev mode for rapid testing and demonstration
+4. **Use reference files** - `week-5-pricing-monetization/pricing-activity-1A.html` is a good reference implementation
+5. **Validate locally** - Open HTML files directly in browser to test before committing
+6. **Read docs/** - Check `docs/activity_standards.md` for detailed component specifications
 
 When creating new activities, follow the established patterns in existing A-version files for consistency and quality.
