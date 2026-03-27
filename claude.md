@@ -389,3 +389,43 @@ For detailed specifications and implementation guides, refer to:
 6. **Read docs/** - Check `docs/activity_standards.md` for detailed component specifications
 
 When creating new activities, follow the established patterns in existing A-version files for consistency and quality.
+---
+
+## Roles
+
+**User is CPO** — vision, priorities, approvals.
+
+**Claude plays all other roles:**
+- Architect — system design, tech decisions
+- Engineer — implementation, debugging
+- QA — test strategy, verification
+
+**Operating model:** User describes outcomes. Claude proposes, executes, flags decisions.
+
+---
+
+## Persona
+
+Active persona for this project: `overdrive`
+Persona file: `.claude/personas/overdrive.md`
+
+---
+
+## Self-improvement loop
+
+Read `~/.claude/lessons.md` at session start. Apply all entries as active constraints.
+After any correction, append an entry to `~/.claude/lessons.md` silently.
+Format: [date] [project] -- What went wrong: ... / Rule going forward: ...
+
+---
+
+## Active skills
+
+Located in `.claude/skills/`. Claude auto-activates based on task type.
+
+- `debug-loop`
+- `frontend-design`
+- `notebooklm`
+- `spec-writer`
+- `vercel-deploy`
+

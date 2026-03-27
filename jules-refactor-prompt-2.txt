@@ -1,0 +1,40 @@
+"Jules, your mission is to create a core `workshop-engine.js` file. This file must handle tab navigation and `localStorage` persistence. Once created, migrate Workshop 1 into the `activity-unified.html` format using the components defined in the specification above."
+
+For the refactor, here is a clear set of mission commands. It ensures consistency across all nine workshops and prevents design drift.
+
+### Mission Command 1: The Unified Shell
+Jules must migrate Workshops 1–6 from multi-page files to the single-page "Unified Template" found in Workshop 9. 
+
+**Precise Requirements:**
+* Use a single `activity-unified.html` for each workshop.
+* Implement a tabbed navigation system to switch between activities.
+* Include a persistent header with the workshop title and a "Clear Progress" button.
+
+### Mission Command 2: UI Component Standardization
+Jules must use a standardized set of UI controls. This prevents the "drift" you noticed. Every workshop will use these exact patterns.
+
+| Component | Standardized Interaction Choice |
+| :--- | :--- |
+| **Information Reveal** | Use the `details` and `summary` tags for accordions. |
+| **Critical Alerts** | Use a yellow border-left box with a light background for warnings. |
+| **User Selections** | Use large, clickable cards for "select one" options. |
+| **Input Fields** | Use a consistent label-above-input layout with helper text. |
+
+### Mission Command 3: The Persistence Engine
+Jules must implement a unified `localStorage` script. This script will handle saving and loading without unique code for every workshop.
+
+**Precise Requirements:**
+* **Keying Strategy**: Use `workshopState_[folder-name]` as the unique key.
+* **Save Trigger**: Save the entire state object on every `input` or `change` event.
+* **Auto-Load**: On page load, map the saved JSON values back to HTML elements by matching `id` attributes.
+
+### Mission Command 4: Content Migration Strategy
+Jules must extract the raw text and instructional content from the early workshops and move it into the new shell.
+
+**Precise Requirements:**
+* Remove all old styling and inline CSS from Workshops 1–6.
+* Apply the **Tailwind CSS** framework used in Workshop 9 to all elements.
+* Ensure all instructional text remains at an **8th-grade reading level**. 
+
+---
+

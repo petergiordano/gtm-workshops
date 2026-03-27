@@ -1,0 +1,9 @@
+# scaffold-manifest — written by sync-project.sh
+# DO NOT edit manually. Used to detect user modifications.
+# Format: rel_path|sha1_hash_of_scaffold_source_at_sync_time
+.claude/skills/debug-loop/SKILL.md|04a79df32a1397a02dfcb42924494f57ac431015
+.claude/skills/frontend-design/SKILL.md|bb9cd6e564c2d849a4fafbcc52f2440337b1c7bf
+.claude/skills/notebooklm/SKILL.md|526739af99cc3595a0e68e2426e3eece3ee98bae
+.claude/skills/spec-writer/SKILL.md|b6aa8a0112d5f38643f116b7e1f4a9f9b7abdcc6
+.claude/skills/vercel-deploy/SKILL.md|263268c86d34b07f8afd0c9a28eb45d2cb9aebc0
+.claude/personas/overdrive.md|36d3d9a35e6320e0982cd177efb48059fea99b2f

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Problems Worth Solving Workshop</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .landing-zone {
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        .landing-zone:hover {
+            filter: brightness(1.1);
+        }
+        .marker {
+            cursor: move;
+            transition: transform 0.2s ease;
+        }
+        .marker:hover {
+            transform: scale(1.1);
+        }
+        input::placeholder {
+            color: #9CA3AF;
+        }
+        @media (max-width: 768px) {
+            .fields-grid {
+                grid-template-columns: 1fr !important;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo, useRef } = React;
+        
+        // Global constants
+        const WORKSHOP_STORAGE_KEY = 'workshopState_problems_worth_solving';
+
+        // Helper components
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">
+                        (write {minWords}+ words)
+                    </span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words
+                        {isValid && <span className="font-bold">OK</span>}
+                    </span>
+                </div>
+            );
+        };
+
+        const AlertBox = ({ type = 'info', title, children }) => {
+            const styles = {
+                info: 'bg-blue-50 border-blue-200 text-blue-800',
+                warning: 'bg-amber-50 border-amber-200 text-amber-800',
+                success: 'bg-green-50 border-green-200 text-green-800'
+            };
+            return (
+                <div className={`border rounded-lg p-4 my-4 ${styles[type]}`}>
+                    {title && <h4 className="text-sm font-bold mb-1">{title}</h4>}
+                    <div className="text-xs">{children}</div>
+                </div>
+            );
+        };
+
+        const Accordion = ({ title, children, defaultOpen = false }) => {
+            const [isOpen, setIsOpen] = useState(defaultOpen);
+            return (
+                <div className="border-t border-b border-gray-200 py-3 my-6">
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900 text-left"
+                    >
+                        <span>{title}</span>
+                        <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>V</span>
+                    </button>
+                    {isOpen && (
+                        <div className="mt-4 pl-4 border-l-2 border-orange-500 text-sm text-gray-600 space-y-3 animate-fadeIn">
+                            {children}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const StepIndicator = ({ currentStep, steps }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    {steps.map((step, index) => (
+                        <React.Fragment key={step.number}>
+                            <div className="flex items-center">
+                                <div className={`step-icon ${
+                                    step.complete ? 'bg-green-500' : 
+                                    currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'
+                                }`}>
+                                    {step.complete ? 'OK' : step.number}
+                                </div>
+                                <div className="ml-3 hidden md:block">
+                                    <p className="text-sm font-medium text-gray-900">{step.title}</p>
+                                    <p className="text-xs text-gray-500">{step.desc}</p>
+                                </div>
+                            </div>
+                            {index < steps.length - 1 && (
+                                <div className="flex-1 mx-4 h-px bg-gray-300"></div>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // Icons
+        const Flag = ({ size = 20, className = "", fill = "none" }) => (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2">
+                <path d="M4 22V4c0 0 3-2 6-2 4 0 6 3 10 3 2 0 4-1 4-1v11c0 0-2 1-4 1-4 0-6-3-10-3-3 0-6 2-6 2" />
+                <line x1="4" y1="22" x2="4" y2="15" />
+            </svg>
+        );
+
+        const Lightbulb = ({ size = 20, className = "", fill = "none" }) => (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2">
+                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                <path d="M9 18h6"/><path d="M10 22h4"/>
+            </svg>
+        );
+
+        const MapPin = ({ size = 20, className = "", fill = "none" }) => (
+            <svg className={className} width={size} height={size} viewBox="0 0 24 24" fill={fill} stroke="currentColor" strokeWidth="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+        );
+
+        const WorkshopApp = () => {
+            // Persistence helper
+            const loadState = () => {
+                try {
+                    const saved = localStorage.getItem(WORKSHOP_STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : {};
+                } catch(e) { return {}; }
+            };
+
+            const [state, setState] = useState(() => {
+                const saved = loadState();
+                return {
+                    currentStep: 1,
+                    momentOfRealization: '',
+                    whoExperienced: '',
+                    whyMatters: '',
+                    whatSurprised: '',
+                    howRealProblem: '',
+                    markers: [],
+                    landingZoneChoice: '',
+                    evidence: '',
+                    problemStatement: '',
+                    scores: { urgency: 0, importance: 0, value: 0, marketGap: 0, accessibility: 0 },
+                    evidenceScores: { urgency: '', importance: '', value: '', marketGap: '', accessibility: '' },
+                    ...saved
+                };
+            });
+
+            useEffect(() => {
+                localStorage.setItem(WORKSHOP_STORAGE_KEY, JSON.stringify(state));
+            }, [state]);
+
+            const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
+
+            const steps = [
+                { number: 1, title: "Problem Story", desc: "How it was found", complete: state.momentOfRealization.length > 20 && state.whatSurprised.length > 10 },
+                { number: 2, title: "Market Gap", desc: "Where you will start", complete: state.markers.length > 1 && state.landingZoneChoice },
+                { number: 3, title: "Check Score", desc: "Problem check", complete: Object.values(state.scores).every(s => s > 0) }
+            ];
+
+            const diagramRef = useRef(null);
+
+            // Step 2 logic
+            const [selectedMarkerType, setSelectedMarkerType] = useState('competitor');
+            const [activeMarkerIndex, setActiveMarkerIndex] = useState(null);
+
+            const handleAddMarker = (e) => {
+                if (!diagramRef.current) return;
+                const rect = diagramRef.current.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                
+                const newMarker = { id: Date.now(), type: selectedMarkerType, x, y, notes: '' };
+                if (selectedMarkerType === 'strategic') {
+                    updateState({ markers: [...state.markers.filter(m => m.type !== 'strategic'), newMarker] });
+                } else {
+                    updateState({ markers: [...state.markers, newMarker] });
+                }
+            };
+
+            const handleMarkerDrag = (e, index) => {
+                if (!diagramRef.current || e.clientX === 0) return;
+                const rect = diagramRef.current.getBoundingClientRect();
+                const x = e.clientX - rect.left;
+                const y = e.clientY - rect.top;
+                const updated = state.markers.map((m, i) => i === index ? { ...m, x, y } : m);
+                updateState({ markers: updated });
+            };
+
+            const updateMarkerNotes = (index, notes) => {
+                const updated = state.markers.map((m, i) => i === index ? { ...m, notes } : m);
+                updateState({ markers: updated });
+            };
+
+            // Markdown export function
+            const generateSummary = () => {
+                const totalScore = Object.values(state.scores).reduce((a, b) => a + b, 0);
+                const lz = state.landingZoneChoice === 'mainstream' ? 'Main Market' : state.landingZoneChoice === 'lowend' ? 'Low-End Market' : 'New Needs';
+                
+                return `# Problem Analysis Summary
+
+## 1. Problem Story
+Moment of discovery: ${state.momentOfRealization}
+Who has the problem: ${state.whoExperienced}
+Why it matters: ${state.whyMatters}
+What was surprising: ${state.whatSurprised}
+Proof it is real: ${state.howRealProblem}
+
+## 2. Market Gap
+Selected Start Point: ${lz}
+Reasoning: ${state.evidence}
+
+## 3. Problem Score: ${totalScore}/25
+- How Soon (Urgency): ${state.scores.urgency}/5
+- How Big (Importance): ${state.scores.importance}/5
+- Will They Pay (Value): ${state.scores.value}/5
+- Is It New (Gap): ${state.scores.marketGap}/5
+- Easy to Find (Access): ${state.scores.accessibility}/5
+
+Problem Statement: ${state.problemStatement}`;
+            };
+
+            const handleCopy = () => {
+                navigator.clipboard.writeText(generateSummary());
+                alert('Summary copied to clipboard');
+            };
+
+            return (
+                <div className="max-w-[900px] mx-auto p-4 md:p-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <a href="index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">Back to Workshop</a>
+                        <a href="../index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">All Workshops</a>
+                    </div>
+
+                    <h1 className="text-3xl font-bold text-gray-800 mb-6">Problems Worth Solving</h1>
+
+                    <StepIndicator currentStep={state.currentStep} steps={steps} />
+
+                    <AlertBox title="Private Data">
+                        Your work stays on your computer. It is saved in this browser. No data goes to a server.
+                    </AlertBox>
+
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        {state.currentStep === 1 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 1: Problem Story</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Good products fix real problems. Think back to the first time you saw this issue. 
+                                    Who was having a hard time? Why did it matter to them?
+                                </p>
+                                
+                                <div className="space-y-6">
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">When did you first see this problem?</label>
+                                        <textarea 
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            value={state.momentOfRealization}
+                                            onChange={(e) => updateState({ momentOfRealization: e.target.value })}
+                                            placeholder="Tell the story of when you saw the problem..."
+                                        />
+                                        <WordCountFeedback text={state.momentOfRealization} minWords={15} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Who was having the problem?</label>
+                                        <textarea 
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            value={state.whoExperienced}
+                                            onChange={(e) => updateState({ whoExperienced: e.target.value })}
+                                            placeholder="Who are the people most affected?"
+                                        />
+                                        <WordCountFeedback text={state.whoExperienced} minWords={10} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">Why did it matter to them?</label>
+                                        <textarea 
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            value={state.whyMatters}
+                                            onChange={(e) => updateState({ whyMatters: e.target.value })}
+                                            placeholder="How did this hurt their life or work?"
+                                        />
+                                        <WordCountFeedback text={state.whyMatters} minWords={15} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">What was surprising about it?</label>
+                                        <textarea 
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            value={state.whatSurprised}
+                                            onChange={(e) => updateState({ whatSurprised: e.target.value })}
+                                            placeholder="What was odd or unexpected?"
+                                        />
+                                        <WordCountFeedback text={state.whatSurprised} minWords={10} />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-bold text-gray-700 mb-2">How do you know it is real?</label>
+                                        <textarea 
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            value={state.howRealProblem}
+                                            onChange={(e) => updateState({ howRealProblem: e.target.value })}
+                                            placeholder="What proof do you have that this is a real issue?"
+                                        />
+                                        <WordCountFeedback text={state.howRealProblem} minWords={15} />
+                                    </div>
+                                </div>
+
+                                <Accordion title="Tips for writing a good story">
+                                    <p>Pick one clear time it happened. Do not say "the internet is slow." Instead, say "Last week, a user in New York could not pay because the page broke three times."</p>
+                                    <p className="mt-2 font-bold italic text-orange-700 underline">Small details make the problem easy to see.</p>
+                                </Accordion>
+                            </div>
+                        )}
+
+                        {state.currentStep === 2 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 2: Market Gap</h2>
+                                <p className="text-gray-600 mb-4 text-base leading-relaxed">
+                                    Map the market to find the best place to start. Where are others strong? Where is there a gap?
+                                </p>
+                                
+                                <div className="flex space-x-2 mb-4">
+                                    <button onClick={() => setSelectedMarkerType('competitor')} className={`px-3 py-1 text-xs rounded-full border ${selectedMarkerType === 'competitor' ? 'bg-gray-800 text-white' : 'bg-white text-gray-800 hover:bg-gray-100'}`}>Others in Market</button>
+                                    <button onClick={() => setSelectedMarkerType('underserved')} className={`px-3 py-1 text-xs rounded-full border ${selectedMarkerType === 'underserved' ? 'bg-blue-600 text-white' : 'bg-white text-blue-600 hover:bg-blue-50'}`}>Unmet Need</button>
+                                    <button onClick={() => setSelectedMarkerType('strategic')} className={`px-3 py-1 text-xs rounded-full border ${selectedMarkerType === 'strategic' ? 'bg-orange-500 text-white' : 'bg-white text-orange-500 hover:bg-orange-50'}`}>Your Start Point</button>
+                                </div>
+
+                                <div 
+                                    ref={diagramRef}
+                                    className="relative w-full h-[400px] border-2 border-gray-200 rounded-xl bg-white overflow-hidden mb-6"
+                                    onClick={handleAddMarker}
+                                >
+                                    <svg width="100%" height="100%" viewBox="0 0 400 400" preserveAspectRatio="xMidYMid meet">
+                                        <circle cx="120" cy="140" r="110" fill="#f1f5f9" stroke="#94a3b8" strokeWidth="2" />
+                                        <text x="120" y="50" textAnchor="middle" fill="#475569" className="text-[10px] font-bold">Main Market</text>
+                                        <circle cx="280" cy="140" r="110" fill="#eff6ff" stroke="#3b82f6" strokeWidth="2" />
+                                        <text x="280" y="50" textAnchor="middle" fill="#2563eb" className="text-[10px] font-bold">Low-End Market</text>
+                                        <circle cx="200" cy="280" r="110" fill="#fff7ed" stroke="#f97316" strokeWidth="2" />
+                                        <text x="200" y="375" textAnchor="middle" fill="#ea580c" className="text-[10px] font-bold">New Needs</text>
+                                    </svg>
+
+                                    {state.markers.map((m, i) => (
+                                        <div 
+                                            key={m.id} 
+                                            className="absolute marker z-10 cursor-move" 
+                                            style={{ left: m.x, top: m.y, transform: 'translate(-50%, -50%)' }}
+                                            draggable
+                                            onDragEnd={(e) => handleMarkerDrag(e, i)}
+                                            onClick={(e) => { e.stopPropagation(); setActiveMarkerIndex(i); }}
+                                        >
+                                            {m.type === 'competitor' ? <Flag className="text-gray-700" fill="#64748b20" /> : 
+                                             m.type === 'underserved' ? <Lightbulb className="text-blue-600" fill="#3b82f620" /> : 
+                                             <MapPin className="text-orange-600" fill="#f97316" />}
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {activeMarkerIndex !== null && state.markers[activeMarkerIndex] && (
+                                    <div className="mb-6 p-4 border rounded-lg bg-gray-50 animate-fadeIn">
+                                        <div className="flex justify-between items-center mb-2">
+                                            <h4 className="text-sm font-bold capitalize">Details: {state.markers[activeMarkerIndex].type}</h4>
+                                            <button onClick={() => { updateState({ markers: state.markers.filter((_, idx) => idx !== activeMarkerIndex) }); setActiveMarkerIndex(null); }} className="text-red-500 text-xs hover:underline">Remove</button>
+                                        </div>
+                                        <textarea 
+                                            className="w-full p-2 text-sm border rounded focus:ring-1 focus:ring-orange-300"
+                                            value={state.markers[activeMarkerIndex].notes}
+                                            onChange={(e) => updateMarkerNotes(activeMarkerIndex, e.target.value)}
+                                            placeholder="Why did you put this here?"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className="space-y-4">
+                                    <label className="block text-sm font-bold">Where will you start?</label>
+                                    <select 
+                                        className="w-full p-2 border rounded-lg bg-white"
+                                        value={state.landingZoneChoice}
+                                        onChange={(e) => updateState({ landingZoneChoice: e.target.value })}
+                                    >
+                                        <option value="">Choose a place...</option>
+                                        <option value="mainstream">Main Market</option>
+                                        <option value="lowend">Low-End Market</option>
+                                        <option value="new">New Needs</option>
+                                    </select>
+                                    <label className="block text-sm font-bold">Why did you pick this?</label>
+                                    <textarea 
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                        value={state.evidence}
+                                        onChange={(e) => updateState({ evidence: e.target.value })}
+                                        placeholder="Show your proof and logic..."
+                                    />
+                                    <WordCountFeedback text={state.evidence} minWords={15} />
+                                </div>
+                            </div>
+                        )}
+
+                        {state.currentStep === 3 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 3: Check Score</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Check your problem with five key points. Give each a score from 1 to 5.
+                                </p>
+
+                                <div className="mb-6">
+                                    <label className="block text-sm font-bold mb-2">Problem Statement</label>
+                                    <textarea 
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 font-medium"
+                                        value={state.problemStatement}
+                                        onChange={(e) => updateState({ problemStatement: e.target.value })}
+                                        placeholder="Write who has it, what it is, and why it matters in one line..."
+                                    />
+                                    <WordCountFeedback text={state.problemStatement} minWords={10} />
+                                </div>
+
+                                <div className="space-y-8">
+                                    {[
+                                        { id: 'urgency', label: 'How Soon', desc: 'Does it need a fix right now?' },
+                                        { id: 'importance', label: 'How Big', desc: 'Does it hurt their business a lot?' },
+                                        { id: 'value', label: 'Will They Pay', desc: 'Is it worth spending money on?' },
+                                        { id: 'marketGap', label: 'Is It New', desc: 'Are other ways to fix it bad?' },
+                                        { id: 'accessibility', label: 'Easy to Find', desc: 'Can you find these people easily?' }
+                                    ].map((c) => (
+                                        <div key={c.id} className="p-4 border rounded-xl bg-gray-50">
+                                            <div className="flex justify-between items-center mb-1">
+                                                <h4 className="font-bold text-gray-800">{c.label}</h4>
+                                                <div className="flex space-x-2">
+                                                    {[1, 2, 3, 4, 5].map(score => (
+                                                        <button 
+                                                            key={score}
+                                                            onClick={() => updateState({ scores: { ...state.scores, [c.id]: score } })}
+                                                            className={`w-8 h-8 rounded-full font-bold text-xs border transition-all ${state.scores[c.id] === score ? 'bg-orange-500 text-white border-orange-600 scale-110' : 'bg-white text-gray-600 border-gray-300 hover:bg-gray-100'}`}
+                                                        >
+                                                            {score}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            </div>
+                                            <p className="text-xs text-gray-500 mb-3 italic">{c.desc}</p>
+                                            <textarea 
+                                                className="w-full p-2 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-orange-400"
+                                                value={state.evidenceScores[c.id]}
+                                                onChange={(e) => updateState({ evidenceScores: { ...state.evidenceScores, [c.id]: e.target.value } })}
+                                                placeholder={`Show your proof for this score...`}
+                                            />
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-8 p-6 bg-orange-600 text-white rounded-xl text-center shadow-md">
+                                    <p className="text-sm font-medium uppercase tracking-wider mb-1 opacity-90">Total Problem Score</p>
+                                    <div className="text-5xl font-bold">{Object.values(state.scores).reduce((a, b) => a + b, 0)} <span className="text-xl opacity-60">/ 25</span></div>
+                                    <p className="mt-4 text-sm font-medium">A score over 20 means this is a great problem to solve now.</p>
+                                </div>
+                                
+                                <div className="mt-8 text-center">
+                                    <button 
+                                        onClick={handleCopy}
+                                        className="bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+                                    >
+                                        Copy Workshop Summary
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <button 
+                            onClick={() => updateState({ currentStep: Math.max(1, state.currentStep - 1) })}
+                            disabled={state.currentStep === 1}
+                            className={`px-4 py-2 rounded-lg font-medium transition-all ${state.currentStep === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600'}`}
+                        >
+                            Back
+                        </button>
+                        <button 
+                            onClick={() => { if (confirm('Clear all work? You cannot get it back.')) { localStorage.removeItem(WORKSHOP_STORAGE_KEY); window.location.reload(); } }}
+                            className="text-gray-400 text-xs hover:text-red-500 transition-colors"
+                        >
+                            Reset Workshop
+                        </button>
+                        <button 
+                            onClick={() => {
+                                if (state.currentStep < 3) {
+                                    updateState({ currentStep: state.currentStep + 1 });
+                                }
+                            }}
+                            className="bg-orange-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-orange-600 transition-colors shadow-sm"
+                        >
+                            {state.currentStep === 3 ? 'Workshop Done' : 'Continue'}
+                        </button>
+                    </div>
+                    
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Problems Worth Solving Workshop - GTM Program - 2025
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WorkshopApp />);
+    </script>
+</body>
+</html>
