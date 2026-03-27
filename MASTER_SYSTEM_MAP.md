@@ -8,7 +8,7 @@
 | W1 | `problems_worth_solving/` | `problems-activity-1A.html` | Activity | None | No |
 | W1 | `problems_worth_solving/` | `problems-activity-2A.html` | Activity | None | No |
 | W1 | `problems_worth_solving/` | `problems-activity-3A.html` | Activity | None | No |
-| W2 | `finding_your_early_customers/` | `ecp-activity-1A.html` | Activity | None | No |
+| W2 | `finding_your_early_customers/` | `activity-unified.html` | Activity | localStorage | Yes |
 | W2 | `finding_your_early_customers/` | `ecp-activity-2A.html` | Activity | None | No |
 | W2 | `finding_your_early_customers/` | `ecp-activity-3A.html` | Activity | None | No |
 | W2 | `finding_your_early_customers/` | `index.html` | Landing | None | No |
@@ -50,12 +50,8 @@
 
 | File | Persistence Key / Mechanism | Data Fields (IDs/State Keys) | Load Logic |
 | :--- | :--- | :--- | :--- |
-| `problems_worth_solving/problems-activity-1A.html` | None N/A | momentOfRealization, whoExperienced, whyMatters, whatSurprised, howRealProblem | None |
-| `problems_worth_solving/problems-activity-2A.html` | None N/A | currentStep, showInstructions, selectedMarkerType, markers, activeMarkerIndex, justification, landingZoneChoice, evidence, hasPlacedStrategic, activityComplete, devMode, devFillLoading | None |
-| `problems_worth_solving/problems-activity-3A.html` | None N/A | urgency, importance, value, marketGap, accessibility | None |
-| `finding_your_early_customers/ecp-activity-1A.html` | None N/A | currentStep, selectedScenarios, wrongAnswers, activityComplete, devMode, devFillLoading | None |
-| `finding_your_early_customers/ecp-activity-2A.html` | None N/A |  | None |
-| `finding_your_early_customers/ecp-activity-3A.html` | None N/A |  | None |
+| `problems_worth_solving/activity-unified.html` | localStorage `workshopState_problems_worth_solving` | momentOfRealization, whoExperienced, whyMatters, whatSurprised, howRealProblem, markers, landingZoneChoice, evidence, problemStatement, scores, evidenceScores | Reactive (useEffect) |
+| `finding_your_early_customers/activity-unified.html` | localStorage `workshopState_finding_early_customers` | currentStep, selectedScenarios, mappings, responses | Reactive (useEffect) |
 | `positioning_basics/positioning-activity-1A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
 | `positioning_basics/positioning-activity-2A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
 | `positioning_basics/positioning-activity-3A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
@@ -225,8 +221,8 @@ const [glossaryOpen, setGlossaryOpen] = useState(false);
 
 | Workshop | LocalStorage Key | Persistence Logic | Hydration Hook |
 | :--- | :--- | :--- | :--- |
-| **W1** | *None* | *None* | Manual (None) |
-| **W2** | *None* | *None* | Manual (None) |
+| **W1** | `workshopState_problems_worth_solving` | **Reactive SPA Loop** | `useEffect()` Auto-Hydration |
+| **W2** | `workshopState_finding_early_customers` | **Reactive SPA Loop** | `useEffect()` Auto-Hydration |
 | **W3** | `workshopData` (State Key) | **Progress Code (Base64)** | `atob()` Decoder |
 | **W4-W8** | *None Identified* | *None* | Manual (None) |
 | **W9** | `workshopState_competitive_strategy` | **Reactive SPA Loop** | `useEffect()` Auto-Hydration |
