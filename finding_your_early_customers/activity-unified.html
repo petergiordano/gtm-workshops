@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finding Your Early Customers Workshop</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const WORKSHOP_STORAGE_KEY = 'workshopState_finding_early_customers';
+
+        // Helper Components
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">(write {minWords}+ words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <span className="font-bold">OK</span>}
+                    </span>
+                </div>
+            );
+        };
+
+        const AlertBox = ({ type = 'info', title, children }) => {
+            const styles = {
+                info: 'bg-blue-50 border-blue-200 text-blue-800',
+                warning: 'bg-amber-50 border-amber-200 text-amber-800',
+                success: 'bg-green-50 border-green-200 text-green-800'
+            };
+            return (
+                <div className={`border rounded-lg p-4 my-4 ${styles[type]}`}>
+                    {title && <h4 className="text-sm font-bold mb-1">{title}</h4>}
+                    <div className="text-xs">{children}</div>
+                </div>
+            );
+        };
+
+        const Accordion = ({ title, children, defaultOpen = false }) => {
+            const [isOpen, setIsOpen] = useState(defaultOpen);
+            return (
+                <div className="border-t border-b border-gray-200 py-3 my-6">
+                    <button onClick={() => setIsOpen(!isOpen)} className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900 text-left">
+                        <span>{title}</span>
+                        <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>V</span>
+                    </button>
+                    {isOpen && <div className="mt-4 pl-4 border-l-2 border-orange-500 text-sm text-gray-600 space-y-3 animate-fadeIn">{children}</div>}
+                </div>
+            );
+        };
+
+        const StepIndicator = ({ currentStep, steps }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    {steps.map((step, index) => (
+                        <React.Fragment key={step.number}>
+                            <div className="flex items-center">
+                                <div className={`step-icon ${step.complete ? 'bg-green-500' : currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'}`}>
+                                    {step.complete ? 'OK' : step.number}
+                                </div>
+                                <div className="ml-3 hidden md:block text-left">
+                                    <p className="text-sm font-medium text-gray-900">{step.title}</p>
+                                    <p className="text-xs text-gray-500">{step.desc}</p>
+                                </div>
+                            </div>
+                            {index < steps.length - 1 && <div className="flex-1 mx-4 h-px bg-gray-300"></div>}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // Data
+        const scenarios = [
+            { id: 1, title: "Factory Inc.", desc: "Wants 10x faster work with new robots.", traits: ["Wants big changes", "Will test new ideas", "Fast to pick"], isEarly: true },
+            { id: 2, title: "Big Corp B", desc: "Wants software that is proven with full support.", traits: ["Wants full fix", "Dislikes risk", "Slow to pick"], isEarly: false },
+            { id: 3, title: "Small Startup C", desc: "Needs AI fix for a big customer problem.", traits: ["Fast need", "Open to new tech", "Quick to start"], isEarly: true },
+            { id: 4, title: "Bank D", desc: "Wants a small change to a current system.", traits: ["Keep same work", "No risk", "Many bosses must say yes"], isEarly: false }
+        ];
+
+        const charTypes = [
+            { id: 'common_needs', label: 'Common Needs', color: 'bg-blue-100 border-blue-300 text-blue-800' },
+            { id: 'problem_urgency', label: 'Problem Urgency', color: 'bg-red-100 border-red-300 text-red-800' },
+            { id: 'prioritized_requirements', label: 'Main Needs', color: 'bg-green-100 border-green-300 text-green-800' },
+            { id: 'quick_decision', label: 'Fast Choice', color: 'bg-purple-100 border-purple-300 text-purple-800' },
+            { id: 'business_value', label: 'Business Value', color: 'bg-yellow-100 border-yellow-300 text-yellow-800' },
+            { id: 'implementation_readiness', label: 'Ready to Start', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' }
+        ];
+
+        const matchElements = [
+            { id: 'dev_teams', text: 'Teams needing to fix API issues before users see them', match: 'common_needs' },
+            { id: 'weekly_issues', text: 'Having API issues every week', match: 'problem_urgency' },
+            { id: 'predictive_alerts', text: 'Fast alerts matter more than big reports', match: 'prioritized_requirements' },
+            { id: 'engineering_approval', text: 'Leader can say yes to cost up to $X', match: 'quick_decision' },
+            { id: 'reduce_downtime', text: 'Cut down downtime and save money', match: 'business_value' },
+            { id: 'modern_infrastructure', text: 'Modern tools and tech team in place', match: 'implementation_readiness' }
+        ];
+
+        const hypothesisSteps = [
+            { id: 'commonNeeds', title: 'Common Needs', prompt: 'Who has this problem the most?', hint: 'Think about the type of team and their main goal.' },
+            { id: 'problemUrgency', title: 'Why Now?', prompt: 'What makes this a big deal right now?', hint: 'Focus on time or money lost if it is not fixed.' },
+            { id: 'desiredBusinessValue', title: 'Main Goal', prompt: 'What good thing do they want to happen?', hint: 'Use numbers like time saved or costs cut.' },
+            { id: 'basicCustomerProfile', title: 'Who They Are', prompt: 'What kind of companies are these?', hint: 'Think size, industry, and location.' }
+        ];
+
+        // Main App
+        const WorkshopApp = () => {
+            const loadState = () => {
+                try {
+                    const saved = localStorage.getItem(WORKSHOP_STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : {};
+                } catch(e) { return {}; }
+            };
+
+            const [state, setState] = useState(() => {
+                const saved = loadState();
+                return {
+                    currentStep: 1,
+                    selectedScenarios: [],
+                    mappings: {},
+                    responses: { commonNeeds: '', problemUrgency: '', desiredBusinessValue: '', basicCustomerProfile: '' },
+                    ...saved
+                };
+            });
+
+            useEffect(() => {
+                localStorage.setItem(WORKSHOP_STORAGE_KEY, JSON.stringify(state));
+            }, [state]);
+
+            const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
+
+            const steps = [
+                { number: 1, title: "Early Market", desc: "Innovators", complete: state.selectedScenarios.length === 4 && state.selectedScenarios.every(s => s.correct) },
+                { number: 2, title: "Mapping", desc: "Framework", complete: Object.keys(state.mappings).length === 6 && Object.entries(state.mappings).every(([id, m]) => matchElements.find(e => e.id === id).match === m) },
+                { number: 3, title: "Hypothesis", desc: "Build ECP", complete: Object.values(state.responses).every(v => v.length > 20) }
+            ];
+
+            const handleScenarioSelect = (id, isEarly) => {
+                const scenario = scenarios.find(s => s.id === id);
+                const correct = isEarly === scenario.isEarly;
+                updateState({ selectedScenarios: [...state.selectedScenarios.filter(s => s.id !== id), { id, selected: isEarly, correct }] });
+            };
+
+            const generateSummary = () => {
+                return `# Early Customer Profile (ECP)
+
+## 1. Common Needs
+${state.responses.commonNeeds}
+
+## 2. Why Now?
+${state.responses.problemUrgency}
+
+## 3. Main Goal
+${state.responses.desiredBusinessValue}
+
+## 4. Who They Are
+${state.responses.basicCustomerProfile}`;
+            };
+
+            return (
+                <div className="max-w-[900px] mx-auto p-4 md:p-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <a href="index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">Back to Workshop</a>
+                        <a href="../index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">All Workshops</a>
+                    </div>
+
+                    <h1 className="text-3xl font-bold text-gray-800 mb-6 leading-tight">Finding Your Early Customers</h1>
+                    <StepIndicator currentStep={state.currentStep} steps={steps} />
+
+                    <AlertBox title="Private Data">
+                        Your work stays on your computer. It is saved in this browser. No data goes to a server.
+                    </AlertBox>
+
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        {state.currentStep === 1 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4">Step 1: Early Market vs Mainstream</h2>
+                                <p className="text-gray-600 mb-6">Pick the right market type for each group. Early customers love new ideas. Mainstream customers want things that already work well.</p>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    {scenarios.map(s => {
+                                        const sel = state.selectedScenarios.find(x => x.id === s.id);
+                                        const isCorrect = sel?.correct;
+                                        return (
+                                            <div key={s.id} className={`p-4 border-2 rounded-lg transition-all ${isCorrect ? 'border-green-500 bg-green-50' : sel ? 'border-red-300 bg-red-50' : 'border-gray-100'}`}>
+                                                <h4 className="font-bold mb-1 text-sm md:text-base">{s.title}</h4>
+                                                <p className="text-xs text-gray-600 mb-2">{s.desc}</p>
+                                                <div className="flex gap-2">
+                                                    <button onClick={() => handleScenarioSelect(s.id, true)} className={`flex-1 py-1 text-xs rounded border ${sel?.selected === true ? 'bg-orange-500 text-white border-orange-600 shadow-sm' : 'hover:bg-gray-50'}`}>Early Market</button>
+                                                    <button onClick={() => handleScenarioSelect(s.id, false)} className={`flex-1 py-1 text-xs rounded border ${sel?.selected === false ? 'bg-gray-500 text-white border-gray-600 shadow-sm' : 'hover:bg-gray-50'}`}>Mainstream</button>
+                                                </div>
+                                                {isCorrect && <p className="text-center text-[10px] text-green-600 font-bold mt-2 uppercase tracking-wide">Correct</p>}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <Accordion title="Why focus on the early market?">
+                                    <p>Early customers help you build your product. They give you feedback fast. They do not need a perfect product to start. Success with them helps you reach the mainstream market later.</p>
+                                </Accordion>
+                            </div>
+                        )}
+
+                        {state.currentStep === 2 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4">Step 2: Component Mapping</h2>
+                                <p className="text-gray-600 mb-6">Match each part of the example to the right category. A good profile uses all six parts.</p>
+                                <div className="space-y-3">
+                                    {matchElements.map(el => {
+                                        const sel = state.mappings[el.id];
+                                        const isCorrect = sel === el.match;
+                                        return (
+                                            <div key={el.id} className={`p-3 border-2 rounded-lg transition-all ${isCorrect ? 'border-green-500 bg-green-50' : sel ? 'border-red-200 bg-red-50' : 'border-gray-100'}`}>
+                                                <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                                                    <p className="text-sm font-medium">{el.text}</p>
+                                                    <select
+                                                        value={sel || ''}
+                                                        onChange={(e) => updateState({ mappings: { ...state.mappings, [el.id]: e.target.value } })}
+                                                        className="w-full md:w-auto text-xs border rounded p-1 bg-white"
+                                                    >
+                                                        <option value="">Select...</option>
+                                                        {charTypes.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                                <Accordion title="What makes a good profile?">
+                                    <ul className="list-disc ml-4 space-y-2">
+                                        <li><strong>Common Needs:</strong> What they all struggle with.</li>
+                                        <li><strong>Urgency:</strong> Why they need it now.</li>
+                                        <li><strong>Main Needs:</strong> What they must have.</li>
+                                        <li><strong>Fast Choice:</strong> Who can say yes quickly.</li>
+                                        <li><strong>Business Value:</strong> The money or time they save.</li>
+                                        <li><strong>Ready to Start:</strong> If they can use it today.</li>
+                                    </ul>
+                                </Accordion>
+                            </div>
+                        )}
+
+                        {state.currentStep === 3 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4">Step 3: Hypothesis Builder</h2>
+                                <p className="text-gray-600 mb-6">Build your own Early Customer Profile (ECP). Use what you know about the problem you found.</p>
+                                <div className="space-y-8">
+                                    {hypothesisSteps.map(s => (
+                                        <div key={s.id} className="p-4 border-2 rounded-xl border-gray-100 bg-gray-50">
+                                            <label className="block font-bold text-gray-800 mb-1">{s.title}</label>
+                                            <p className="text-xs text-gray-500 mb-3">{s.prompt}</p>
+                                            <textarea
+                                                className="laptop-textarea w-full p-3 border rounded-lg focus:ring-2 focus:ring-orange-500 text-sm md:text-base"
+                                                value={state.responses[s.id]}
+                                                onChange={(e) => updateState({ responses: { ...state.responses, [s.id]: e.target.value } })}
+                                                placeholder="Write your answer here..."
+                                            />
+                                            <WordCountFeedback text={state.responses[s.id]} minWords={15} />
+                                            <div className="mt-3 text-[11px] text-blue-600 bg-blue-50 border border-blue-100 p-2 rounded"><strong>Tip:</strong> {s.hint}</div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {steps[2].complete && (
+                                    <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl shadow-sm">
+                                        <h3 className="font-bold text-green-800 mb-4 text-center">Your ECP Summary</h3>
+                                        <textarea
+                                            readOnly
+                                            className="w-full h-48 p-3 text-xs font-mono border rounded bg-white mb-4 shadow-inner"
+                                            value={generateSummary()}
+                                        />
+                                        <button
+                                            onClick={() => { navigator.clipboard.writeText(generateSummary()); alert('Summary copied'); }}
+                                            className="w-full bg-green-600 text-white font-bold py-2 rounded-lg hover:bg-green-700 transition-all shadow-md active:shadow-none"
+                                        >
+                                            Copy Summary
+                                        </button>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <button
+                            onClick={() => updateState({ currentStep: Math.max(1, state.currentStep - 1) })}
+                            disabled={state.currentStep === 1}
+                            className={`px-6 py-2 rounded-lg font-medium transition-all ${state.currentStep === 1 ? 'bg-gray-100 text-gray-300 cursor-not-allowed border border-gray-200' : 'bg-gray-500 text-white hover:bg-gray-600 shadow-sm'}`}
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { if (confirm('Clear all work? You cannot get it back.')) { localStorage.removeItem(WORKSHOP_STORAGE_KEY); window.location.reload(); } }}
+                            className="text-gray-400 text-xs hover:text-red-500 transition-colors uppercase tracking-wider font-semibold"
+                        >
+                            Reset Workshop
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (state.currentStep === 3) {
+                                    alert('Workshop done! Copy your summary for next time.');
+                                } else {
+                                    updateState({ currentStep: state.currentStep + 1 });
+                                }
+                            }}
+                            disabled={!steps[state.currentStep-1].complete}
+                            className={`px-8 py-2 rounded-lg font-bold transition-all shadow-sm ${steps[state.currentStep-1].complete ? 'bg-orange-500 text-white hover:bg-orange-600 active:shadow-none' : 'bg-gray-100 text-gray-300 cursor-not-allowed border border-gray-200'}`}
+                        >
+                            {state.currentStep === 3 ? 'Finish' : 'Continue'}
+                        </button>
+                    </div>
+
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Finding Your Early Customers Workshop - GTM Program - 2025
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WorkshopApp />);
+    </script>
+</body>
+</html>
