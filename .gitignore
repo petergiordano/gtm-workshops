@@ -25,4 +25,5 @@ yarn-error.log*
 
 # Temporary files
 *.tmp
-*.temp
+*.temp.scaffold-manifest
+.scaffold-version
