@@ -1,0 +1,685 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finding Your Early Customers Workshop</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        input::placeholder {
+            color: #9CA3AF;
+        }
+        .lucide-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const WORKSHOP_STORAGE_KEY = 'workshopState_finding_early_customers';
+
+        // --- Helper Components ---
+
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">
+                        (write {minWords}+ words)
+                    </span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words
+                        {isValid && <span className="font-bold">OK</span>}
+                    </span>
+                </div>
+            );
+        };
+
+        const AlertBox = ({ type = 'info', title, children }) => {
+            const styles = {
+                info: 'bg-blue-50 border-blue-200 text-blue-800',
+                warning: 'bg-amber-50 border-amber-200 text-amber-800',
+                success: 'bg-green-50 border-green-200 text-green-800'
+            };
+            return (
+                <div className={`border rounded-lg p-4 my-4 ${styles[type]}`}>
+                    {title && <h4 className="text-sm font-bold mb-1">{title}</h4>}
+                    <div className="text-xs">{children}</div>
+                </div>
+            );
+        };
+
+        const Accordion = ({ title, children, defaultOpen = false }) => {
+            const [isOpen, setIsOpen] = useState(defaultOpen);
+            return (
+                <div className="border-t border-b border-gray-200 py-3 my-6">
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900 text-left"
+                    >
+                        <span>{title}</span>
+                        <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
+                    </button>
+                    {isOpen && (
+                        <div className="mt-4 pl-4 border-l-2 border-orange-500 text-sm text-gray-600 space-y-3 animate-fadeIn">
+                            {children}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const StepIndicator = ({ currentStep, steps }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    {steps.map((step, index) => (
+                        <React.Fragment key={step.number}>
+                            <div className="flex items-center">
+                                <div className={`step-icon ${
+                                    step.complete ? 'bg-green-500' :
+                                    currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'
+                                }`}>
+                                    {step.complete ? 'OK' : step.number}
+                                </div>
+                                <div className="ml-3 hidden md:block">
+                                    <p className="text-sm font-medium text-gray-900">{step.title}</p>
+                                    <p className="text-xs text-gray-500">{step.desc}</p>
+                                </div>
+                            </div>
+                            {index < steps.length - 1 && (
+                                <div className="flex-1 mx-4 h-px bg-gray-300"></div>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // --- Icons ---
+
+        const Target = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="2"/>
+            </svg>
+        );
+
+        const Users = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        );
+
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
+        const Lightbulb = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                <path d="M9 18h6"/><path d="M10 22h4"/>
+            </svg>
+        );
+
+        // --- Main Workshop Component ---
+
+        const WorkshopApp = () => {
+            const loadState = () => {
+                try {
+                    const saved = localStorage.getItem(WORKSHOP_STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : {};
+                } catch(e) { return {}; }
+            };
+
+            const [state, setState] = useState(() => {
+                const saved = loadState();
+                return {
+                    currentStep: 1,
+                    // Activity 1
+                    selectedScenarios: [],
+                    // Activity 2
+                    mappings: {},
+                    // Activity 3
+                    responses: {},
+                    ...saved
+                };
+            });
+
+            useEffect(() => {
+                localStorage.setItem(WORKSHOP_STORAGE_KEY, JSON.stringify(state));
+            }, [state]);
+
+            const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
+
+            // --- Activity 1 Data ---
+            const scenarios = [
+                {
+                    id: 1,
+                    title: "Manufacturing Company A",
+                    description: "Looking for 10x faster production with new robotics technology",
+                    characteristics: ["Seeks breakthrough innovation", "Willing to test new solutions", "Quick decision making"],
+                    isEarlyMarket: true
+                },
+                {
+                    id: 2,
+                    title: "Enterprise Corp B",
+                    description: "Wants proven software with complete training and 24/7 support",
+                    characteristics: ["Needs complete solution", "Risk-averse", "Long evaluation process"],
+                    isEarlyMarket: false
+                },
+                {
+                    id: 3,
+                    title: "Tech Startup C",
+                    description: "Needs AI solution to solve urgent customer retention problem",
+                    characteristics: ["Problem urgency", "Open to new technology", "Can implement quickly"],
+                    isEarlyMarket: true
+                },
+                {
+                    id: 4,
+                    title: "Financial Services D",
+                    description: "Wants incremental improvement to existing compliance system",
+                    characteristics: ["Preserve current workflow", "Minimal risk tolerance", "Extensive approval process"],
+                    isEarlyMarket: false
+                }
+            ];
+
+            const handleScenarioSelect = (scenarioId, isEarlyMarket) => {
+                const scenario = scenarios.find(s => s.id === scenarioId);
+                const isCorrect = isEarlyMarket === scenario.isEarlyMarket;
+
+                updateState({
+                    selectedScenarios: [
+                        ...state.selectedScenarios.filter(s => s.id !== scenarioId),
+                        { id: scenarioId, selected: isEarlyMarket, correct: isCorrect }
+                    ]
+                });
+            };
+
+            const activity1Complete = state.selectedScenarios.length === scenarios.length &&
+                                      state.selectedScenarios.every(s => s.correct);
+
+            // --- Activity 2 Data ---
+            const ecpCharacteristics = [
+                { id: 'common_needs', label: 'Common Needs', color: 'bg-blue-100 border-blue-300 text-blue-800' },
+                { id: 'problem_urgency', label: 'Problem Urgency', color: 'bg-red-100 border-red-300 text-red-800' },
+                { id: 'prioritized_requirements', label: 'Prioritized Requirements', color: 'bg-green-100 border-green-300 text-green-800' },
+                { id: 'quick_decision', label: 'Quick Decision Making', color: 'bg-purple-100 border-purple-300 text-purple-800' },
+                { id: 'business_value', label: 'Desired Business Value', color: 'bg-yellow-100 border-yellow-300 text-yellow-800' },
+                { id: 'implementation_readiness', label: 'Implementation Readiness', color: 'bg-indigo-100 border-indigo-300 text-indigo-800' }
+            ];
+
+            const poshAmpElements = [
+                {
+                    id: 'dev_teams',
+                    text: 'Development teams needing to prevent API failures before they impact customers',
+                    correctMatch: 'common_needs',
+                    explanation: 'This describes the target customer type and their core need'
+                },
+                {
+                    id: 'weekly_issues',
+                    text: 'Currently experiencing API issues weekly',
+                    correctMatch: 'problem_urgency',
+                    explanation: 'Shows the frequency and urgency of the problem'
+                },
+                {
+                    id: 'predictive_alerts',
+                    text: 'Predictive alerts more important than custom dashboards',
+                    correctMatch: 'prioritized_requirements',
+                    explanation: 'Shows what features matter most to early customers'
+                },
+                {
+                    id: 'engineering_approval',
+                    text: 'Engineering leader can approve up to $X',
+                    correctMatch: 'quick_decision',
+                    explanation: 'Indicates decision-making authority and speed'
+                },
+                {
+                    id: 'reduce_downtime',
+                    text: 'Reduce downtime costs by X%, improve MTTR by Y%',
+                    correctMatch: 'business_value',
+                    explanation: 'Quantifies the business impact and value delivered'
+                },
+                {
+                    id: 'modern_infrastructure',
+                    text: 'Modern API infrastructure, DevOps team in place',
+                    correctMatch: 'implementation_readiness',
+                    explanation: 'Shows technical capability to adopt the solution'
+                }
+            ];
+
+            const handleMapping = (elementId, characteristicId) => {
+                updateState({
+                    mappings: { ...state.mappings, [elementId]: characteristicId }
+                });
+            };
+
+            const activity2Complete = poshAmpElements.every(e => state.mappings[e.id] === e.correctMatch);
+
+            // --- Activity 3 Data ---
+            const ecpElements = [
+                {
+                    id: 'commonNeeds',
+                    title: 'Common Needs',
+                    subtitle: 'Jobs to be Done',
+                    prompt: 'Based on the problem you validated, WHO has this problem most urgently?',
+                    placeholder: 'We believe our early customers are...\n\nExample: "Development teams at fast-growing tech companies who need to prevent API failures because they directly impact customer experience and revenue"',
+                    hint: 'Think about the TYPE of organization and ROLE of people who feel this problem most acutely'
+                },
+                {
+                    id: 'problemUrgency',
+                    title: 'Problem Urgency',
+                    subtitle: 'Why Now?',
+                    prompt: 'What makes this problem URGENT for your target customers right now?',
+                    placeholder: 'Our customers need to solve this NOW because...\n\nExample: "They are experiencing API issues weekly, each outage costs $50k+ in lost revenue, and their current monitoring tools only detect problems after customer impact"',
+                    hint: 'Focus on pain points that drive immediate action - financial impact, competitive pressure, compliance needs'
+                },
+                {
+                    id: 'desiredBusinessValue',
+                    title: 'Desired Business Value',
+                    subtitle: 'Success Metrics',
+                    prompt: 'What specific business outcomes do your customers want to achieve?',
+                    placeholder: 'Success for our customers looks like...\n\nExample: "Reduce API downtime by 80%, improve incident response time from 2 hours to 15 minutes, prevent $500k annual revenue loss from outages"',
+                    hint: 'Be specific with numbers, percentages, time savings, or cost reductions'
+                },
+                {
+                    id: 'basicCustomerProfile',
+                    title: 'Basic Customer Profile',
+                    subtitle: 'Company Characteristics',
+                    prompt: 'What type of companies are most likely to have this urgent problem?',
+                    placeholder: 'Our ideal early customers are...\n\nExample: "B2B SaaS companies with 100-1000 employees, $10M-100M revenue, heavy API usage, modern cloud infrastructure, located in North America"',
+                    hint: 'Think industry, company size, technology adoption, geography, growth stage'
+                }
+            ];
+
+            const activity3Complete = ecpElements.every(e => {
+                const text = state.responses[e.id] || '';
+                return text.trim().split(/\s+/).filter(w => w.length > 0).length >= 10;
+            });
+
+            const steps = [
+                { number: 1, title: "Identify Customers", desc: "Early vs Mainstream", complete: activity1Complete },
+                { number: 2, title: "Map Components", desc: "The ECP Framework", complete: activity2Complete },
+                { number: 3, title: "Build Your ECP", desc: "Hypothesis builder", complete: activity3Complete }
+            ];
+
+            // --- Export Logic ---
+            const generateMarkdown = () => {
+                let md = `# Finding Your Early Customers Workshop Summary\n\n`;
+
+                md += `## 1. Customer Classification\n\n`;
+                scenarios.forEach(s => {
+                    const selection = state.selectedScenarios.find(sel => sel.id === s.id);
+                    const type = s.isEarlyMarket ? 'Early Market' : 'Mainstream';
+                    md += `- **${s.title}**: Classified as ${type}\n`;
+                });
+
+                md += `\n## 2. ECP Framework Mapping (Posh AMP Example)\n\n`;
+                poshAmpElements.forEach(e => {
+                    const char = ecpCharacteristics.find(c => c.id === e.correctMatch);
+                    md += `- **${char.label}**: "${e.text}"\n`;
+                });
+
+                md += `\n## 3. Early Customer Profile Hypothesis\n\n`;
+                ecpElements.forEach(e => {
+                    md += `### ${e.title} (${e.subtitle})\n`;
+                    md += `${state.responses[e.id] || 'Not completed'}\n\n`;
+                });
+
+                return md;
+            };
+
+            const handleCopy = () => {
+                navigator.clipboard.writeText(generateMarkdown());
+                alert('Summary copied to clipboard');
+            };
+
+            return (
+                <div className="max-w-[1000px] mx-auto p-4 md:p-8">
+                    <div className="flex justify-between items-center mb-4">
+                        <a href="index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">Back to Workshop</a>
+                        <a href="../index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">All Workshops</a>
+                    </div>
+
+                    <h1 className="text-3xl font-bold text-gray-800 mb-6">Finding Your Early Customers</h1>
+
+                    <StepIndicator currentStep={state.currentStep} steps={steps} />
+
+                    <AlertBox title="Private Data">
+                        Your work stays on your computer. It is saved in this browser. No data goes to a server.
+                    </AlertBox>
+
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        {state.currentStep === 1 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 1: Early Market vs Mainstream</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Startups must find customers who value innovation over safety. Read each scenario and decide if they are Early Market or Mainstream.
+                                </p>
+
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                                    {scenarios.map((scenario) => {
+                                        const selection = state.selectedScenarios.find(s => s.id === scenario.id);
+                                        const isCorrect = selection?.correct;
+                                        const showWrong = selection && !isCorrect;
+
+                                        return (
+                                            <div
+                                                key={scenario.id}
+                                                className={`border-2 rounded-lg p-4 transition-all duration-300 ${
+                                                    isCorrect ? 'border-green-500 bg-green-50' :
+                                                    showWrong ? 'border-red-500 bg-red-50' : 'border-gray-200'
+                                                }`}
+                                            >
+                                                <h4 className="font-bold text-base mb-2 text-gray-800">{scenario.title}</h4>
+                                                <p className="text-gray-600 text-sm mb-3">{scenario.description}</p>
+
+                                                <div className="mb-3">
+                                                    <p className="text-xs font-semibold text-gray-700 mb-1">Key Characteristics:</p>
+                                                    <ul className="text-xs text-gray-600 space-y-1">
+                                                        {scenario.characteristics.map((char, index) => (
+                                                            <li key={index} className="flex items-center">
+                                                                <span className="w-2 h-2 bg-orange-500 rounded-full mr-2"></span>
+                                                                {char}
+                                                            </li>
+                                                        ))}
+                                                    </ul>
+                                                </div>
+
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        onClick={() => handleScenarioSelect(scenario.id, true)}
+                                                        className={`flex-1 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                                                            selection?.selected === true && isCorrect ? 'bg-green-600 text-white' :
+                                                            'bg-orange-500 text-white hover:bg-orange-600'
+                                                        }`}
+                                                        disabled={isCorrect}
+                                                    >
+                                                        Early Market
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleScenarioSelect(scenario.id, false)}
+                                                        className={`flex-1 px-3 py-1.5 rounded-lg text-sm transition-colors ${
+                                                            selection?.selected === false && isCorrect ? 'bg-green-600 text-white' :
+                                                            'bg-gray-500 text-white hover:bg-gray-600'
+                                                        }`}
+                                                        disabled={isCorrect}
+                                                    >
+                                                        Mainstream
+                                                    </button>
+                                                </div>
+                                                {isCorrect && (
+                                                    <div className="text-center mt-2">
+                                                        <p className="text-xs font-semibold text-green-700">Correct!</p>
+                                                    </div>
+                                                )}
+                                                {showWrong && (
+                                                    <div className="text-center mt-2">
+                                                        <p className="text-xs font-semibold text-red-700">Try again</p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+
+                                <Accordion title="Why does this matter?">
+                                    <p>Early Market customers seek breakthrough innovation. They have urgent problems and can make quick decisions. They are willing to work with early products.</p>
+                                    <p className="mt-2">Mainstream customers want proven, complete solutions. They are risk-averse and have long evaluation processes. They focus on incremental improvements.</p>
+                                </Accordion>
+
+                                {activity1Complete && (
+                                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-6 mt-8">
+                                        <h4 className="text-lg font-bold text-blue-800 mb-3 flex items-center">
+                                            <Lightbulb className="mr-2" size={20} />
+                                            Key Takeaway
+                                        </h4>
+                                        <p className="text-blue-700">
+                                            Focus on Early Market customers first. They provide the feedback you need to find Product-Market Fit. Once you have proven success, you can expand to the Mainstream.
+                                        </p>
+                                    </div>
+                                )}
+                            </div>
+                        )}
+
+                        {state.currentStep === 2 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 2: ECP Component Mapping</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Every strong Early Customer Profile (ECP) needs 6 specific characteristics. Map this example for Posh AMP to the right ECP categories.
+                                </p>
+
+                                <div className="flex flex-col md:flex-row gap-8">
+                                    <div className="md:w-1/3">
+                                        <h4 className="font-semibold text-gray-800 mb-3 text-sm">6 ECP Characteristics:</h4>
+                                        <div className="space-y-2">
+                                            {ecpCharacteristics.map((char) => (
+                                                <div
+                                                    key={char.id}
+                                                    className={`p-3 rounded-lg border ${char.color} text-center font-medium text-xs`}
+                                                >
+                                                    {char.label}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+
+                                    <div className="flex-1">
+                                        <h4 className="font-semibold text-gray-800 mb-3 text-sm">Posh AMP Example Elements:</h4>
+                                        <div className="space-y-3">
+                                            {poshAmpElements.map((element) => {
+                                                const selectedCharId = state.mappings[element.id];
+                                                const isCorrect = selectedCharId === element.correctMatch;
+                                                const showFeedback = selectedCharId && !isCorrect;
+
+                                                return (
+                                                    <div
+                                                        key={element.id}
+                                                        className={`p-4 border rounded-lg transition-all duration-300 ${
+                                                            isCorrect ? 'border-green-500 bg-green-50' :
+                                                            showFeedback ? 'border-red-500 bg-red-50' : 'border-gray-200 bg-white'
+                                                        }`}
+                                                    >
+                                                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                                                            <p className="text-gray-800 text-sm flex-1">{element.text}</p>
+                                                            <select
+                                                                value={selectedCharId || ''}
+                                                                onChange={(e) => handleMapping(element.id, e.target.value)}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-orange-500"
+                                                                disabled={isCorrect}
+                                                            >
+                                                                <option value="">Select Category...</option>
+                                                                {ecpCharacteristics.map((char) => (
+                                                                    <option key={char.id} value={char.id}>
+                                                                        {char.label}
+                                                                    </option>
+                                                                ))}
+                                                            </select>
+                                                        </div>
+                                                        {isCorrect && (
+                                                            <div className="mt-2 text-xs text-green-700 animate-fadeIn">
+                                                                <strong>Correct:</strong> {element.explanation}
+                                                            </div>
+                                                        )}
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <Accordion title="What are these characteristics?">
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div>
+                                            <p><strong>Common Needs:</strong> The target customer and their core problem.</p>
+                                            <p className="mt-2"><strong>Problem Urgency:</strong> How often and how badly it hurts.</p>
+                                            <p className="mt-2"><strong>Prioritized Requirements:</strong> What must be there vs nice-to-have.</p>
+                                        </div>
+                                        <div>
+                                            <p><strong>Quick Decision Making:</strong> Can they buy fast without many layers?</p>
+                                            <p className="mt-2"><strong>Business Value:</strong> The clear ROI they expect.</p>
+                                            <p className="mt-2"><strong>Implementation Readiness:</strong> Do they have the tools to use your solution?</p>
+                                        </div>
+                                    </div>
+                                </Accordion>
+                            </div>
+                        )}
+
+                        {state.currentStep === 3 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 3: Build Your ECP Hypothesis</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Now, build your own Early Customer Profile. Create hypotheses based on the problem you are solving.
+                                </p>
+
+                                <div className="space-y-8">
+                                    {ecpElements.map((element, index) => (
+                                        <div key={element.id} className="border-2 border-gray-200 rounded-lg p-6">
+                                            <div className="flex items-start justify-between mb-4">
+                                                <div>
+                                                    <h4 className="text-lg font-bold text-gray-800 flex items-center">
+                                                        <span className="w-8 h-8 bg-orange-500 text-white rounded-full flex items-center justify-center text-sm font-bold mr-3">
+                                                            {index + 1}
+                                                        </span>
+                                                        {element.title}
+                                                    </h4>
+                                                    <p className="text-orange-600 font-medium text-sm ml-11">{element.subtitle}</p>
+                                                </div>
+                                                {state.responses[element.id]?.length > 50 && (
+                                                    <CheckCircle className="text-green-500" size={24} />
+                                                )}
+                                            </div>
+
+                                            <p className="text-gray-700 font-medium mb-3 ml-11">{element.prompt}</p>
+
+                                            <textarea
+                                                value={state.responses[element.id] || ''}
+                                                onChange={(e) => updateState({ responses: { ...state.responses, [element.id]: e.target.value } })}
+                                                placeholder={element.placeholder}
+                                                className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm ml-0"
+                                            />
+                                            <div className="ml-11">
+                                                <WordCountFeedback text={state.responses[element.id] || ''} minWords={10} />
+                                            </div>
+
+                                            <div className="bg-blue-50 border border-blue-200 p-3 mt-3 ml-11 rounded-lg">
+                                                <div className="flex items-center">
+                                                    <Lightbulb className="text-blue-600 mr-2" size={16} />
+                                                    <p className="text-blue-700 text-sm font-bold">Hint:</p>
+                                                </div>
+                                                <p className="text-blue-600 text-sm mt-1">{element.hint}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <div className="mt-8 p-6 bg-green-50 border border-green-200 rounded-xl text-center shadow-sm">
+                                    <h4 className="text-lg font-bold text-green-800 mb-2">Next Steps</h4>
+                                    <p className="text-green-700 text-sm mb-4">
+                                        Your ECP is a hypothesis. Now you must validate it through discovery interviews. Ask: "How do you solve this today?" and "What would make this a top priority?"
+                                    </p>
+                                    <button
+                                        onClick={handleCopy}
+                                        className="bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+                                    >
+                                        Copy Workshop Summary
+                                    </button>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <button
+                            onClick={() => updateState({ currentStep: Math.max(1, state.currentStep - 1) })}
+                            disabled={state.currentStep === 1}
+                            className={`px-4 py-2 rounded-lg font-medium transition-all ${state.currentStep === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600'}`}
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { if (confirm('Clear all work? You cannot get it back.')) { localStorage.removeItem(WORKSHOP_STORAGE_KEY); window.location.reload(); } }}
+                            className="text-gray-400 text-xs hover:text-red-500 transition-colors"
+                        >
+                            Reset Workshop
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (state.currentStep < 3) {
+                                    updateState({ currentStep: state.currentStep + 1 });
+                                }
+                            }}
+                            className={`px-6 py-2 rounded-lg font-medium transition-colors shadow-sm ${
+                                state.currentStep === 3 ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-orange-500 text-white hover:bg-orange-600'
+                            }`}
+                        >
+                            {state.currentStep === 3 ? 'Workshop Done' : 'Continue'}
+                        </button>
+                    </div>
+
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Finding Your Early Customers Workshop - GTM Program - 2025
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WorkshopApp />);
+    </script>
+</body>
+</html>
