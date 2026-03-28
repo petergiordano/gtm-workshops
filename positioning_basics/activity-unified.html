@@ -1,0 +1,629 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positioning Basics Workshop</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        input::placeholder {
+            color: #9CA3AF;
+        }
+        .lucide-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="application/json" id="testData">
+    {
+        "currentStep": 3,
+        "customerProfile": "Directors of Engineering at Series A-B SaaS companies ($10M-$50M ARR) who manage critical API infrastructure, experience weekly API failures, and prioritize preemptive action over reactive solutions to prevent customer impact and revenue loss.",
+        "competitiveAlternative": "Traditional API Monitoring Solutions",
+        "alternativeDescription": "Teams use basic monitoring tools that only alert after problems occur, requiring manual investigation. This leads to longer downtime and more customer impact because issues aren't caught proactively.",
+        "differentiators": [
+            "Predictive Analytics and Machine Learning Engine that proactively identifies potential API issues, performs anomaly detection, and recognizes patterns for future failures.",
+            "Automated Problem Resolution Engine with automated scripts to resolve common issues and self-healing capabilities, significantly reducing manual intervention.",
+            "Cross-Platform Integration Capabilities enabling seamless integration with various cloud environments and supporting diverse API types."
+        ],
+        "values": [
+            "Shifts focus from reactive troubleshooting to preemptive prevention, leading to a 50% improvement in Mean Time Between Failures and substantial operational cost savings.",
+            "Significantly reduces downtime and operational costs for customers, resulting in a 75% increase in incident automation rate and 75% faster incident response time.",
+            "Provides comprehensive visibility and streamlined management across complex infrastructures, achieving 95% API integration success rate and 100% visibility."
+        ],
+        "corePain": "API failures that impact customers and cause revenue loss before teams can respond, resulting in significant operational costs and excessive manual intervention."
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect, useMemo } = React;
+
+        const WORKSHOP_STORAGE_KEY = 'workshopState_positioning_basics';
+
+        // --- Helper Components ---
+
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">
+                        (write {minWords}+ words)
+                    </span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words
+                        {isValid && <span className="font-bold">OK</span>}
+                    </span>
+                </div>
+            );
+        };
+
+        const AlertBox = ({ type = 'info', title, children }) => {
+            const styles = {
+                info: 'bg-blue-50 border-blue-200 text-blue-800',
+                warning: 'bg-amber-50 border-amber-200 text-amber-800',
+                success: 'bg-green-50 border-green-200 text-green-800'
+            };
+            return (
+                <div className={`border rounded-lg p-4 my-4 ${styles[type]}`}>
+                    {title && <h4 className="text-sm font-bold mb-1">{title}</h4>}
+                    <div className="text-xs">{children}</div>
+                </div>
+            );
+        };
+
+        const Accordion = ({ title, children, defaultOpen = false }) => {
+            const [isOpen, setIsOpen] = useState(defaultOpen);
+            return (
+                <div className="border-t border-b border-gray-200 py-3 my-6">
+                    <button
+                        onClick={() => setIsOpen(!isOpen)}
+                        className="w-full flex justify-between items-center text-base font-bold text-gray-800 hover:text-gray-900 text-left"
+                    >
+                        <span>{title}</span>
+                        <span className={`transform transition-transform ${isOpen ? 'rotate-180' : ''}`}>▼</span>
+                    </button>
+                    {isOpen && (
+                        <div className="mt-4 pl-4 border-l-2 border-orange-500 text-sm text-gray-600 space-y-3 animate-fadeIn">
+                            {children}
+                        </div>
+                    )}
+                </div>
+            );
+        };
+
+        const StepIndicator = ({ currentStep, steps, onStepClick }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    {steps.map((step, index) => (
+                        <React.Fragment key={step.number}>
+                            <div
+                                className={`flex items-center ${onStepClick ? 'cursor-pointer' : ''}`}
+                                onClick={() => onStepClick && onStepClick(step.number)}
+                                title={onStepClick ? `Go to ${step.title}` : ''}
+                            >
+                                <div className={`step-icon ${
+                                    step.complete ? 'bg-green-500' :
+                                    currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'
+                                }`}>
+                                    {step.complete ? 'OK' : step.number}
+                                </div>
+                                <div className="ml-3 hidden md:block">
+                                    <p className="text-sm font-medium text-gray-900">{step.title}</p>
+                                    <p className="text-xs text-gray-500">{step.desc}</p>
+                                </div>
+                            </div>
+                            {index < steps.length - 1 && (
+                                <div className="flex-1 mx-4 h-px bg-gray-300"></div>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // --- Icons ---
+
+        const Users = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+                <circle cx="9" cy="7" r="4"/>
+                <path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+                <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+        );
+
+        const Target = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/>
+                <circle cx="12" cy="12" r="6"/>
+                <circle cx="12" cy="12" r="2"/>
+            </svg>
+        );
+
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
+        const Lightbulb = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5"/>
+                <path d="M9 18h6"/><path d="M10 22h4"/>
+            </svg>
+        );
+
+        const Settings = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.38a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+                <circle cx="12" cy="12" r="3"/>
+            </svg>
+        );
+
+        const Gem = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M6 3h12l4 6-10 13L2 9Z"/>
+                <path d="M11 3L8 9l4 13 4-13-3-6"/>
+                <path d="M2 9h20"/>
+            </svg>
+        );
+
+        // --- Main Workshop Component ---
+
+        const WorkshopApp = () => {
+            const loadState = () => {
+                try {
+                    const saved = localStorage.getItem(WORKSHOP_STORAGE_KEY);
+                    return saved ? JSON.parse(saved) : {};
+                } catch(e) { return {}; }
+            };
+
+            const [state, setState] = useState(() => {
+                const saved = loadState();
+                return {
+                    currentStep: 1,
+                    // Activity 1
+                    customerProfile: '',
+                    competitiveAlternative: '',
+                    alternativeDescription: '',
+                    // Activity 2
+                    differentiators: ['', '', ''],
+                    values: ['', '', ''],
+                    // Activity 3
+                    corePain: '',
+                    ...saved
+                };
+            });
+
+            useEffect(() => {
+                localStorage.setItem(WORKSHOP_STORAGE_KEY, JSON.stringify(state));
+            }, [state]);
+
+            const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
+
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+
+            const toggleDevMode = () => {
+                setDevMode(prev => !prev);
+            };
+
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setState(prev => ({ ...prev, ...testData }));
+                    console.log('Dev data loaded successfully');
+                } catch (error) {
+                    console.error('Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
+            // --- Activity 1 Completion Check ---
+            const activity1Complete = state.customerProfile.length >= 25 &&
+                                      state.competitiveAlternative.length >= 15 &&
+                                      state.alternativeDescription.length >= 25;
+
+            // --- Activity 2 Completion Check ---
+            const validDifferentiatorsCount = state.differentiators.filter(d => d.length >= 15).length;
+            const validValuesCount = state.values.filter((v, i) => state.differentiators[i].length >= 15 && v.length >= 25).length;
+            const activity2Complete = validDifferentiatorsCount >= 2 && validValuesCount >= validDifferentiatorsCount;
+
+            // --- Activity 3 Completion Check ---
+            const activity3Complete = state.corePain.length >= 25;
+
+            const steps = [
+                { number: 1, title: "Customer & Alternative", desc: "Define market context", complete: activity1Complete },
+                { number: 2, title: "Differentiators & Value", desc: "Unique capabilities", complete: activity2Complete },
+                { number: 3, title: "Positioning Statement", desc: "Assemble foundation", complete: activity3Complete }
+            ];
+
+            return (
+                <div className="max-w-[1000px] mx-auto p-4 md:p-8 text-gray-800">
+                    <div className="flex justify-between items-center mb-4">
+                        <a href="index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">Back to Workshop</a>
+                        <a href="../index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">All Workshops</a>
+                    </div>
+
+                    <h1
+                        className={`text-3xl font-bold mb-2 cursor-pointer select-none ${devMode ? 'text-orange-600' : 'text-gray-800'}`}
+                        onDoubleClick={toggleDevMode}
+                        title="Double-click to toggle dev mode"
+                    >
+                        Positioning Basics {devMode && '[dev]'}
+                    </h1>
+
+                    {devMode && (
+                        <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
+                            <span className="text-xs text-orange-600 font-medium">Dev Mode Active</span>
+                            <button
+                                onClick={devFillData}
+                                disabled={devFillLoading}
+                                className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
+                            >
+                                {devFillLoading ? 'Loading...' : 'Fill Test Data'}
+                            </button>
+                        </div>
+                    )}
+
+                    <StepIndicator
+                        currentStep={state.currentStep}
+                        steps={steps}
+                        onStepClick={(stepNumber) => updateState({ currentStep: stepNumber })}
+                    />
+
+                    <AlertBox title="Private Data">
+                        Your work stays on your computer. It is saved in this browser. No data goes to a server.
+                    </AlertBox>
+
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                        {state.currentStep === 1 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 1: Define Customer & Alternative</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    A strong positioning foundation starts with knowing exactly who you serve and what they compare you to.
+                                </p>
+
+                                <div className="space-y-6">
+                                    <div className="border-2 border-gray-200 rounded-lg p-6">
+                                        <div className="flex items-center mb-4">
+                                            <Users className="text-orange-500 mr-2" size={24} />
+                                            <h4 className="text-lg font-bold text-gray-800">Target Customer Profile</h4>
+                                        </div>
+                                        <p className="text-gray-700 font-medium mb-3">Who is your ideal early customer? Be specific about role, company size, and situation.</p>
+                                        <textarea
+                                            value={state.customerProfile}
+                                            onChange={(e) => updateState({ customerProfile: e.target.value })}
+                                            placeholder='Example: "Directors of Engineering at Series A-B SaaS companies who manage critical API infrastructure and experience weekly downtime issues"'
+                                            className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                        />
+                                        <WordCountFeedback text={state.customerProfile} minWords={10} />
+
+                                        <AlertBox type="info" title="ECP Refinement Tips">
+                                            <ul className="list-disc list-inside space-y-1">
+                                                <li>Include company characteristics (size, industry, stage)</li>
+                                                <li>Specify the role of your target buyer</li>
+                                                <li>Mention the urgent situation or context they face</li>
+                                            </ul>
+                                        </AlertBox>
+                                    </div>
+
+                                    <div className="border-2 border-gray-200 rounded-lg p-6">
+                                        <div className="flex items-center mb-4">
+                                            <Target className="text-orange-500 mr-2" size={24} />
+                                            <h4 className="text-lg font-bold text-gray-800">Competitive Alternative</h4>
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-medium mb-2 text-sm">Primary competitive alternative:</label>
+                                            <input
+                                                type="text"
+                                                value={state.competitiveAlternative}
+                                                onChange={(e) => updateState({ competitiveAlternative: e.target.value })}
+                                                placeholder='Example: "Manual API monitoring with basic alerting tools"'
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                            />
+                                            <div className="text-right mt-1">
+                                                <span className={`text-xs ${state.competitiveAlternative.length >= 15 ? 'text-green-600' : 'text-gray-400'}`}>
+                                                    {state.competitiveAlternative.length} chars (15+ min)
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="mb-4">
+                                            <label className="block text-gray-700 font-medium mb-2 text-sm">How does this alternative work and why does it fall short?</label>
+                                            <textarea
+                                                value={state.alternativeDescription}
+                                                onChange={(e) => updateState({ alternativeDescription: e.target.value })}
+                                                placeholder='Example: "Teams use basic monitoring tools that only alert after problems occur. This requires manual investigation and leads to longer downtime because issues aren&apos;t caught proactively."'
+                                                className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                            />
+                                            <WordCountFeedback text={state.alternativeDescription} minWords={10} />
+                                        </div>
+
+                                        <AlertBox type="warning" title="Competition is Broader Than You Think">
+                                            <p>Your competition includes everything customers use today: direct competitors, spreadsheets, manual processes, or even doing nothing at all.</p>
+                                        </AlertBox>
+                                    </div>
+                                </div>
+
+                                <Accordion title="Why define the alternative first?">
+                                    <p>You cannot be "better" in a vacuum. You are only better relative to what the customer is doing today. By defining the alternative, you set the baseline for your unique value.</p>
+                                </Accordion>
+                            </div>
+                        )}
+
+                        {state.currentStep === 2 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 2: Define Differentiators & Value</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Now, identify the unique capabilities that set you apart and translate them into tangible customer value.
+                                </p>
+
+                                {state.customerProfile && (
+                                    <AlertBox type="info" title="Context: Your Target Customer">
+                                        <p>{state.customerProfile}</p>
+                                    </AlertBox>
+                                )}
+
+                                <div className="space-y-8">
+                                    {[0, 1, 2].map((index) => (
+                                        <div key={index} className="border-2 border-gray-200 rounded-lg p-6">
+                                            <div className="flex items-center mb-4">
+                                                <Settings className="text-orange-500 mr-2" size={20} />
+                                                <h4 className="text-lg font-bold text-gray-800">Differentiator #{index + 1} {index >= 2 && <span className="text-sm font-normal text-gray-500 ml-2">(optional)</span>}</h4>
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <label className="block text-gray-700 font-medium mb-2 text-sm">Unique capability:</label>
+                                                <textarea
+                                                    value={state.differentiators[index]}
+                                                    onChange={(e) => {
+                                                        const newDiffs = [...state.differentiators];
+                                                        newDiffs[index] = e.target.value;
+                                                        updateState({ differentiators: newDiffs });
+                                                    }}
+                                                    placeholder='Example: "Predictive Machine Learning engine that proactively identifies potential API failures before they impact users."'
+                                                    className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                />
+                                                <div className="text-right mt-1">
+                                                    <span className={`text-xs ${state.differentiators[index].length >= 15 ? 'text-green-600' : 'text-gray-400'}`}>
+                                                        {state.differentiators[index].length} chars (15+ min)
+                                                    </span>
+                                                </div>
+                                            </div>
+
+                                            <div className="mb-4">
+                                                <div className="flex items-center mb-2">
+                                                    <Gem className="text-orange-500 mr-2" size={18} />
+                                                    <label className="block text-gray-700 font-medium text-sm">Customer value this creates:</label>
+                                                </div>
+                                                <textarea
+                                                    value={state.values[index]}
+                                                    onChange={(e) => {
+                                                        const newValues = [...state.values];
+                                                        newValues[index] = e.target.value;
+                                                        updateState({ values: newValues });
+                                                    }}
+                                                    placeholder='Example: "Reduces API downtime by 80% and prevents an average of $50k in lost revenue per month."'
+                                                    className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                />
+                                                <WordCountFeedback text={state.values[index]} minWords={10} />
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                <Accordion title="How to think about value?">
+                                    <p>Features are what your product does. Value is what the customer gets. Think about outcomes like saving time, reducing costs, or increasing revenue.</p>
+                                    <p className="mt-2 font-bold">Try the "So what?" test:</p>
+                                    <p className="italic">"Our product has a machine learning engine."</p>
+                                    <p className="font-bold">So what?</p>
+                                    <p className="italic">"It catches errors early."</p>
+                                    <p className="font-bold">So what?</p>
+                                    <p className="italic text-green-600 font-bold">"Customers save $50,000 in lost revenue from outages." (That's the value!)</p>
+                                </Accordion>
+                            </div>
+                        )}
+
+                        {state.currentStep === 3 && (
+                            <div className="animate-fadeIn">
+                                <h2 className="text-xl font-bold mb-4 text-gray-800">Step 3: Assemble Your Positioning Statement</h2>
+                                <p className="text-gray-600 mb-6 text-base leading-relaxed">
+                                    Finally, combine your target customer, the pain you solve, and your unique value into a single positioning foundation.
+                                </p>
+
+                                <div className="space-y-6">
+                                    <div className="border-2 border-gray-200 rounded-lg p-6">
+                                        <div className="flex items-center mb-4">
+                                            <Lightbulb className="text-orange-500 mr-2" size={24} />
+                                            <h4 className="text-lg font-bold text-gray-800">Core Pain Point</h4>
+                                        </div>
+                                        <p className="text-gray-700 font-medium mb-3">What specific struggle does your target customer face that your value addresses?</p>
+                                        <textarea
+                                            value={state.corePain}
+                                            onChange={(e) => updateState({ corePain: e.target.value })}
+                                            placeholder='Example: "API failures that impact customers and cause revenue loss before teams can respond."'
+                                            className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                        />
+                                        <WordCountFeedback text={state.corePain} minWords={10} />
+                                    </div>
+
+                                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-6">
+                                        <h4 className="text-lg font-bold text-orange-800 mb-4 flex items-center">
+                                            <CheckCircle className="mr-2" size={24} />
+                                            Your Positioning Foundation
+                                        </h4>
+
+                                        <div className="space-y-4 font-mono text-sm bg-white p-6 rounded-lg border border-orange-100 shadow-inner">
+                                            <div>
+                                                <span className="font-bold text-orange-600 uppercase block mb-1">FOR:</span>
+                                                <p className="text-gray-800">{state.customerProfile || "(Define in Step 1)"}</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-bold text-orange-600 uppercase block mb-1">WHO STRUGGLES WITH:</span>
+                                                <p className="text-gray-800">{state.corePain || "(Enter pain point above)"}</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-bold text-orange-600 uppercase block mb-1">UNLIKE:</span>
+                                                <p className="text-gray-800">{state.competitiveAlternative || "(Define in Step 1)"}</p>
+                                            </div>
+                                            <div>
+                                                <span className="font-bold text-orange-600 uppercase block mb-1">WE ARE BETTER BECAUSE:</span>
+                                                <ul className="list-disc list-inside space-y-2 mt-1">
+                                                    {state.differentiators.filter(d => d.length >= 15).length > 0 ? (
+                                                        state.differentiators.filter(d => d.length >= 15).map((diff, i) => (
+                                                            <li key={i} className="text-gray-800">{diff}</li>
+                                                        ))
+                                                    ) : (
+                                                        <li className="text-gray-400 italic">(Define in Step 2)</li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                            <div>
+                                                <span className="font-bold text-orange-600 uppercase block mb-1">THAT PROVIDES:</span>
+                                                <ul className="list-disc list-inside space-y-2 mt-1">
+                                                    {state.values.filter((v, i) => state.differentiators[i].length >= 15 && v.length >= 25).length > 0 ? (
+                                                        state.values.filter((v, i) => state.differentiators[i].length >= 15 && v.length >= 25).map((val, i) => (
+                                                            <li key={i} className="text-gray-800">{val}</li>
+                                                        ))
+                                                    ) : (
+                                                        <li className="text-gray-400 italic">(Define in Step 2)</li>
+                                                    )}
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="p-6 bg-green-50 border border-green-200 rounded-xl text-center shadow-sm">
+                                        <h4 className="text-lg font-bold text-green-800 mb-2">Next Steps</h4>
+                                        <p className="text-green-700 text-sm mb-4">
+                                            This positioning foundation provides the clarity needed for all marketing and sales communications. Test this messaging with customers and refine it based on their feedback.
+                                        </p>
+                                        <button
+                                            onClick={() => {
+                                                const md = `# Positioning Basics Workshop Summary\n\n` +
+                                                           `## 1. Market Context\n\n` +
+                                                           `### Target Customer Profile\n` +
+                                                           `${state.customerProfile}\n\n` +
+                                                           `### Competitive Alternative\n` +
+                                                           `${state.competitiveAlternative}\n\n` +
+                                                           `### Baseline Gaps\n` +
+                                                           `${state.alternativeDescription}\n\n` +
+                                                           `## 2. Differentiators & Value\n\n` +
+                                                           state.differentiators.filter(d => d.length >= 15).map((diff, i) =>
+                                                               `### Differentiator ${i+1}\n` +
+                                                               `**Capability:** ${diff}\n` +
+                                                               `**Value:** ${state.values[i]}\n`
+                                                           ).join('\n') +
+                                                           `\n## 3. Positioning Foundation\n\n` +
+                                                           `**FOR:** ${state.customerProfile}\n\n` +
+                                                           `**WHO STRUGGLES WITH:** ${state.corePain}\n\n` +
+                                                           `**UNLIKE:** ${state.competitiveAlternative}\n\n` +
+                                                           `**WE ARE BETTER BECAUSE:**\n` +
+                                                           state.differentiators.filter(d => d.length >= 15).map(d => `- ${d}`).join('\n') +
+                                                           `\n\n**THAT PROVIDES:**\n` +
+                                                           state.values.filter((v, i) => state.differentiators[i].length >= 15 && v.length >= 25).map(v => `- ${v}`).join('\n');
+
+                                                navigator.clipboard.writeText(md);
+                                                alert('Workshop summary copied to clipboard');
+                                            }}
+                                            className="bg-green-600 text-white px-8 py-3 rounded-lg font-bold hover:bg-green-700 transition-colors"
+                                        >
+                                            Copy Workshop Summary
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="flex justify-between items-center">
+                        <button
+                            onClick={() => updateState({ currentStep: Math.max(1, state.currentStep - 1) })}
+                            disabled={state.currentStep === 1}
+                            className={`px-4 py-2 rounded-lg font-medium transition-all ${state.currentStep === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-500 text-white hover:bg-gray-600'}`}
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { if (confirm('Clear all work? You cannot get it back.')) { localStorage.removeItem(WORKSHOP_STORAGE_KEY); window.location.reload(); } }}
+                            className="text-gray-400 text-xs hover:text-red-500 transition-colors"
+                        >
+                            Reset Workshop
+                        </button>
+                        <button
+                            onClick={() => {
+                                if (state.currentStep < 3) {
+                                    updateState({ currentStep: state.currentStep + 1 });
+                                }
+                            }}
+                            className={`px-6 py-2 rounded-lg font-medium transition-colors shadow-sm ${
+                                state.currentStep === 3 ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-orange-500 text-white hover:bg-orange-600'
+                            }`}
+                        >
+                            {state.currentStep === 3 ? 'Workshop Done' : 'Continue'}
+                        </button>
+                    </div>
+
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Positioning Basics Workshop - GTM Program - 2025
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WorkshopApp />);
+    </script>
+</body>
+</html>
