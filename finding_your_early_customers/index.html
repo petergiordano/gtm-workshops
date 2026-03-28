@@ -8,29 +8,28 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px; /* Keep original padding */
-            background: #f8f9fa; /* Changed background to light gray */
+            padding: 40px;
+            background: #f8f9fa;
             min-height: 100vh;
-            color: #333; /* Changed text color to dark gray */
+            color: #333;
         }
         
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
+            background: white;
             padding: 40px;
-            border-radius: 20px; /* Keep original border radius */
-            /* backdrop-filter: blur(10px); Removed as container is now solid */
-            /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); Replaced with new shadow */
-            background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid #e9ecef; /* Changed container background, added shadow and border */
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
         }
         
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #FF7F00; /* Changed back-link color to orange */
+            color: #FF7F00;
             text-decoration: none;
-            opacity: 0.8; /* Keep original opacity */
+            opacity: 0.8;
             transition: opacity 0.3s ease;
         }
         
@@ -44,23 +43,18 @@
             font-weight: 300;
         }
         
-        .workshop-info {
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        
         .activity-list {
             list-style: none;
             padding: 0;
         }
         
         .activity-item {
-            background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%); /* Changed card background to orange gradient */
+            background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%);
             margin-bottom: 15px;
             border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
-        } /* Keep original transition */
+        }
         
         .activity-item:hover {
             background: linear-gradient(135deg, #FF6F00 0%, #FF8500 100%);
@@ -71,7 +65,7 @@
         .activity-link {
             display: block;
             padding: 20px;
-            color: white; /* Keep text color white for contrast on orange */
+            color: white;
             text-decoration: none;
         }
         
@@ -79,6 +73,8 @@
             font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
         
         .activity-description {
@@ -86,34 +82,8 @@
             opacity: 0.8;
         }
         
-        .coming-soon {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
         .available {
             border-left: 4px solid #F1C232;
-        }
-        
-        /* Activity Numbering Styles */
-        .activity-title {
-            display: flex;
-            align-items: center;
-        }
-        
-        .activity-title span {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            width: 24px;
-            height: 24px;
-            background-color: white;
-            color: #FF7F00;
-            border-radius: 50%;
-            font-weight: bold;
-            margin-right: 8px;
-            font-size: 0.875rem;
-            flex-shrink: 0;
         }
         
         .mt-8 { margin-top: 2rem; }
@@ -132,35 +102,13 @@
         
         <ul class="activity-list">
             <li class="activity-item available">
-                <a href="ecp-activity-1A.html" class="activity-link">
+                <a href="activity-unified.html" class="activity-link">
                     <div class="activity-title">
-                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">1</span>
-                        Early Market vs Mainstream Identification
+                        Launch Unified Workshop
                     </div>
-                    <div class="activity-description">Interactive exercise for building Early Customer Profiles</div>
+                    <div class="activity-description">Identify early market customers, map ECP components, and build your customer hypothesis.</div>
                 </a>
             </li>
-            
-            <li class="activity-item available">
-                <a href="ecp-activity-2A.html" class="activity-link">
-                    <div class="activity-title">
-                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">2</span>
-                        ECP Component Mapping Activity
-                    </div>
-                    <div class="activity-description">Interactive exercise mapping Posh AMP example to ECP characteristics</div>
-                </a>
-            </li>
-            
-            <li class="activity-item available">
-                <a href="ecp-activity-3A.html" class="activity-link">
-                    <div class="activity-title">
-                        <span class="inline-flex items-center justify-center w-6 h-6 bg-white text-orange-600 rounded-full font-bold mr-2 text-sm">3</span>
-                        ECP Hypothesis Builder
-                    </div>
-                    <div class="activity-description">Build and refine your Early Customer Profile hypothesis</div>
-                </a>
-            </li>
-            
         </ul>
 
         <div class="mt-8 flex items-center justify-center">
