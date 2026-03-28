@@ -8,29 +8,28 @@
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 40px; /* Keep original padding */
-            background: #f8f9fa; /* Changed background to light gray */
+            padding: 40px;
+            background: #f8f9fa;
             min-height: 100vh;
-            color: #333; /* Changed text color to dark gray */
+            color: #333;
         }
         
         .container {
             max-width: 600px;
             margin: 0 auto;
-            background: rgba(255, 255, 255, 0.1);
+            background: white;
             padding: 40px;
-            border-radius: 20px; /* Keep original border radius */
-            /* backdrop-filter: blur(10px); Removed as container is now solid */
-            /* box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1); Replaced with new shadow */
-            background: white; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); border: 1px solid #e9ecef; /* Changed container background, added shadow and border */
+            border-radius: 20px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+            border: 1px solid #e9ecef;
         }
         
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
-            color: #FF7F00; /* Changed back-link color to orange */
+            color: #FF7F00;
             text-decoration: none;
-            opacity: 0.8; /* Keep original opacity */
+            opacity: 0.8;
             transition: opacity 0.3s ease;
         }
         
@@ -44,23 +43,13 @@
             font-weight: 300;
         }
         
-        .workshop-info {
-            margin-bottom: 30px;
-            opacity: 0.9;
-        }
-        
-        .activity-list {
-            list-style: none;
-            padding: 0;
-        }
-        
         .activity-item {
-            background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%); /* Changed card background to orange gradient */
-            margin-bottom: 15px;
+            background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%);
+            margin-top: 30px;
             border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
-        } /* Keep original transition */
+        }
         
         .activity-item:hover {
             background: linear-gradient(135deg, #FF6F00 0%, #FF8500 100%);
@@ -70,33 +59,15 @@
         
         .activity-link {
             display: block;
-            padding: 20px;
-            color: white; /* Keep text color white for contrast on orange */
+            padding: 24px;
+            color: white;
             text-decoration: none;
         }
         
         .activity-title {
-            font-size: 1.2em;
+            font-size: 1.4em;
             font-weight: 600;
-            margin-bottom: 5px;
-        }
-        
-        .activity-description {
-            font-size: 0.9em;
-            opacity: 0.8;
-        }
-        
-        .coming-soon {
-            opacity: 0.5;
-            pointer-events: none;
-        }
-        
-        .available {
-            border-left: 4px solid #F1C232;
-        }
-        
-        /* Activity Numbering Styles */
-        .activity-title {
+            margin-bottom: 8px;
             display: flex;
             align-items: center;
         }
@@ -105,15 +76,20 @@
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 24px;
-            height: 24px;
+            width: 28px;
+            height: 28px;
             background-color: white;
             color: #FF7F00;
             border-radius: 50%;
             font-weight: bold;
-            margin-right: 8px;
-            font-size: 0.875rem;
-            flex-shrink: 0;
+            margin-right: 12px;
+            font-size: 0.9em;
+        }
+
+        .activity-description {
+            font-size: 1em;
+            opacity: 0.9;
+            line-height: 1.5;
         }
         
         .mt-8 { margin-top: 2rem; }
@@ -129,38 +105,17 @@
         <a href="../index.html" class="back-link">← Back to All Workshops</a>
         
         <h1>Pricing & Monetization</h1>
+        <p style="color: #666; margin-bottom: 20px;">Align your pricing to value and build sustainable guardrails for growth.</p>
         
-        <ul class="activity-list">
-            <li class="activity-item">
-                <a href="pricing-activity-1A.html" class="activity-link">
-                    <div class="activity-title">
-                        <span>1</span>
-                        Find Your Value Metric
-                    </div>
-                    <div class="activity-description">Align to how your customer uses your product to create value in their business</div>
-                </a>
-            </li>
-            
-            <li class="activity-item">
-                <a href="pricing-activity-2A.html" class="activity-link">
-                    <div class="activity-title">
-                        <span>2</span>
-                        Match your Model
-                    </div>
-                    <div class="activity-description">Ensure you to make more money when your customer realizes more value from your product</div>
-                </a>
-            </li>
-            
-            <li class="activity-item">
-                <a href="pricing-activity-3A.html" class="activity-link">
-                    <div class="activity-title">
-                        <span>3</span>
-                        Implement Price Points and Guardrails
-                    </div>
-                    <div class="activity-description">Protect you and the customer without limiting value creation</div>
-                </a>
-            </li>
-        </ul>
+        <div class="activity-item">
+            <a href="activity-unified.html" class="activity-link">
+                <div class="activity-title">
+                    <span>A</span>
+                    Pricing Strategy Workshop
+                </div>
+                <div class="activity-description">A unified 3-step guide to finding your value metric, matching your model, and implementing price points.</div>
+            </a>
+        </div>
 
         <div class="mt-8 flex items-center justify-center">
             <a href="https://docs.google.com/presentation/d/1oMAbn1y_zLOE56Ax6rhnoC5Aya_KLIhSL2qC-PdIG8E/edit?usp=sharing" target="_blank" class="flex items-center" style="text-decoration: none;">

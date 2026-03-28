@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pricing & Monetization Workshop</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=Raleway:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Open Sans', 'Raleway', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background-color: #fafafa;
+            margin: 0;
+            padding: 0;
+        }
+        .laptop-textarea {
+            min-height: 80px;
+            max-height: 120px;
+            transition: max-height 0.3s ease;
+            resize: none;
+        }
+        .laptop-textarea:focus {
+            max-height: 200px;
+        }
+        .animate-fadeIn {
+            animation: fadeIn 0.3s ease-in;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .step-icon {
+            width: 48px;
+            height: 48px;
+            background-color: #FF9000;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 18px;
+            flex-shrink: 0;
+        }
+        .lucide-icon {
+            width: 20px;
+            height: 20px;
+            display: inline-block;
+            vertical-align: middle;
+        }
+        .value-card {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .value-card:hover {
+            border-color: #FF9000;
+            box-shadow: 0 4px 12px rgba(255, 144, 0, 0.15);
+        }
+        .value-card.selected {
+            border-color: #FF9000;
+            background: #FFF7ED;
+            box-shadow: 0 4px 12px rgba(255, 144, 0, 0.2);
+        }
+        .hybrid-box {
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        .hybrid-box.selected {
+            border-color: #FF9000;
+            background: #FFF7ED;
+            box-shadow: 0 4px 12px rgba(255, 144, 0, 0.15);
+        }
+    </style>
+</head>
+<body>
+    <div id="root"></div>
+
+    <script type="application/json" id="testData">
+    {
+      "currentStep": 3,
+      "step1": {
+        "selectedMetric": "B",
+        "rationale": "Our customers process millions of API calls daily and their usage directly correlates with the business value they get from our predictive monitoring platform.",
+        "problemSolved": "Eliminates the need for complex infrastructure scaling decisions and prevents costly downtime incidents before they occur.",
+        "pricePerUnit": "0.001"
+      },
+      "step2": {
+        "baseComponent": "subscription",
+        "valueScaling": "usage",
+        "customerJustification": "Monthly subscription covers our infrastructure and platform costs while usage-based scaling ensures customers only pay more when they're getting more value from monitoring additional API calls.",
+        "customerExplanation": "Pay a monthly base fee for access to our monitoring platform, plus a small per-API-call fee that scales with your usage and the value you receive.",
+        "potentialChallenge": "Usage spikes during peak traffic could cause unexpected bill increases - we'd address this with usage alerts, spending caps, and graduated pricing tiers to prevent bill shock."
+      },
+      "step3": {
+        "competitorPricing": "DataDog APM: $15/host/month, New Relic: $0.25/100K transactions, PagerDuty: $29/user/month for incident response",
+        "substituteCosts": "In-house monitoring team: $150K/year engineer cost, Manual incident response: 40 hours/week ops time, Downtime cost: $10K/hour revenue impact",
+        "tooExpensive": "8000",
+        "gettingExpensive": "4000",
+        "goodValue": "2200",
+        "bargainPrice": "800",
+        "starterPricing": "$2,000/month base + $0.015/API call (up to 5M calls included)",
+        "growthPricing": "$5,000/month base + $0.01/API call + $25 per prevented incident bonus",
+        "pricingJustification": "Based on customer interviews and competitive analysis, this pricing captures significant value while remaining accessible to growth-stage companies. The hybrid model ensures predictable base costs with value-aligned scaling.",
+        "selectedGuardrails": ["usage_caps", "overage_fees", "monitoring_dashboard"],
+        "guardrail1": "Usage caps: Starter tier includes 5M API calls, Growth tier includes 20M calls. Soft limits with email warnings at 80% and dashboard alerts.",
+        "guardrail2": "Overage fees: $0.02 per API call above tier limit (25% premium) with automatic billing alerts and monthly caps to prevent bill shock.",
+        "guardrail3": "Usage monitoring dashboard: Real-time tracking with predictive alerts, customer spending controls, and transparent usage analytics for cost management.",
+        "customerCommunication": "We've designed these protections to give you predictable costs while ensuring fair usage across all customers. You'll always know your usage levels and have control over spending limits."
+      }
+    }
+    </script>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+
+        const WORKSHOP_STORAGE_KEY = 'workshopState_pricing_monetization';
+
+        // --- Icons ---
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
+        const TrendingUp = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <polyline points="22,7 13.5,15.5 8.5,10.5 2,17"/><polyline points="16,7 22,7 22,13"/>
+            </svg>
+        );
+
+        const Target = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>
+            </svg>
+        );
+
+        const DollarSign = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>
+            </svg>
+        );
+
+        const FileText = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14,2 14,8 20,8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10,9 9,9 8,9"/>
+            </svg>
+        );
+
+        const Shield = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+        );
+
+        const Info = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+            </svg>
+        );
+
+        // --- Helper Components ---
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">(write {minWords}+ words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
+        const StepIndicator = ({ currentStep, steps, onStepClick }) => (
+            <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
+                <div className="flex justify-between items-center">
+                    {steps.map((step, index) => (
+                        <React.Fragment key={step.number}>
+                            <div
+                                className={`flex items-center ${onStepClick ? 'cursor-pointer' : ''}`}
+                                onClick={() => onStepClick && onStepClick(step.number)}
+                            >
+                                <div className={`step-icon ${
+                                    currentStep === step.number ? 'bg-orange-500' :
+                                    currentStep > step.number ? 'bg-green-500' : 'bg-gray-400'
+                                }`}>
+                                    {currentStep > step.number ? <CheckCircle size={24} /> : step.number}
+                                </div>
+                                <div className="ml-3 hidden md:block">
+                                    <p className="text-sm font-medium text-gray-900">{step.title}</p>
+                                    <p className="text-xs text-gray-500">{step.desc}</p>
+                                </div>
+                            </div>
+                            {index < steps.length - 1 && (
+                                <div className="flex-1 mx-4 h-px bg-gray-300"></div>
+                            )}
+                        </React.Fragment>
+                    ))}
+                </div>
+            </div>
+        );
+
+        // --- Main Component ---
+        const WorkshopApp = () => {
+            const [state, setState] = useState(() => {
+                const saved = localStorage.getItem(WORKSHOP_STORAGE_KEY);
+                const initialState = saved ? JSON.parse(saved) : {
+                    currentStep: 1,
+                    step1: {
+                        selectedMetric: '',
+                        rationale: '',
+                        problemSolved: '',
+                        pricePerUnit: ''
+                    },
+                    step2: {
+                        baseComponent: '',
+                        valueScaling: '',
+                        customerJustification: '',
+                        customerExplanation: '',
+                        potentialChallenge: ''
+                    },
+                    step3: {
+                        competitorPricing: '',
+                        substituteCosts: '',
+                        tooExpensive: '',
+                        gettingExpensive: '',
+                        goodValue: '',
+                        bargainPrice: '',
+                        starterPricing: '',
+                        growthPricing: '',
+                        pricingJustification: '',
+                        selectedGuardrails: [],
+                        guardrail1: '',
+                        guardrail2: '',
+                        guardrail3: '',
+                        customerCommunication: ''
+                    }
+                };
+
+                const params = new URLSearchParams(window.location.search);
+                const stepParam = params.get('step');
+                if (stepParam) {
+                    initialState.currentStep = parseInt(stepParam, 10);
+                }
+
+                return initialState;
+            });
+
+            useEffect(() => {
+                localStorage.setItem(WORKSHOP_STORAGE_KEY, JSON.stringify(state));
+            }, [state]);
+
+            const [devMode, setDevMode] = useState(false);
+            const toggleDevMode = () => setDevMode(!devMode);
+
+            const devFillData = () => {
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setState(testData);
+                } catch (e) {
+                    console.error("Failed to load test data", e);
+                }
+            };
+
+            const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
+
+            const updateStepState = (step, updates) => {
+                setState(prev => ({
+                    ...prev,
+                    [step]: { ...prev[step], ...updates }
+                }));
+            };
+
+            const [showGuidance, setShowGuidance] = useState(false);
+
+            const valueMetrics = [
+                { id: 'A', name: 'People/User Enablement', icon: '👥', desc: 'Value from enabling individuals/teams', example: 'E.g. Notion AI per-member add-on' },
+                { id: 'B', name: 'Volume/Throughput', icon: '📈', desc: 'Value from activity volume/data processed', example: 'E.g. OpenAI API per token' },
+                { id: 'C', name: 'Outcome/Business Result', icon: '🎯', desc: 'Value from measurable business results', example: 'E.g. 11x.ai per meeting booked' }
+            ];
+
+            const baseComponentOptions = [
+                { id: 'platform_fee', name: 'Platform Fee', desc: 'Entry access charge', example: 'E.g. Anthropic Claude API base fee', useCase: 'When customers need guaranteed access' },
+                { id: 'subscription', name: 'Subscription', desc: 'Recurring capabilities', example: 'E.g. Notion AI add-on', useCase: 'When customers want predictable costs' }
+            ];
+
+            const valueScalingOptions = [
+                { id: 'seats', name: 'Per Seat/User Scaling', example: 'E.g. Notion AI per team member' },
+                { id: 'usage', name: 'Per Usage/Activity Scaling', example: 'E.g. Anthropic Claude per token' },
+                { id: 'outcomes', name: 'Per Outcome/Result Scaling', example: 'E.g. Clay per data enrichment' }
+            ];
+
+            const guardrailOptions = [
+                { id: 'usage_caps', name: 'Usage Caps per Tier', example: 'Starter tier limited to 5M API calls' },
+                { id: 'overage_fees', name: 'Overage Fee Structure', example: '25% premium for usage above limits' },
+                { id: 'fair_use', name: 'Fair Use Policies', example: 'Limits on average daily usage spikes' },
+                { id: 'monitoring_dashboard', name: 'Usage Monitoring Dashboard', example: 'Real-time tracking with alerts' },
+                { id: 'spending_caps', name: 'Spending Caps & Alerts', example: 'Customer-set monthly spending limits' },
+                { id: 'minimum_commitments', name: 'Minimum Commitments', example: 'Annual contracts for enterprise' }
+            ];
+
+            // Validation
+            const getWordCount = (text) => text.trim().split(/\s+/).filter(w => w.length > 0).length;
+
+            const isStep1Complete = () => {
+                return state.step1.selectedMetric &&
+                       getWordCount(state.step1.rationale) >= 5 &&
+                       getWordCount(state.step1.problemSolved) >= 5;
+            };
+
+            const isStep2Complete = () => {
+                return state.step2.baseComponent &&
+                       state.step2.valueScaling &&
+                       getWordCount(state.step2.customerJustification) >= 5 &&
+                       getWordCount(state.step2.customerExplanation) >= 5 &&
+                       getWordCount(state.step2.potentialChallenge) >= 5;
+            };
+
+            const isStep3Complete = () => {
+                const step3 = state.step3;
+                return getWordCount(step3.competitorPricing) >= 15 &&
+                       getWordCount(step3.substituteCosts) >= 12 &&
+                       step3.tooExpensive && step3.gettingExpensive && step3.goodValue && step3.bargainPrice &&
+                       getWordCount(step3.starterPricing) >= 8 &&
+                       getWordCount(step3.growthPricing) >= 8 &&
+                       getWordCount(step3.pricingJustification) >= 20 &&
+                       step3.selectedGuardrails.length >= 2 &&
+                       getWordCount(step3.guardrail1) >= 15 &&
+                       getWordCount(step3.guardrail2) >= 15 &&
+                       getWordCount(step3.customerCommunication) >= 15;
+            };
+
+            const steps = [
+                { number: 1, title: "Value Metric", desc: "Define core value", complete: isStep1Complete() },
+                { number: 2, title: "Pricing Model", desc: "Design hybrid model", complete: isStep2Complete() },
+                { number: 3, title: "Implementation", desc: "Points & guardrails", complete: isStep3Complete() }
+            ];
+
+            const renderStep1 = () => (
+                <div className="animate-fadeIn space-y-6">
+                    <h2 className="text-xl font-bold text-gray-800">Identify Your Primary Value Metric</h2>
+                    <p className="text-gray-600">When customers achieve ROI with your product, what has primarily improved?</p>
+
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 cursor-pointer" onClick={() => setShowGuidance(!showGuidance)}>
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2">
+                                <Info className="text-orange-600" />
+                                <span className="font-semibold text-orange-800">Decision Framework</span>
+                            </div>
+                            <span className={`transform transition-transform ${showGuidance ? 'rotate-180' : ''}`}>▼</span>
+                        </div>
+                        {showGuidance && (
+                            <div className="mt-4 grid md:grid-cols-3 gap-4 animate-fadeIn">
+                                <div className="bg-white p-3 rounded shadow-sm text-xs">
+                                    <p className="font-bold mb-1">Problem Focus</p>
+                                    <p>What specific problem does your product solve?</p>
+                                </div>
+                                <div className="bg-white p-3 rounded shadow-sm text-xs">
+                                    <p className="font-bold mb-1">Success Measure</p>
+                                    <p>How do customers measure their success?</p>
+                                </div>
+                                <div className="bg-white p-3 rounded shadow-sm text-xs">
+                                    <p className="font-bold mb-1">Value Scaling</p>
+                                    <p>What unit scales naturally with that value?</p>
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    <div className="grid md:grid-cols-3 gap-4">
+                        {valueMetrics.map(m => (
+                            <div key={m.id} className={`value-card ${state.step1.selectedMetric === m.id ? 'selected' : ''}`} onClick={() => updateStepState('step1', { selectedMetric: m.id })}>
+                                <div className="text-3xl mb-2 text-center">{m.icon}</div>
+                                <h3 className="font-bold text-center mb-1 text-sm">{m.name}</h3>
+                                <p className="text-xs text-gray-600 text-center mb-2">{m.desc}</p>
+                                <p className="text-[10px] text-orange-600 font-medium text-center">{m.example}</p>
+                            </div>
+                        ))}
+                    </div>
+
+                    {state.step1.selectedMetric && (
+                        <div className="space-y-4 pt-4 border-t border-gray-100">
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Why did you choose this option?</label>
+                                <textarea
+                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                    value={state.step1.rationale}
+                                    onChange={(e) => updateStepState('step1', { rationale: e.target.value })}
+                                    placeholder="Explain your reasoning..."
+                                />
+                                <WordCountFeedback text={state.step1.rationale} minWords={5} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">What specific problem does this solve?</label>
+                                <textarea
+                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                    value={state.step1.problemSolved}
+                                    onChange={(e) => updateStepState('step1', { problemSolved: e.target.value })}
+                                    placeholder="Describe the customer problem..."
+                                />
+                                <WordCountFeedback text={state.step1.problemSolved} minWords={5} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-bold text-gray-700 mb-1">Proposed price per unit (optional)</label>
+                                <div className="flex items-center gap-2">
+                                    <span className="text-gray-500">$</span>
+                                    <input
+                                        type="number"
+                                        className="w-32 p-2 border border-gray-300 rounded text-sm"
+                                        value={state.step1.pricePerUnit}
+                                        onChange={(e) => updateStepState('step1', { pricePerUnit: e.target.value })}
+                                        placeholder="0.01"
+                                    />
+                                    <span className="text-gray-500 text-sm">per unit</span>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+
+            const renderStep2 = () => {
+                const selectedMetric = valueMetrics.find(m => m.id === state.step1.selectedMetric);
+                return (
+                    <div className="animate-fadeIn space-y-8">
+                        <div>
+                            <h2 className="text-xl font-bold text-gray-800">Match Your Model</h2>
+                            <p className="text-gray-600">Combine your value metric with a base component for a balanced hybrid model.</p>
+                        </div>
+
+                        <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                            <div className="flex items-center justify-center gap-4 text-center">
+                                <div className="bg-white p-3 rounded-lg border border-blue-100 w-32 shadow-sm">
+                                    <p className="text-[10px] uppercase font-bold text-blue-600 mb-1">Base</p>
+                                    <p className="text-xs font-bold">Platform Fee</p>
+                                </div>
+                                <span className="text-2xl font-bold text-blue-400">+</span>
+                                <div className="bg-white p-3 rounded-lg border border-blue-100 w-32 shadow-sm">
+                                    <p className="text-[10px] uppercase font-bold text-blue-600 mb-1">Scaling</p>
+                                    <p className="text-xs font-bold">{selectedMetric?.name || 'Value Metric'}</p>
+                                </div>
+                                <span className="text-2xl font-bold text-blue-400">=</span>
+                                <div className="bg-orange-500 p-3 rounded-lg text-white w-32 shadow-md">
+                                    <p className="text-[10px] uppercase font-bold opacity-80 mb-1">Result</p>
+                                    <p className="text-xs font-bold">Hybrid Model</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-gray-700">1. Choose Your Base Component</h3>
+                            <div className="grid md:grid-cols-2 gap-4">
+                                {baseComponentOptions.map(opt => (
+                                    <div key={opt.id} className={`hybrid-box cursor-pointer ${state.step2.baseComponent === opt.id ? 'selected' : ''}`} onClick={() => updateStepState('step2', { baseComponent: opt.id })}>
+                                        <h4 className="font-bold text-sm mb-1">{opt.name}</h4>
+                                        <p className="text-xs text-gray-600 mb-2">{opt.desc}</p>
+                                        <p className="text-[10px] text-orange-600 font-medium mb-1">{opt.example}</p>
+                                        <p className="text-[10px] text-gray-400 italic">{opt.useCase}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        <div className="space-y-4">
+                            <h3 className="font-bold text-gray-700">2. Confirm Value Scaling</h3>
+                            <div className="space-y-3">
+                                {valueScalingOptions.map(opt => (
+                                    <div key={opt.id} className="border border-gray-200 rounded-lg p-3 bg-white">
+                                        <label className="flex items-center gap-3 cursor-pointer">
+                                            <input type="radio" name="scaling" checked={state.step2.valueScaling === opt.id} onChange={() => updateStepState('step2', { valueScaling: opt.id })} className="w-4 h-4 text-orange-600" />
+                                            <div>
+                                                <p className="text-sm font-bold">{opt.name}</p>
+                                                <p className="text-xs text-blue-600">{opt.example}</p>
+                                            </div>
+                                        </label>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+
+                        {state.step2.baseComponent && state.step2.valueScaling && (
+                            <div className="space-y-4 pt-4 border-t border-gray-100 animate-fadeIn">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Why does this combination work for your customers?</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step2.customerJustification} onChange={(e) => updateStepState('step2', { customerJustification: e.target.value })} />
+                                    <WordCountFeedback text={state.step2.customerJustification} minWords={5} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Explain this pricing in simple terms for a customer:</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step2.customerExplanation} onChange={(e) => updateStepState('step2', { customerExplanation: e.target.value })} />
+                                    <WordCountFeedback text={state.step2.customerExplanation} minWords={5} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">What is one potential challenge and how will you address it?</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step2.potentialChallenge} onChange={(e) => updateStepState('step2', { potentialChallenge: e.target.value })} />
+                                    <WordCountFeedback text={state.step2.potentialChallenge} minWords={5} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                );
+            };
+
+            const renderStep3 = () => (
+                <div className="animate-fadeIn space-y-8">
+                    <div>
+                        <h2 className="text-xl font-bold text-gray-800">Set Price Points & Build Guardrails</h2>
+                        <p className="text-gray-600">Determine specific pricing tiers and protective measures.</p>
+                    </div>
+
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-4">
+                        <h3 className="font-bold text-blue-800 flex items-center gap-2"><TrendingUp /> Research & Comparison</h3>
+                        <div>
+                            <label className="block text-xs font-bold text-blue-700 uppercase mb-1">Direct Competitors & Pricing</label>
+                            <textarea className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm" value={state.step3.competitorPricing} onChange={(e) => updateStepState('step3', { competitorPricing: e.target.value })} placeholder="E.g. DataDog: $15/host..." />
+                            <WordCountFeedback text={state.step3.competitorPricing} minWords={15} />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-blue-700 uppercase mb-1">Substitute Solutions & Costs</label>
+                            <textarea className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm" value={state.step3.substituteCosts} onChange={(e) => updateStepState('step3', { substituteCosts: e.target.value })} placeholder="E.g. In-house team: $150K/year..." />
+                            <WordCountFeedback text={state.step3.substituteCosts} minWords={12} />
+                        </div>
+                    </div>
+
+                    <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+                        <h3 className="font-bold text-green-800 mb-4 flex items-center gap-2"><DollarSign /> Price Range Estimation</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                            <div>
+                                <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Too Expensive</label>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-gray-500">$</span>
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.tooExpensive} onChange={(e) => updateStepState('step3', { tooExpensive: e.target.value })} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Getting Expensive</label>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-gray-500">$</span>
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.gettingExpensive} onChange={(e) => updateStepState('step3', { gettingExpensive: e.target.value })} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Good Value</label>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-gray-500">$</span>
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.goodValue} onChange={(e) => updateStepState('step3', { goodValue: e.target.value })} />
+                                </div>
+                            </div>
+                            <div>
+                                <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Bargain Price</label>
+                                <div className="flex items-center gap-1">
+                                    <span className="text-gray-500">$</span>
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.bargainPrice} onChange={(e) => updateStepState('step3', { bargainPrice: e.target.value })} />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 space-y-4">
+                        <h3 className="font-bold text-orange-800 flex items-center gap-2"><Target /> Recommended Structure</h3>
+                        <div>
+                            <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Starter Tier Pricing</label>
+                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm" value={state.step3.starterPricing} onChange={(e) => updateStepState('step3', { starterPricing: e.target.value })} />
+                            <WordCountFeedback text={state.step3.starterPricing} minWords={8} />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Growth Tier Pricing</label>
+                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm" value={state.step3.growthPricing} onChange={(e) => updateStepState('step3', { growthPricing: e.target.value })} />
+                            <WordCountFeedback text={state.step3.growthPricing} minWords={8} />
+                        </div>
+                        <div>
+                            <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Pricing Justification</label>
+                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm" value={state.step3.pricingJustification} onChange={(e) => updateStepState('step3', { pricingJustification: e.target.value })} />
+                            <WordCountFeedback text={state.step3.pricingJustification} minWords={20} />
+                        </div>
+                    </div>
+
+                    <div className="space-y-6">
+                        <div className="flex items-center gap-2">
+                            <Shield className="text-orange-600" />
+                            <h3 className="font-bold text-gray-800 text-lg">Protective Guardrails</h3>
+                        </div>
+
+                        <div className="grid md:grid-cols-2 gap-3">
+                            {guardrailOptions.map(opt => (
+                                <div key={opt.id} className={`p-3 border rounded-lg cursor-pointer transition-all ${state.step3.selectedGuardrails.includes(opt.id) ? 'border-orange-500 bg-orange-50 shadow-sm' : 'border-gray-200 bg-white hover:border-orange-200'}`}
+                                     onClick={() => {
+                                         const current = state.step3.selectedGuardrails;
+                                         const updated = current.includes(opt.id) ? current.filter(id => id !== opt.id) : [...current, opt.id];
+                                         updateStepState('step3', { selectedGuardrails: updated });
+                                     }}>
+                                    <div className="flex items-start gap-2">
+                                        <div className={`w-4 h-4 rounded border mt-1 flex items-center justify-center ${state.step3.selectedGuardrails.includes(opt.id) ? 'bg-orange-500 border-orange-500' : 'border-gray-300 bg-white'}`}>
+                                            {state.step3.selectedGuardrails.includes(opt.id) && <span className="text-white text-[10px]">✓</span>}
+                                        </div>
+                                        <div>
+                                            <p className="text-xs font-bold">{opt.name}</p>
+                                            <p className="text-[10px] text-gray-500">{opt.example}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+
+                        {state.step3.selectedGuardrails.length > 0 && (
+                            <div className="space-y-4 animate-fadeIn">
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Guardrail 1 Implementation Details</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.guardrail1} onChange={(e) => updateStepState('step3', { guardrail1: e.target.value })} />
+                                    <WordCountFeedback text={state.step3.guardrail1} minWords={15} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Guardrail 2 Implementation Details</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.guardrail2} onChange={(e) => updateStepState('step3', { guardrail2: e.target.value })} />
+                                    <WordCountFeedback text={state.step3.guardrail2} minWords={15} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">Guardrail 3 (Optional)</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.guardrail3} onChange={(e) => updateStepState('step3', { guardrail3: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-bold text-gray-700 mb-1">How you will explain these guardrails to customers:</label>
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.customerCommunication} onChange={(e) => updateStepState('step3', { customerCommunication: e.target.value })} />
+                                    <WordCountFeedback text={state.step3.customerCommunication} minWords={15} />
+                                </div>
+                            </div>
+                        )}
+                    </div>
+
+                    {isStep3Complete() && (
+                        <div className="p-8 bg-green-50 border-2 border-green-200 rounded-2xl animate-fadeIn">
+                            <h3 className="text-2xl font-bold text-green-800 mb-4 flex items-center gap-3">
+                                <CheckCircle size={32} />
+                                Strategy Complete
+                            </h3>
+                            <p className="text-green-700 mb-6">You have completed the full Pricing & Monetization workshop. Your strategy is now documented and ready for export.</p>
+
+                            <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
+                                <h4 className="font-bold text-gray-700 mb-2 flex items-center gap-2"><FileText /> Markdown Export</h4>
+                                <textarea
+                                    readOnly
+                                    className="w-full h-48 p-4 font-mono text-[10px] border border-gray-200 rounded-lg bg-gray-50"
+                                    value={generateMarkdown()}
+                                />
+                            </div>
+
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={() => {
+                                        navigator.clipboard.writeText(generateMarkdown());
+                                        alert('Strategy exported to clipboard!');
+                                    }}
+                                    className="bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg flex items-center gap-2"
+                                >
+                                    <FileText size={24}/> Copy Strategy Summary
+                                </button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            );
+
+            const generateMarkdown = () => {
+                const { step1, step2, step3 } = state;
+                const metric = valueMetrics.find(m => m.id === step1.selectedMetric);
+                const base = baseComponentOptions.find(b => b.id === step2.baseComponent);
+                const scaling = valueScalingOptions.find(s => s.id === step2.valueScaling);
+
+                return `# Pricing & Monetization Strategy
+
+## 1. Value Metric
+- **Primary Metric:** ${metric?.name || 'N/A'}
+- **Rationale:** ${step1.rationale}
+- **Problem Solved:** ${step1.problemSolved}
+- **Proposed Unit Price:** ${step1.pricePerUnit ? `$${step1.pricePerUnit}` : 'N/A'}
+
+## 2. Hybrid Pricing Model
+- **Base Component:** ${base?.name || 'N/A'}
+- **Value Scaling:** ${scaling?.name || 'N/A'}
+- **Strategic Fit:** ${step2.customerJustification}
+- **Customer Explanation:** ${step2.customerExplanation}
+- **Potential Challenge:** ${step2.potentialChallenge}
+
+## 3. Price Points & Analysis
+### Competitive Context
+- **Competitors:** ${step3.competitorPricing}
+- **Substitutes:** ${step3.substituteCosts}
+
+### WTP Analysis
+- **Too Expensive:** $${step3.tooExpensive}
+- **Getting Expensive:** $${step3.gettingExpensive}
+- **Good Value:** $${step3.goodValue}
+- **Bargain Price:** $${step3.bargainPrice}
+
+### Tiers
+- **Starter Tier:** ${step3.starterPricing}
+- **Growth Tier:** ${step3.growthPricing}
+- **Justification:** ${step3.pricingJustification}
+
+## 4. Implementation Guardrails
+- **Selected Protections:** ${step3.selectedGuardrails.map(id => guardrailOptions.find(o => o.id === id)?.name).join(', ')}
+- **Guardrail 1:** ${step3.guardrail1}
+- **Guardrail 2:** ${step3.guardrail2}
+${step3.guardrail3 ? `- **Guardrail 3:** ${step3.guardrail3}\n` : ''}
+- **Communication Strategy:** ${step3.customerCommunication}
+
+---
+Generated: ${new Date().toLocaleDateString()}`;
+            };
+
+            return (
+                <div className="max-w-[1000px] mx-auto p-4 md:p-8 text-gray-800">
+                    <div className="flex justify-between items-center mb-4">
+                        <a href="index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">Back to Workshop</a>
+                        <a href="../index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">All Workshops</a>
+                    </div>
+
+                    <h1
+                        className={`text-3xl font-bold mb-2 cursor-pointer select-none transition-colors ${devMode ? 'text-orange-600' : 'text-gray-800'}`}
+                        onDoubleClick={toggleDevMode}
+                    >
+                        Pricing & Monetization {devMode && '[dev]'}
+                    </h1>
+
+                    {devMode && (
+                        <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between animate-fadeIn">
+                            <span className="text-xs text-orange-600 font-medium">Dev Mode Active</span>
+                            <button onClick={devFillData} className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600">Fill Test Data</button>
+                        </div>
+                    )}
+
+                    <StepIndicator currentStep={state.currentStep} steps={steps} onStepClick={(n) => updateState({ currentStep: n })} />
+
+                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-10 mb-6 min-h-[500px]">
+                        {state.currentStep === 1 && renderStep1()}
+                        {state.currentStep === 2 && renderStep2()}
+                        {state.currentStep === 3 && renderStep3()}
+                    </div>
+
+                    <div className="flex justify-between items-center bg-gray-50 p-4 rounded-xl border border-gray-200">
+                        <button
+                            onClick={() => updateState({ currentStep: Math.max(1, state.currentStep - 1) })}
+                            disabled={state.currentStep === 1}
+                            className={`px-6 py-2 rounded-lg font-bold transition-all ${state.currentStep === 1 ? 'opacity-0 pointer-events-none' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                        >
+                            Back
+                        </button>
+                        <button
+                            onClick={() => { if (confirm('Clear all work?')) { localStorage.removeItem(WORKSHOP_STORAGE_KEY); window.location.reload(); } }}
+                            className="text-gray-400 text-xs hover:text-red-500 font-medium uppercase tracking-wider"
+                        >
+                            Reset Workshop
+                        </button>
+                        <button
+                            onClick={() => { if (state.currentStep < 3) updateState({ currentStep: state.currentStep + 1 }); }}
+                            className={`px-8 py-3 rounded-lg font-bold shadow-lg transition-all ${
+                                state.currentStep === 3 ? (isStep3Complete() ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-green-600/50 text-white cursor-not-allowed') : 'bg-orange-500 text-white hover:bg-orange-600'
+                            }`}
+                        >
+                            {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
+                        </button>
+                    </div>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<WorkshopApp />);
+    </script>
+</body>
+</html>
