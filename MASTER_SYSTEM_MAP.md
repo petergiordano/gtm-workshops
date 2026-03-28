@@ -10,10 +10,8 @@
 | W1 | `problems_worth_solving/` | `problems-activity-3A.html` | Activity | None | No |
 | W2 | `finding_your_early_customers/` | `activity-unified.html` | Activity | localStorage | Yes |
 | W2 | `finding_your_early_customers/` | `index.html` | Landing | None | No |
+| W3 | `positioning_basics/` | `activity-unified.html` | Activity | localStorage | Yes |
 | W3 | `positioning_basics/` | `index.html` | Landing | None | No |
-| W3 | `positioning_basics/` | `positioning-activity-1A.html` | Activity | Progress Code (Base64) | No |
-| W3 | `positioning_basics/` | `positioning-activity-2A.html` | Activity | Progress Code (Base64) | No |
-| W3 | `positioning_basics/` | `positioning-activity-3A.html` | Activity | Progress Code (Base64) | No |
 | W4 | `market_entry_readiness/` | `index-orig.html` | Activity | None | No |
 | W4 | `market_entry_readiness/` | `index.html` | Landing | None | No |
 | W4 | `market_entry_readiness/` | `market-entry-activity-1A.html` | Activity | None | No |
@@ -52,9 +50,7 @@
 | `problems_worth_solving/problems-activity-2A.html` | None N/A | currentStep, showInstructions, selectedMarkerType, markers, activeMarkerIndex, justification, landingZoneChoice, evidence, hasPlacedStrategic, activityComplete, devMode, devFillLoading | None |
 | `problems_worth_solving/problems-activity-3A.html` | None N/A | urgency, importance, value, marketGap, accessibility | None |
 | `finding_your_early_customers/activity-unified.html` | localStorage `workshopState_finding_early_customers` | currentStep, selectedScenarios, mappings, responses | Reactive (useEffect) |
-| `positioning_basics/positioning-activity-1A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
-| `positioning_basics/positioning-activity-2A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
-| `positioning_basics/positioning-activity-3A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
+| `positioning_basics/activity-unified.html` | localStorage `workshopState_positioning_basics` | currentStep, customerProfile, competitiveAlternative, alternativeDescription, differentiators, values, corePain | Reactive (useEffect) |
 | `market_entry_readiness/index-orig.html` | None N/A |  | None |
 | `market_entry_readiness/market-entry-activity-1A.html` | None N/A | uniqueAttributes, localStrength, globalLimitation, marketKnowledge, localStrength, globalLimitation, resources, localStrength, globalLimitation, networkRelationships, localStrength, globalLimitation, infrastructure, localStrength, globalLimitation | None |
 | `market_entry_readiness/market-entry-activity-2A.html` | None N/A | market_size, japan, us, customer_dynamics, japan, us, competitive_landscape, japan, us, regulatory_environment, japan, us, operational_needs, japan, us | None |
