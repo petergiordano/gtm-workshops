@@ -72,6 +72,29 @@
 <body>
     <div id="root"></div>
 
+    <script type="application/json" id="testData">
+    {
+        "currentStep": 3,
+        "momentOfRealization": "During a customer call in Q2, an engineering director described spending three hours manually investigating an API outage that had already caused $40K in lost revenue. They had six monitoring tools open simultaneously and still couldn't pinpoint the root cause. That moment made clear the problem was systemic, not anecdotal.",
+        "whoExperienced": "Directors of Engineering and DevOps leads at Series A-B SaaS companies managing customer-facing APIs. They are responsible for uptime SLAs but lack tooling that connects API behavior patterns to business impact before failures occur.",
+        "whyMatters": "Every hour of API downtime costs these teams between $10K-$50K in lost revenue plus engineering time. More critically, repeated incidents erode customer trust and increase churn risk. Teams are reactive by design because their tools alert them after failure, not before.",
+        "whatSurprised": "All six monitoring tools were working correctly — they just reported symptoms, not causes. Teams were drowning in accurate data but still blind to the pattern. No tool connected the dots across the API call chain proactively.",
+        "howRealProblem": "Interviewed 18 engineering directors across 12 companies. Fourteen reported spending 6+ hours per week on post-incident analysis. Three had lost major customers in the past year due to API reliability issues. All were paying for monitoring tools but described them as rear-view mirrors.",
+        "markers": [],
+        "landingZoneChoice": "mainstream",
+        "evidence": "The main market already buys monitoring tools, proving budget exists and pain is acknowledged. The gap is that existing solutions are all reactive. We enter where buyers already have a line item and a known problem, then differentiate on predictive capability — a clear and defensible wedge.",
+        "problemStatement": "Engineering directors at Series A-B SaaS companies lose $10K-$50K per API incident and spend 6+ hours weekly on post-incident reviews because existing monitoring tools only detect failures after they impact customers, not before.",
+        "scores": { "urgency": 5, "importance": 5, "value": 4, "marketGap": 4, "accessibility": 4 },
+        "evidenceScores": {
+            "urgency": "API failures happen weekly for most targets. Every incident is a P0 requiring immediate all-hands response. The pain is not eventual — it is happening right now.",
+            "importance": "Direct revenue loss per incident plus engineering cost plus churn risk. Reliability is a board-level metric for these companies.",
+            "value": "All interviewed companies already pay for monitoring tools. Four stated they would pay 2x current spend for a tool that prevented incidents vs. just alerting on them.",
+            "marketGap": "Existing tools (Datadog, New Relic) focus on detection and notification. None offer cross-service predictive pattern recognition. The gap is real but large players are aware of it.",
+            "accessibility": "This ICP is reachable through engineering communities, LinkedIn by job title, and DevOps conference circuits. Sales cycle is short due to direct buyer access."
+        }
+    }
+    </script>
+
     <script type="text/babel">
         const { useState, useEffect, useMemo, useRef } = React;
         
@@ -130,12 +153,15 @@
             );
         };
 
-        const StepIndicator = ({ currentStep, steps }) => (
+        const StepIndicator = ({ currentStep, steps, onStepClick }) => (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                 <div className="flex justify-between items-center">
                     {steps.map((step, index) => (
                         <React.Fragment key={step.number}>
-                            <div className="flex items-center">
+                            <div
+                                className={`flex items-center ${onStepClick ? 'cursor-pointer' : ''}`}
+                                onClick={() => onStepClick && onStepClick(step.number)}
+                            >
                                 <div className={`step-icon ${
                                     step.complete ? 'bg-green-500' : 
                                     currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'
@@ -212,6 +238,22 @@
 
             const updateState = (updates) => setState(prev => ({ ...prev, ...updates }));
 
+            const [devMode, setDevMode] = useState(false);
+            const [devFillLoading, setDevFillLoading] = useState(false);
+            const toggleDevMode = () => setDevMode(prev => !prev);
+            const devFillData = () => {
+                setDevFillLoading(true);
+                try {
+                    const testData = JSON.parse(document.getElementById('testData').textContent);
+                    setState(prev => ({ ...prev, ...testData }));
+                    console.log('Dev data loaded successfully');
+                } catch (error) {
+                    console.error('Failed to load dev data:', error);
+                } finally {
+                    setDevFillLoading(false);
+                }
+            };
+
             const steps = [
                 { number: 1, title: "Problem Story", desc: "How it was found", complete: state.momentOfRealization.length > 20 && state.whatSurprised.length > 10 },
                 { number: 2, title: "Market Gap", desc: "Where you will start", complete: state.markers.length > 1 && state.landingZoneChoice },
@@ -281,8 +323,17 @@ Problem Statement: ${state.problemStatement}`;
             };
 
             const handleCopy = () => {
-                navigator.clipboard.writeText(generateSummary());
-                alert('Summary copied to clipboard');
+                navigator.clipboard.writeText(generateSummary()).then(() => {
+                    const notification = document.createElement('div');
+                    notification.style.cssText = 'position:fixed;top:20px;right:20px;background:#22c55e;color:white;padding:16px 24px;border-radius:8px;z-index:9999;font-weight:bold;';
+                    notification.textContent = 'Summary copied to clipboard!';
+                    document.body.appendChild(notification);
+                    setTimeout(() => {
+                        notification.style.transition = 'opacity 0.5s';
+                        notification.style.opacity = '0';
+                        setTimeout(() => notification.remove(), 500);
+                    }, 2500);
+                });
             };
 
             return (
@@ -292,9 +343,28 @@ Problem Statement: ${state.problemStatement}`;
                         <a href="../index.html" className="text-orange-500 hover:text-orange-600 font-bold text-sm">All Workshops</a>
                     </div>
 
-                    <h1 className="text-3xl font-bold text-gray-800 mb-6">Problems Worth Solving</h1>
+                    <h1
+                        className={`text-3xl font-bold mb-2 cursor-pointer select-none ${devMode ? 'text-orange-600' : 'text-gray-800'}`}
+                        onDoubleClick={toggleDevMode}
+                        title="Double-click to toggle dev mode"
+                    >
+                        Problems Worth Solving {devMode && '[dev]'}
+                    </h1>
 
-                    <StepIndicator currentStep={state.currentStep} steps={steps} />
+                    {devMode && (
+                        <div className="mb-4 p-3 bg-orange-50 border border-orange-200 rounded-lg flex items-center justify-between">
+                            <span className="text-xs text-orange-600 font-medium">Dev Mode Active</span>
+                            <button
+                                onClick={devFillData}
+                                disabled={devFillLoading}
+                                className="bg-orange-500 text-white px-3 py-1 rounded text-xs hover:bg-orange-600"
+                            >
+                                {devFillLoading ? 'Loading...' : 'Fill Test Data'}
+                            </button>
+                        </div>
+                    )}
+
+                    <StepIndicator currentStep={state.currentStep} steps={steps} onStepClick={(n) => updateState({ currentStep: n })} />
 
                     <AlertBox title="Private Data">
                         Your work stays on your computer. It is saved in this browser. No data goes to a server.
