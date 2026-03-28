@@ -8,9 +8,7 @@
 | W1 | `problems_worth_solving/` | `problems-activity-1A.html` | Activity | None | No |
 | W1 | `problems_worth_solving/` | `problems-activity-2A.html` | Activity | None | No |
 | W1 | `problems_worth_solving/` | `problems-activity-3A.html` | Activity | None | No |
-| W2 | `finding_your_early_customers/` | `ecp-activity-1A.html` | Activity | None | No |
-| W2 | `finding_your_early_customers/` | `ecp-activity-2A.html` | Activity | None | No |
-| W2 | `finding_your_early_customers/` | `ecp-activity-3A.html` | Activity | None | No |
+| W2 | `finding_your_early_customers/` | `activity-unified.html` | Activity | localStorage | Yes |
 | W2 | `finding_your_early_customers/` | `index.html` | Landing | None | No |
 | W3 | `positioning_basics/` | `index.html` | Landing | None | No |
 | W3 | `positioning_basics/` | `positioning-activity-1A.html` | Activity | Progress Code (Base64) | No |
@@ -53,9 +51,7 @@
 | `problems_worth_solving/problems-activity-1A.html` | None N/A | momentOfRealization, whoExperienced, whyMatters, whatSurprised, howRealProblem | None |
 | `problems_worth_solving/problems-activity-2A.html` | None N/A | currentStep, showInstructions, selectedMarkerType, markers, activeMarkerIndex, justification, landingZoneChoice, evidence, hasPlacedStrategic, activityComplete, devMode, devFillLoading | None |
 | `problems_worth_solving/problems-activity-3A.html` | None N/A | urgency, importance, value, marketGap, accessibility | None |
-| `finding_your_early_customers/ecp-activity-1A.html` | None N/A | currentStep, selectedScenarios, wrongAnswers, activityComplete, devMode, devFillLoading | None |
-| `finding_your_early_customers/ecp-activity-2A.html` | None N/A |  | None |
-| `finding_your_early_customers/ecp-activity-3A.html` | None N/A |  | None |
+| `finding_your_early_customers/activity-unified.html` | localStorage `workshopState_finding_early_customers` | currentStep, selectedScenarios, mappings, responses | Reactive (useEffect) |
 | `positioning_basics/positioning-activity-1A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
 | `positioning_basics/positioning-activity-2A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
 | `positioning_basics/positioning-activity-3A.html` | Progress Code (Base64) GSAP2025-* | version, createdAt, lastUpdated, day1, day2_1, day2_2, day3 | Manual (Progress Code) |
