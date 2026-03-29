@@ -107,6 +107,15 @@
             );
         };
 
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
         const WORKSHOP_STORAGE_KEY = 'workshopState_finding_early_customers';
 
         // --- Helper Components ---
@@ -616,9 +625,10 @@
                                                     >
                                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                                             <p className="text-gray-800 text-sm flex-1">{element.text}</p>
-                                                            <select value={selectedCharId || ''}
-                                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleMapping(element.id, e.target.value)}
-                                                                className="border border-gray-300 rounded px-2 py-1 text-xs focus:ring-1 focus:ring-orange-500"
+                                                            <select
+                                                                value={selectedCharId || ''}
+                                                                onChange={(e) => handleMapping(element.id, e.target.value)}
+                                                                className="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                 disabled={isCorrect}
                                                             >
                                                                 <option value="">Select Category...</option>
@@ -634,7 +644,8 @@
                                                                 <strong>Correct:</strong> {element.explanation}
                                                             </div>
                                                         )}
-                                                        <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Finding Your Early Customers Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Finding Your Early Customers Workshop — GTM Program — 2026</footer>
 </div>
                                                 );
                                             })}
@@ -686,10 +697,11 @@
                                             
                                             <p className="text-gray-700 font-medium mb-3 ml-11">{element.prompt}</p>
                                             
-                                            <textarea value={state.responses[element.id] || ''}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ responses: { ...state.responses, [element.id]: e.target.value } })}
+                                            <textarea
+                                                value={state.responses[element.id] || ''}
+                                                onChange={(e) => updateState({ responses: { ...state.responses, [element.id]: e.target.value } })}
                                                 placeholder={element.placeholder}
-                                                className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm ml-0"
+                                                className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm ml-0 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             />
                                             <div className="ml-11">
                                                 <WordCountFeedback text={state.responses[element.id] || ''} minWords={10} />

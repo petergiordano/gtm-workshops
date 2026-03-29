@@ -124,6 +124,15 @@
             );
         };
 
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
         const WORKSHOP_STORAGE_KEY = 'workshopState_messaging_storytelling';
 
         // --- Icons ---
@@ -343,7 +352,8 @@
                     <div className="space-y-4 pt-4 border-t border-gray-100">
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Target Persona</label>
-                            <input className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
+                            <input
+                                className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 value={state.step1.targetPersona}
                                 onChange={(e) => updateStepState('step1', { targetPersona: e.target.value })}
                                 placeholder="E.g. Technical Founders of Cloud Infrastructure startups..."
@@ -352,7 +362,8 @@
                         </div>
                         <div>
                             <label className="block text-sm font-bold text-gray-700 mb-1">Umbrella Message (One Sentence)</label>
-                            <textarea className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                            <textarea
+                                className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 value={state.step1.umbrellaMessage}
                                 onChange={(e) => updateStepState('step1', { umbrellaMessage: e.target.value })}
                                 placeholder="E.g. We help cloud startups scale without the complexity of managing their own K8s clusters."
@@ -367,17 +378,20 @@
                             {[1, 2, 3].map(i => (
                                 <div key={i} className="space-y-3 p-4 bg-gray-50 rounded-xl border border-gray-200">
                                     <h4 className="font-bold text-sm text-orange-600 uppercase tracking-wider">Pillar {i}</h4>
-                                    <input className="w-full p-2 border border-gray-300 rounded text-sm font-bold focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
+                                    <input
+                                        className="w-full p-2 border border-gray-300 rounded text-sm font-bold focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step1[`pillar${i}Title`]}
                                         onChange={(e) => updateStepState('step1', { [`pillar${i}Title`]: e.target.value })}
                                         placeholder="Pillar Title"
                                     />
-                                    <textarea className="laptop-textarea focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" className="w-full h-24 p-2 border border-gray-300 rounded text-xs"
+                                    <textarea
+                                        className="laptop-textarea w-full h-24 p-2 border border-gray-300 rounded text-xs p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step1[`pillar${i}Desc`]}
                                         onChange={(e) => updateStepState('step1', { [`pillar${i}Desc`]: e.target.value })}
                                         placeholder="Detailed description of this value pillar..."
                                     />
-                                    <textarea className="laptop-textarea focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" className="w-full h-16 p-2 border border-orange-100 bg-orange-50 rounded text-xs italic"
+                                    <textarea
+                                        className="laptop-textarea w-full h-16 p-2 border border-orange-100 bg-orange-50 rounded text-xs italic p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step1[`pillar${i}Proof`]}
                                         onChange={(e) => updateStepState('step1', { [`pillar${i}Proof`]: e.target.value })}
                                         placeholder="Proof points, stats, or evidence..."
@@ -420,7 +434,8 @@
                             <div className="space-y-4">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">1. Status Quo (Past Reality)</label>
-                                    <textarea className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                    <textarea
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step2.statusQuo}
                                         onChange={(e) => updateStepState('step2', { statusQuo: e.target.value })}
                                         placeholder="How did customers solve this before? Why was it okay then?"
@@ -429,7 +444,8 @@
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">2. The Big Change (Market Shift)</label>
-                                    <textarea className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                    <textarea
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step2.theChange}
                                         onChange={(e) => updateStepState('step2', { theChange: e.target.value })}
                                         placeholder="What changed in the market or technology that created a gap?"
@@ -438,7 +454,8 @@
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">3. The Complication (Pain/Friction)</label>
-                                    <textarea className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                    <textarea
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step2.theComplication}
                                         onChange={(e) => updateStepState('step2', { theComplication: e.target.value })}
                                         placeholder="What happens to customers who don't adapt to the change?"
@@ -451,7 +468,8 @@
                                     <h3 className="font-bold text-orange-800 flex items-center gap-2"><BookOpen /> The Resolution</h3>
                                     <div className="flex-1">
                                         <label className="block text-sm font-bold text-orange-700 mb-1">4. The New World (The Goal)</label>
-                                        <textarea className="laptop-textarea w-full p-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                        <textarea
+                                            className="laptop-textarea w-full p-3 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.step2.newWorld}
                                             onChange={(e) => updateStepState('step2', { newWorld: e.target.value })}
                                             placeholder="What is the ideal future state for your customer?"
@@ -460,7 +478,8 @@
                                     </div>
                                     <div className="flex-1">
                                         <label className="block text-sm font-bold text-orange-700 mb-1">5. The Solution (Your Role)</label>
-                                        <textarea className="laptop-textarea w-full p-3 border rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                        <textarea
+                                            className="laptop-textarea w-full p-3 border rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.step2.theSolution}
                                             onChange={(e) => updateStepState('step2', { theSolution: e.target.value })}
                                             placeholder="How exactly does your product bridge the gap to the new world?"
@@ -506,7 +525,8 @@
                             <div className="space-y-6 pt-4 border-t border-gray-100 animate-fadeIn">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Asset Implementation Details</label>
-                                    <textarea className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                    <textarea
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step3.assetDetails}
                                         onChange={(e) => updateStepState('step3', { assetDetails: e.target.value })}
                                         placeholder="Describe what will go into these assets (E.g. The Pitch Deck will focus on X and Y...)"
@@ -520,7 +540,8 @@
                                             <PenTool size={16} className="text-orange-500" />
                                             Primary Call to Action (CTA)
                                         </label>
-                                        <input className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
+                                        <input
+                                            className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.step3.primaryCTA}
                                             onChange={(e) => updateStepState('step3', { primaryCTA: e.target.value })}
                                             placeholder="E.g. Book a Technical Audit"
@@ -529,7 +550,8 @@
                                     </div>
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-1">Distribution Plan</label>
-                                        <textarea className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
+                                        <textarea
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.step3.distributionPlan}
                                             onChange={(e) => updateStepState('step3', { distributionPlan: e.target.value })}
                                             placeholder="Where and how will you reach your target persona?"
@@ -551,7 +573,8 @@
 
                             <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
                                 <h4 className="font-bold text-gray-700 mb-2 flex items-center gap-2"><FileText /> Markdown Export</h4>
-                                <textarea readOnly
+                                <textarea
+                                    readOnly
                                     className="w-full h-48 p-4 font-mono text-[10px] border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                     value={generateMarkdown()}
                                 />
@@ -663,7 +686,8 @@ Generated: ${new Date().toLocaleDateString()}`;
                             {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
                         </button>
                     </div>
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Messaging & Storytelling Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Messaging & Storytelling Workshop — GTM Program — 2026</footer>
 </div>
             );
         };

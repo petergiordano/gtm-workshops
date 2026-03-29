@@ -127,6 +127,15 @@
                 </div>
             );
         };
+
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
         
         // Global constants and helper functions
         const WORKSHOP_STORAGE_KEY = 'workshopState_buyer_stakeholders';
@@ -515,10 +524,11 @@
                                                 { name: 'Consensus Creation', tooltip: "The buyer's thought: 'We need to get everyone on board.'" }
                                             ].map((job) => (
                                                 <div key={job.name} className="flex items-center">
-                                                    <input type="checkbox"
+                                                    <input
+                                                        type="checkbox"
                                                         id={job.name}
                                                         checked={selectedBuyingJobs.includes(job.name)}
-                                                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                        onChange={(e) => {
                                                             if (e.target.checked) {
                                                                 if (selectedBuyingJobs.length < 3) {
                                                                     setSelectedBuyingJobs([...selectedBuyingJobs, job.name]);
@@ -527,7 +537,7 @@
                                                                 setSelectedBuyingJobs(selectedBuyingJobs.filter(j => j !== job.name));
                                                             }
                                                         }}
-                                                        className="h-4 w-4 text-orange-500 focus:ring-orange-500 border-gray-300 rounded"
+                                                        className="h-4 w-4 text-orange-500 border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                         disabled={!selectedBuyingJobs.includes(job.name) && selectedBuyingJobs.length >= 3}
                                                     />
                                                     <label htmlFor={job.name} className="ml-2 text-sm text-gray-700 flex items-center">
@@ -567,15 +577,16 @@
                                                         Why is <strong>{job}</strong> a difficult job for your customer?
                                                         <span className="text-red-500">*</span>
                                                     </label>
-                                                    <textarea value={jobJustifications[job] || ''}
-                                                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                    <textarea
+                                                        value={jobJustifications[job] || ''}
+                                                        onChange={(e) => {
                                                             setJobJustifications(prev => ({
                                                                 ...prev,
                                                                 [job]: e.target.value
                                                             }));
                                                         }}
                                                         placeholder={`e.g., Our customers struggle with ${job} because...`}
-                                                        className="laptop-textarea w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                        className="laptop-textarea w-full p-3 text-sm border border-gray-300 rounded-lg resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                     />
                                                     <WordCountFeedback text={jobJustifications[job] || ''} minWords={5} />
                                                 </div>
@@ -615,13 +626,14 @@
                                         <div className="space-y-3">
                                             {/* Type 1 Option */}
                                             <div className="flex items-start">
-                                                <input id="type1"
+                                                <input
+                                                    id="type1"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type1" 
                                                     checked={buyingGroupType === 'Type1'} 
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
-                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)}
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 />
                                                 <div className="ml-3 text-sm">
                                                     <label htmlFor="type1" className="font-medium text-gray-900">Type 1: Singular</label>
@@ -630,13 +642,14 @@
                                             </div>
                                             {/* Type 2 Option */}
                                             <div className="flex items-start">
-                                                <input id="type2"
+                                                <input
+                                                    id="type2"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type2" 
                                                     checked={buyingGroupType === 'Type2'} 
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
-                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)}
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 />
                                                 <div className="ml-3 text-sm">
                                                     <label htmlFor="type2" className="font-medium text-gray-900">Type 2: Limited Multi-Role</label>
@@ -645,13 +658,14 @@
                                             </div>
                                             {/* Type 3 Option */}
                                             <div className="flex items-start">
-                                                <input id="type3"
+                                                <input
+                                                    id="type3"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type3" 
                                                     checked={buyingGroupType === 'Type3'} 
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
-                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)}
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 />
                                                 <div className="ml-3 text-sm">
                                                     <label htmlFor="type3" className="font-medium text-gray-900">Type 3: Diversified (Within Dept)</label>
@@ -660,13 +674,14 @@
                                             </div>
                                             {/* Type 4 Option */}
                                             <div className="flex items-start">
-                                                <input id="type4"
+                                                <input
+                                                    id="type4"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type4" 
                                                     checked={buyingGroupType === 'Type4'} 
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
-                                                    className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
+                                                    onChange={(e) => setBuyingGroupType(e.target.value)}
+                                                    className="h-4 w-4 text-orange-600 border-gray-300 mt-1 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 />
                                                 <div className="ml-3 text-sm">
                                                     <label htmlFor="type4" className="font-medium text-gray-900">Type 4: Cross-Departmental</label>
@@ -801,37 +816,40 @@
                                                                 {index < 3 && <span className="text-xs text-gray-500 ml-1">(Req)</span>}
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <input type="text"
+                                                                <input
+                                                                    type="text"
                                                                     value={stakeholder.functionalRole}
-                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                                    onChange={(e) => {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].functionalRole = e.target.value;
                                                                         setStakeholders(updated);
                                                                     }}
                                                                     placeholder="e.g., Head of DevOps"
-                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <input type="text"
+                                                                <input
+                                                                    type="text"
                                                                     value={stakeholder.commonTitles}
-                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                                    onChange={(e) => {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].commonTitles = e.target.value;
                                                                         setStakeholders(updated);
                                                                     }}
                                                                     placeholder="e.g., VP of Engineering, CTO"
-                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <select value={stakeholder.buyingRole}
-                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                                <select
+                                                                    value={stakeholder.buyingRole}
+                                                                    onChange={(e) => {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].buyingRole = e.target.value;
                                                                         setStakeholders(updated);
                                                                     }}
-                                                                    className="w-full min-w-[130px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                                                                    className="w-full min-w-[130px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                     disabled={index < 3} // Disable for pre-populated roles
                                                                 >
                                                                     <option value="">Select role...</option>
@@ -845,27 +863,29 @@
                                                                 </select>
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <textarea value={stakeholder.keyGoals}
-                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                                <textarea
+                                                                    value={stakeholder.keyGoals}
+                                                                    onChange={(e) => {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].keyGoals = e.target.value;
                                                                         setStakeholders(updated);
                                                                     }}
                                                                     placeholder="e.g., Reduce P1 incidents by 50%"
                                                                     rows="2"
-                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <textarea value={stakeholder.challenges}
-                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                                <textarea
+                                                                    value={stakeholder.challenges}
+                                                                    onChange={(e) => {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].challenges = e.target.value;
                                                                         setStakeholders(updated);
                                                                     }}
                                                                     placeholder="e.g., 10+ hours/week firefighting"
                                                                     rows="2"
-                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
@@ -1007,14 +1027,15 @@
                                                             </td>
                                                             {stakeholders.map((stakeholder, index) => (
                                                                 <td key={index} className="px-3 py-4 border-t">
-                                                                    <textarea value={stakeholder.enablementArtifact || ''}
-                                                                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                                    <textarea
+                                                                        value={stakeholder.enablementArtifact || ''}
+                                                                        onChange={(e) => {
                                                                             const updated = [...stakeholders];
                                                                             updated[index].enablementArtifact = e.target.value;
                                                                             setStakeholders(updated);
                                                                         }}
                                                                         placeholder="e.g., ROI calculator, technical brief..."
-                                                                        className="w-full h-32 p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                                        className="w-full h-32 p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                     />
                                                                     <WordCountFeedback text={stakeholder.enablementArtifact || ''} minWords={10} />
                                                                 </td>
@@ -1059,9 +1080,10 @@
                                     Congratulations! Your stakeholder mapping workshop is complete. Copy the summary below to share with your team or paste into Google Docs.
                                 </p>
                                 
-                                <textarea id="markdownSummary"
+                                <textarea
+                                    id="markdownSummary"
                                     readOnly
-                                    className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
+                                    className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
                                     value={(() => {
                                         const buyingGroupTypeLabels = {
                                             Type1: 'Type 1: Singular',
@@ -1278,7 +1300,8 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                             </div>
                         </div>
                     </div>
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Map Buyer Stakeholders Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Map Buyer Stakeholders Workshop — GTM Program — 2026</footer>
 </div>
             );
         };

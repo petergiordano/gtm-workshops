@@ -195,6 +195,15 @@
                 </div>
             );
         };
+
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
         
         const WORKSHOP_STORAGE_KEY = 'workshopState_market_entry_readiness';
 
@@ -483,18 +492,20 @@
                                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                             <div>
                                                 <label className="block text-xs font-bold text-green-700 uppercase mb-1">Local Strengths</label>
-                                                <textarea value={state.currentPosition[el.key].localStrength}
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateCurrentPosition(el.key, 'localStrength', e.target.value)}
-                                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                                <textarea
+                                                    value={state.currentPosition[el.key].localStrength}
+                                                    onChange={(e) => updateCurrentPosition(el.key, 'localStrength', e.target.value)}
+                                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                     placeholder="Describe your strengths in your home market..."
                                                 />
                                                 <WordCountFeedback text={state.currentPosition[el.key].localStrength} minWords={10} />
                                             </div>
                                             <div>
                                                 <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Global Limitations</label>
-                                                <textarea value={state.currentPosition[el.key].globalLimitation}
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateCurrentPosition(el.key, 'globalLimitation', e.target.value)}
-                                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                                <textarea
+                                                    value={state.currentPosition[el.key].globalLimitation}
+                                                    onChange={(e) => updateCurrentPosition(el.key, 'globalLimitation', e.target.value)}
+                                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                     placeholder="Describe limitations for international expansion..."
                                                 />
                                                 <WordCountFeedback text={state.currentPosition[el.key].globalLimitation} minWords={10} />
@@ -511,14 +522,16 @@
                                     <h4 className="font-bold text-blue-800 mb-4 flex items-center"><Clock className="mr-2"/> 6-Month Targets</h4>
                                     {[0,1,2].map(i => (
                                         <div key={i} className="mb-4">
-                                            <input value={state.sixMonthMetrics[i]}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateArrayItem('sixMonthMetrics', i, e.target.value)}
-                                                className="w-full p-2 border border-blue-200 rounded text-sm mb-1"
+                                            <input
+                                                value={state.sixMonthMetrics[i]}
+                                                onChange={(e) => updateArrayItem('sixMonthMetrics', i, e.target.value)}
+                                                className="w-full p-2 border border-blue-200 rounded text-sm mb-1 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 placeholder={`Metric #${i+1} (e.g. Pilots)`}
                                             />
-                                            <textarea value={state.sixMonthTargets[i]}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateArrayItem('sixMonthTargets', i, e.target.value)}
-                                                className="w-full p-2 border border-blue-200 rounded text-sm"
+                                            <textarea
+                                                value={state.sixMonthTargets[i]}
+                                                onChange={(e) => updateArrayItem('sixMonthTargets', i, e.target.value)}
+                                                className="w-full p-2 border border-blue-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 placeholder="Target Goal..."
                                             />
                                         </div>
@@ -528,14 +541,16 @@
                                     <h4 className="font-bold text-purple-800 mb-4 flex items-center"><TrendingUp className="mr-2"/> 12-Month Targets</h4>
                                     {[0,1,2].map(i => (
                                         <div key={i} className="mb-4">
-                                            <input value={state.twelveMonthMetrics[i]}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateArrayItem('twelveMonthMetrics', i, e.target.value)}
-                                                className="w-full p-2 border border-purple-200 rounded text-sm mb-1"
+                                            <input
+                                                value={state.twelveMonthMetrics[i]}
+                                                onChange={(e) => updateArrayItem('twelveMonthMetrics', i, e.target.value)}
+                                                className="w-full p-2 border border-purple-200 rounded text-sm mb-1 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 placeholder={`Metric #${i+1} (e.g. ARR)`}
                                             />
-                                            <textarea value={state.twelveMonthTargets[i]}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateArrayItem('twelveMonthTargets', i, e.target.value)}
-                                                className="w-full p-2 border border-purple-200 rounded text-sm"
+                                            <textarea
+                                                value={state.twelveMonthTargets[i]}
+                                                onChange={(e) => updateArrayItem('twelveMonthTargets', i, e.target.value)}
+                                                className="w-full p-2 border border-purple-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 placeholder="Target Goal..."
                                             />
                                         </div>
@@ -567,16 +582,18 @@
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                                         <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">🇯🇵 Japan Market</label>
-                                            <textarea value={state.factorData[f.id].japan}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateFactorData(f.id, 'japan', e.target.value)}
-                                                className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                            <textarea
+                                                value={state.factorData[f.id].japan}
+                                                onChange={(e) => updateFactorData(f.id, 'japan', e.target.value)}
+                                                className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             />
                                         </div>
                                         <div>
                                             <label className="block text-xs font-bold text-gray-500 uppercase mb-1">🇺🇸 US Market</label>
-                                            <textarea value={state.factorData[f.id].us}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateFactorData(f.id, 'us', e.target.value)}
-                                                className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                            <textarea
+                                                value={state.factorData[f.id].us}
+                                                onChange={(e) => updateFactorData(f.id, 'us', e.target.value)}
+                                                className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             />
                                         </div>
                                     </div>
@@ -601,9 +618,10 @@
                                     </button>
                                 ))}
                             </div>
-                            <textarea value={state.adaptationNotes}
-                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ adaptationNotes: e.target.value })}
-                                className="w-full p-4 border border-orange-200 rounded-lg text-sm"
+                            <textarea
+                                value={state.adaptationNotes}
+                                onChange={(e) => updateState({ adaptationNotes: e.target.value })}
+                                className="w-full p-4 border border-orange-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 placeholder="How will you address these priority gaps?"
                                 rows={4}
                             />
@@ -618,27 +636,30 @@
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="bg-orange-50 p-4 rounded-lg border border-orange-100">
                             <h4 className="font-bold text-orange-800 mb-2 flex items-center"><Rocket className="mr-2"/> Entry Approach</h4>
-                            <textarea value={state.entryApproach}
-                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ entryApproach: e.target.value })}
-                                className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm"
+                            <textarea
+                                value={state.entryApproach}
+                                onChange={(e) => updateState({ entryApproach: e.target.value })}
+                                className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 placeholder="Direct, partners, digital-first?"
                             />
                             <WordCountFeedback text={state.entryApproach} minWords={10} />
                         </div>
                         <div className="bg-blue-50 p-4 rounded-lg border border-blue-100">
                             <h4 className="font-bold text-blue-800 mb-2 flex items-center"><DollarSign className="mr-2"/> Resource Allocation</h4>
-                            <textarea value={state.resourceAllocation}
-                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ resourceAllocation: e.target.value })}
-                                className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm"
+                            <textarea
+                                value={state.resourceAllocation}
+                                onChange={(e) => updateState({ resourceAllocation: e.target.value })}
+                                className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 placeholder="Budget breakdown..."
                             />
                             <WordCountFeedback text={state.resourceAllocation} minWords={10} />
                         </div>
                         <div className="bg-purple-50 p-4 rounded-lg border border-purple-100">
                             <h4 className="font-bold text-purple-800 mb-2 flex items-center"><Users className="mr-2"/> Team Building</h4>
-                            <textarea value={state.teamBuilding}
-                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ teamBuilding: e.target.value })}
-                                className="laptop-textarea w-full p-2 border border-purple-200 rounded text-sm"
+                            <textarea
+                                value={state.teamBuilding}
+                                onChange={(e) => updateState({ teamBuilding: e.target.value })}
+                                className="laptop-textarea w-full p-2 border border-purple-200 rounded text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 placeholder="Key hires and timing..."
                             />
                             <WordCountFeedback text={state.teamBuilding} minWords={10} />
@@ -654,14 +675,16 @@
                                         <span className="font-bold text-gray-700">{m.month}</span>
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                                        <textarea value={m.goal}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateMilestone(i, 'goal', e.target.value)}
-                                            className="w-full p-2 border border-gray-200 rounded text-sm"
+                                        <textarea
+                                            value={m.goal}
+                                            onChange={(e) => updateMilestone(i, 'goal', e.target.value)}
+                                            className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             placeholder="Primary Goal"
                                         />
-                                        <textarea value={m.successCriteria}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateMilestone(i, 'successCriteria', e.target.value)}
-                                            className="w-full p-2 border border-gray-200 rounded text-sm"
+                                        <textarea
+                                            value={m.successCriteria}
+                                            onChange={(e) => updateMilestone(i, 'successCriteria', e.target.value)}
+                                            className="w-full p-2 border border-gray-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             placeholder="Success Criteria"
                                         />
                                     </div>
@@ -679,7 +702,8 @@
                         
                         <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
                             <h4 className="font-bold text-gray-700 mb-2 flex items-center"><FileText className="mr-2"/> Markdown Export</h4>
-                            <textarea readOnly
+                            <textarea
+                                readOnly
                                 className="w-full h-48 p-4 font-mono text-xs border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 value={generateMarkdown()}
                             />
@@ -805,7 +829,8 @@
                             {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
                         </button>
                     </div>
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Market Entry Readiness Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Market Entry Readiness Workshop — GTM Program — 2026</footer>
 </div>
             );
         };

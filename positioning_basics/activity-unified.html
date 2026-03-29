@@ -101,6 +101,15 @@
             );
         };
 
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
         const WORKSHOP_STORAGE_KEY = 'workshopState_positioning_basics';
 
         // --- Helper Components ---
@@ -347,10 +356,11 @@
                                             <h4 className="text-lg font-bold text-gray-800">Target Customer Profile</h4>
                                         </div>
                                         <p className="text-gray-700 font-medium mb-3">Who is your ideal early customer? Be specific about role, company size, and situation.</p>
-                                        <textarea value={state.customerProfile}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ customerProfile: e.target.value })}
+                                        <textarea
+                                            value={state.customerProfile}
+                                            onChange={(e) => updateState({ customerProfile: e.target.value })}
                                             placeholder='Example: "Directors of Engineering at Series A-B SaaS companies who manage critical API infrastructure and experience weekly downtime issues"'
-                                            className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         />
                                         <WordCountFeedback text={state.customerProfile} minWords={10} />
                                         
@@ -371,11 +381,12 @@
                                         
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-medium mb-2 text-sm">Primary competitive alternative:</label>
-                                            <input type="text"
+                                            <input
+                                                type="text"
                                                 value={state.competitiveAlternative}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ competitiveAlternative: e.target.value })}
+                                                onChange={(e) => updateState({ competitiveAlternative: e.target.value })}
                                                 placeholder='Example: "Manual API monitoring with basic alerting tools"'
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             />
                                             <div className="text-right mt-1">
                                                 <span className={`text-xs ${state.competitiveAlternative.length >= 15 ? 'text-green-600' : 'text-gray-400'}`}>
@@ -386,10 +397,11 @@
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-medium mb-2 text-sm">How does this alternative work and why does it fall short?</label>
-                                            <textarea value={state.alternativeDescription}
-                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ alternativeDescription: e.target.value })}
+                                            <textarea
+                                                value={state.alternativeDescription}
+                                                onChange={(e) => updateState({ alternativeDescription: e.target.value })}
                                                 placeholder='Example: "Teams use basic monitoring tools that only alert after problems occur. This requires manual investigation and leads to longer downtime because issues aren&apos;t caught proactively."'
-                                                className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             />
                                             <WordCountFeedback text={state.alternativeDescription} minWords={10} />
                                         </div>
@@ -429,14 +441,15 @@
                                             
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-medium mb-2 text-sm">Unique capability:</label>
-                                                <textarea value={state.differentiators[index]}
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                <textarea
+                                                    value={state.differentiators[index]}
+                                                    onChange={(e) => {
                                                         const newDiffs = [...state.differentiators];
                                                         newDiffs[index] = e.target.value;
                                                         updateState({ differentiators: newDiffs });
                                                     }}
                                                     placeholder='Example: "Predictive Machine Learning engine that proactively identifies potential API failures before they impact users."'
-                                                    className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                    className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 />
                                                 <div className="text-right mt-1">
                                                     <span className={`text-xs ${state.differentiators[index].length >= 15 ? 'text-green-600' : 'text-gray-400'}`}>
@@ -450,14 +463,15 @@
                                                     <Gem className="text-orange-500 mr-2" size={18} />
                                                     <label className="block text-gray-700 font-medium text-sm">Customer value this creates:</label>
                                                 </div>
-                                                <textarea value={state.values[index]}
-                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
+                                                <textarea
+                                                    value={state.values[index]}
+                                                    onChange={(e) => {
                                                         const newValues = [...state.values];
                                                         newValues[index] = e.target.value;
                                                         updateState({ values: newValues });
                                                     }}
                                                     placeholder='Example: "Reduces API downtime by 80% and prevents an average of $50k in lost revenue per month."'
-                                                    className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                    className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 />
                                                 <WordCountFeedback text={state.values[index]} minWords={10} />
                                             </div>
@@ -491,10 +505,11 @@
                                             <h4 className="text-lg font-bold text-gray-800">Core Pain Point</h4>
                                         </div>
                                         <p className="text-gray-700 font-medium mb-3">What specific struggle does your target customer face that your value addresses?</p>
-                                        <textarea value={state.corePain}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ corePain: e.target.value })}
+                                        <textarea
+                                            value={state.corePain}
+                                            onChange={(e) => updateState({ corePain: e.target.value })}
                                             placeholder='Example: "API failures that impact customers and cause revenue loss before teams can respond."'
-                                            className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         />
                                         <WordCountFeedback text={state.corePain} minWords={10} />
                                     </div>
@@ -617,7 +632,8 @@
                     </div>
                     
 
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Positioning Basics Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Positioning Basics Workshop — GTM Program — 2026</footer>
 </div>
             );
         };

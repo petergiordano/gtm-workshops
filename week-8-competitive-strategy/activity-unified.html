@@ -99,6 +99,15 @@
                 </div>
             );
         };
+
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
         
         // Global constants and helper functions
         const WORKSHOP_STORAGE_KEY = 'workshopState_competitive_strategy';
@@ -168,10 +177,11 @@
                         </div>
                     </h3>
                     <p className="text-xs text-gray-500 italic mt-1 mb-2">{question}</p>
-                    <textarea value={value}
-                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setter(e.target.value)}
+                    <textarea
+                        value={value}
+                        onChange={(e) => setter(e.target.value)}
                         placeholder={placeholder}
-                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400"
+                        className="w-full laptop-textarea p-3 border border-gray-300 rounded-lg text-sm placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                     />
                     <WordCountFeedback text={value} minWords={5} />
                     <div className="mt-2">
@@ -180,7 +190,7 @@
                             className={`w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${isSelected ? 'bg-orange-500 text-white' : 'bg-gray-200 text-gray-700 hover:bg-gray-300'}`}
                             disabled={!isValid}
                         >
-                            {isSelected ? '✓ Selected' : 'Select as Top Force'}
+                            {isSelected ? <span className="flex items-center justify-center gap-1"><CheckCircle size={14} /> Selected</span> : 'Select as Top Force'}
                         </button>
                     </div>
                 </div>
@@ -241,11 +251,12 @@
                             {tooltip}
                         </div>
                     </label>
-                    <textarea value={value}
-                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setter(e.target.value)}
+                    <textarea
+                        value={value}
+                        onChange={(e) => setter(e.target.value)}
                         placeholder={placeholder} 
                         rows={rows} 
-                        className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 laptop-textarea" 
+                        className="w-full p-3 border border-gray-300 rounded-lg text-sm laptop-textarea resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                     />
                     <WordCountFeedback text={value} minWords={5} />
                 </div>
@@ -410,10 +421,11 @@
                                 </div>
                             </div>
                             <p className="text-xs text-blue-100 mb-2">Who else is chasing this problem?</p>
-                            <textarea value={competitors}
-                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setCompetitors(e.target.value)}
+                            <textarea
+                                value={competitors}
+                                onChange={(e) => setCompetitors(e.target.value)}
                                 placeholder="e.g., New Relic, Datadog"
-                                className="w-full laptop-textarea p-3 border border-blue-300 rounded-lg text-sm text-gray-800 bg-white/90 focus:bg-white focus:border-orange-500 focus:ring-2 focus:ring-orange-200 placeholder-gray-400 resize-none"
+                                className="w-full laptop-textarea p-3 border border-blue-300 rounded-lg text-sm text-gray-800 bg-white/90 placeholder-gray-400 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                             />
                             <div className="flex justify-between items-center mt-1">
                                 <span className="text-xs text-blue-200">
@@ -429,7 +441,7 @@
                                 className={`mt-2 w-full py-1.5 px-3 text-sm font-semibold rounded-md transition-colors ${selectedForces.includes('competitors') ? 'bg-orange-500 text-white' : 'bg-white/20 text-white hover:bg-white/30'}`}
                                 disabled={competitors.trim().length < 25}
                             >
-                                {selectedForces.includes('competitors') ? '✓ Selected' : 'Select as Top Force'}
+                                {selectedForces.includes('competitors') ? <span className="flex items-center justify-center gap-1"><CheckCircle size={14} /> Selected</span> : 'Select as Top Force'}
                             </button>
                         </div>
                         
@@ -1045,7 +1057,8 @@
                             </p>
                         </div>
 
-                        <textarea readOnly
+                        <textarea
+                            readOnly
                             className="w-full h-96 text-sm p-4 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-6 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                             value={generateFullBlueprintMarkdown()}
                         />
@@ -1580,7 +1593,8 @@ ${firstTests || '[Not defined]'}
                         </button>
                     </div>
 
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Competitive Strategy Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Competitive Strategy Workshop — GTM Program — 2026</footer>
 </div>
             );
         };

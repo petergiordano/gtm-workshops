@@ -170,6 +170,15 @@
             );
         };
 
+
+        + words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
         const WORKSHOP_STORAGE_KEY = 'workshopState_gtm_channels_buyer_journey';
 
         // --- Icons ---
@@ -433,10 +442,11 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Buyer Behaviors
                                         </label>
-                                        <textarea value={state.step1[stage.id].behaviors}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleStageUpdate(stage.id, 'behaviors', e.target.value)}
+                                        <textarea
+                                            value={state.step1[stage.id].behaviors}
+                                            onChange={(e) => handleStageUpdate(stage.id, 'behaviors', e.target.value)}
                                             placeholder="e.g., Searching on Google, asking peers for recommendations..."
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all outline-none resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             rows="3"
                                         />
                                     </div>
@@ -445,10 +455,11 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Channels Buyer Uses (ICP Preference)
                                         </label>
-                                        <textarea value={state.step1[stage.id].channels}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleStageUpdate(stage.id, 'channels', e.target.value)}
+                                        <textarea
+                                            value={state.step1[stage.id].channels}
+                                            onChange={(e) => handleStageUpdate(stage.id, 'channels', e.target.value)}
                                             placeholder="e.g., Google Search, LinkedIn, Industry Conferences, Word-of-Mouth"
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all outline-none resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             rows="3"
                                         />
                                     </div>
@@ -457,10 +468,11 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                         <label className="block text-sm font-medium text-gray-700 mb-1">
                                             Information Needs
                                         </label>
-                                        <textarea value={state.step1[stage.id].needs}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleStageUpdate(stage.id, 'needs', e.target.value)}
+                                        <textarea
+                                            value={state.step1[stage.id].needs}
+                                            onChange={(e) => handleStageUpdate(stage.id, 'needs', e.target.value)}
                                             placeholder="e.g., 'How much does it cost?', 'What is the ROI?', 'Which vendors are best?'"
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all outline-none resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             rows="3"
                                         />
                                     </div>
@@ -497,9 +509,10 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                             {state.channels.map((channel) => (
                                 <div key={channel.id} className="grid grid-cols-12 gap-4 p-4 items-center channel-row border-b border-gray-100">
                                     <div className="col-span-2">
-                                        <select value={channel.channelType}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'channelType', e.target.value)}
-                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:border-blue-400 transition-colors appearance-none"
+                                        <select
+                                            value={channel.channelType}
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'channelType', e.target.value)}
+                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm transition-colors appearance-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         >
                                             <option value="">Select type</option>
                                             <option value="Direct">Direct</option>
@@ -508,19 +521,21 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                     </div>
                                     
                                     <div className="col-span-3">
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             value={channel.channelName}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'channelName', e.target.value)}
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'channelName', e.target.value)}
                                             placeholder="e.g., Content Marketing"
-                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:border-blue-400 transition-colors"
+                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         />
                                     </div>
 
                                     <div className="col-span-6">
-                                        <textarea value={channel.rationale}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'rationale', e.target.value)}
+                                        <textarea
+                                            value={channel.rationale}
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'rationale', e.target.value)}
                                             placeholder="Explain how this channel leverages a unique product capability..."
-                                            className="laptop-textarea w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:border-blue-400 transition-colors"
+                                            className="laptop-textarea w-full p-2.5 border border-gray-300 rounded-lg text-sm transition-colors p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             rows="2"
                                         />
                                     </div>
@@ -589,9 +604,10 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                             {state.channels.map((channel) => (
                                 <div key={channel.id} className="grid grid-cols-12 gap-4 p-4 items-center channel-row border-b border-gray-100">
                                     <div className="col-span-2">
-                                        <select value={channel.channelType}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'channelType', e.target.value)}
-                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm appearance-none"
+                                        <select
+                                            value={channel.channelType}
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'channelType', e.target.value)}
+                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm appearance-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         >
                                             <option value="">Select type</option>
                                             <option value="Direct">Direct</option>
@@ -600,27 +616,30 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                     </div>
                                     
                                     <div className="col-span-3">
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             value={channel.channelName}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'channelName', e.target.value)}
-                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'channelName', e.target.value)}
+                                            className="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         />
                                     </div>
 
                                     <div className="col-span-4">
-                                        <textarea value={channel.rationale}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'rationale', e.target.value)}
-                                            className="laptop-textarea w-full p-2.5 border border-gray-300 rounded-lg text-sm"
+                                        <textarea
+                                            value={channel.rationale}
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'rationale', e.target.value)}
+                                            className="laptop-textarea w-full p-2.5 border border-gray-300 rounded-lg text-sm p-3 resize-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             rows="2"
                                         />
                                     </div>
 
                                     <div className="col-span-2">
-                                        <input type="text"
+                                        <input
+                                            type="text"
                                             value={channel.metric}
-                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> handleChannelUpdate(channel.id, 'metric', e.target.value)}
+                                            onChange={(e) => handleChannelUpdate(channel.id, 'metric', e.target.value)}
                                             placeholder="e.g., MQLs, Pipeline"
-                                            className="w-full p-2.5 border border-blue-300 rounded-lg text-sm bg-blue-50 focus:border-blue-500 outline-none"
+                                            className="w-full p-2.5 border border-blue-300 rounded-lg text-sm bg-blue-50 outline-none focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         />
                                     </div>
                                     
@@ -647,7 +666,8 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
 
                         <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
                             <h4 className="font-bold text-gray-700 mb-2 flex items-center gap-2">Markdown Export</h4>
-                            <textarea readOnly
+                            <textarea
+                                readOnly
                                 className="w-full h-48 p-4 font-mono text-[10px] border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                 value={generateMarkdown()}
                             />
@@ -718,7 +738,8 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                             {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
                         </button>
                     </div>
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">GTM Channels & Buyer Journey Workshop — GTM Program — 2026</footer>
+
+    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">GTM Channels & Buyer Journey Workshop — GTM Program — 2026</footer>
 </div>
             );
         };
