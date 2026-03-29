@@ -81,23 +81,35 @@
 
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
-        
+
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">(write {minWords}+ words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
         const WORKSHOP_STORAGE_KEY = 'workshopState_positioning_basics';
 
         // --- Helper Components ---
 
-        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
-            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isValid = wordCount >= minWords;
-            
-            return (
-                <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs text-gray-500">
-                        (write {minWords}+ words)
+        + words)
                     </span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words
-                        {isValid && <span className="font-bold">OK</span>}
+                        {isValid && <CheckCircle size={14} />}
                     </span>
                 </div>
             );
@@ -151,7 +163,7 @@
                                     step.complete ? 'bg-green-500' :
                                     currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'
                                 }`}>
-                                    {step.complete ? 'OK' : step.number}
+                                    {step.complete ? <CheckCircle size={20} /> : step.number}
                                 </div>
                                 <div className="ml-3 hidden md:block">
                                     <p className="text-sm font-medium text-gray-900">{step.title}</p>
@@ -186,12 +198,7 @@
             </svg>
         );
 
-        const CheckCircle = ({ size = 20, className = "" }) => (
-            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22,4 12,14.01 9,11.01"/>
-            </svg>
-        );
+
 
         const Lightbulb = ({ size = 20, className = "" }) => (
             <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -340,9 +347,8 @@
                                             <h4 className="text-lg font-bold text-gray-800">Target Customer Profile</h4>
                                         </div>
                                         <p className="text-gray-700 font-medium mb-3">Who is your ideal early customer? Be specific about role, company size, and situation.</p>
-                                        <textarea
-                                            value={state.customerProfile}
-                                            onChange={(e) => updateState({ customerProfile: e.target.value })}
+                                        <textarea value={state.customerProfile}
+                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ customerProfile: e.target.value })}
                                             placeholder='Example: "Directors of Engineering at Series A-B SaaS companies who manage critical API infrastructure and experience weekly downtime issues"'
                                             className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
                                         />
@@ -365,10 +371,9 @@
                                         
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-medium mb-2 text-sm">Primary competitive alternative:</label>
-                                            <input
-                                                type="text"
+                                            <input type="text"
                                                 value={state.competitiveAlternative}
-                                                onChange={(e) => updateState({ competitiveAlternative: e.target.value })}
+                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ competitiveAlternative: e.target.value })}
                                                 placeholder='Example: "Manual API monitoring with basic alerting tools"'
                                                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
                                             />
@@ -381,9 +386,8 @@
 
                                         <div className="mb-4">
                                             <label className="block text-gray-700 font-medium mb-2 text-sm">How does this alternative work and why does it fall short?</label>
-                                            <textarea
-                                                value={state.alternativeDescription}
-                                                onChange={(e) => updateState({ alternativeDescription: e.target.value })}
+                                            <textarea value={state.alternativeDescription}
+                                                onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ alternativeDescription: e.target.value })}
                                                 placeholder='Example: "Teams use basic monitoring tools that only alert after problems occur. This requires manual investigation and leads to longer downtime because issues aren&apos;t caught proactively."'
                                                 className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
                                             />
@@ -425,9 +429,8 @@
                                             
                                             <div className="mb-4">
                                                 <label className="block text-gray-700 font-medium mb-2 text-sm">Unique capability:</label>
-                                                <textarea
-                                                    value={state.differentiators[index]}
-                                                    onChange={(e) => {
+                                                <textarea value={state.differentiators[index]}
+                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                         const newDiffs = [...state.differentiators];
                                                         newDiffs[index] = e.target.value;
                                                         updateState({ differentiators: newDiffs });
@@ -447,9 +450,8 @@
                                                     <Gem className="text-orange-500 mr-2" size={18} />
                                                     <label className="block text-gray-700 font-medium text-sm">Customer value this creates:</label>
                                                 </div>
-                                                <textarea
-                                                    value={state.values[index]}
-                                                    onChange={(e) => {
+                                                <textarea value={state.values[index]}
+                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                         const newValues = [...state.values];
                                                         newValues[index] = e.target.value;
                                                         updateState({ values: newValues });
@@ -489,9 +491,8 @@
                                             <h4 className="text-lg font-bold text-gray-800">Core Pain Point</h4>
                                         </div>
                                         <p className="text-gray-700 font-medium mb-3">What specific struggle does your target customer face that your value addresses?</p>
-                                        <textarea
-                                            value={state.corePain}
-                                            onChange={(e) => updateState({ corePain: e.target.value })}
+                                        <textarea value={state.corePain}
+                                            onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateState({ corePain: e.target.value })}
                                             placeholder='Example: "API failures that impact customers and cause revenue loss before teams can respond."'
                                             className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
                                         />
@@ -615,10 +616,9 @@
                         </button>
                     </div>
                     
-                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
-                        Positioning Basics Workshop - GTM Program - 2025
-                    </footer>
-                </div>
+
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Positioning Basics Workshop — GTM Program — 2026</footer>
+</div>
             );
         };
 

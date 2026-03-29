@@ -124,14 +124,29 @@
     <script type="text/babel">
         const { useState, useEffect } = React;
 
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">(write {minWords}+ words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
+
         const WORKSHOP_STORAGE_KEY = 'workshopState_pricing_monetization';
 
         // --- Icons ---
-        const CheckCircle = ({ size = 20, className = "" }) => (
-            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22,4 12,14.01 9,11.01"/>
-            </svg>
-        );
+
 
         const TrendingUp = ({ size = 20, className = "" }) => (
             <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -170,12 +185,7 @@
         );
 
         // --- Helper Components ---
-        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
-            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isValid = wordCount >= minWords;
-            return (
-                <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs text-gray-500">(write {minWords}+ words)</span>
+        + words)</span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words {isValid && <CheckCircle size={14} />}
                     </span>
@@ -394,8 +404,7 @@
                         <div className="space-y-4 pt-4 border-t border-gray-100">
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1">Why did you choose this option?</label>
-                                <textarea
-                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none"
                                     value={state.step1.rationale}
                                     onChange={(e) => updateStepState('step1', { rationale: e.target.value })}
                                     placeholder="Explain your reasoning..."
@@ -404,8 +413,7 @@
                             </div>
                             <div>
                                 <label className="block text-sm font-bold text-gray-700 mb-1">What specific problem does this solve?</label>
-                                <textarea
-                                    className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm"
+                                <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none"
                                     value={state.step1.problemSolved}
                                     onChange={(e) => updateStepState('step1', { problemSolved: e.target.value })}
                                     placeholder="Describe the customer problem..."
@@ -416,9 +424,8 @@
                                 <label className="block text-sm font-bold text-gray-700 mb-1">Proposed price per unit (optional)</label>
                                 <div className="flex items-center gap-2">
                                     <span className="text-gray-500">$</span>
-                                    <input
-                                        type="number"
-                                        className="w-32 p-2 border border-gray-300 rounded text-sm"
+                                    <input type="number"
+                                        className="w-32 p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.step1.pricePerUnit}
                                         onChange={(e) => updateStepState('step1', { pricePerUnit: e.target.value })}
                                         placeholder="0.01"
@@ -460,7 +467,7 @@
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-bold text-gray-700">1. Choose Your Base Component</h3>
+                            <h3 className="font-bold text-gray-700">Step 1: Choose Your Base Component</h3>
                             <div className="grid md:grid-cols-2 gap-4">
                                 {baseComponentOptions.map(opt => (
                                     <div key={opt.id} className={`hybrid-box cursor-pointer ${state.step2.baseComponent === opt.id ? 'selected' : ''}`} onClick={() => updateStepState('step2', { baseComponent: opt.id })}>
@@ -474,12 +481,12 @@
                         </div>
 
                         <div className="space-y-4">
-                            <h3 className="font-bold text-gray-700">2. Confirm Value Scaling</h3>
+                            <h3 className="font-bold text-gray-700">Step 2: Confirm Value Scaling</h3>
                             <div className="space-y-3">
                                 {valueScalingOptions.map(opt => (
                                     <div key={opt.id} className="border border-gray-200 rounded-lg p-3 bg-white">
                                         <label className="flex items-center gap-3 cursor-pointer">
-                                            <input type="radio" name="scaling" checked={state.step2.valueScaling === opt.id} onChange={() => updateStepState('step2', { valueScaling: opt.id })} className="w-4 h-4 text-orange-600" />
+                                            <input type="radio" name="scaling" checked={state.step2.valueScaling === opt.id} onChange={() = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> updateStepState('step2', { valueScaling: opt.id })} className="w-4 h-4 text-orange-600" />
                                             <div>
                                                 <p className="text-sm font-bold">{opt.name}</p>
                                                 <p className="text-xs text-blue-600">{opt.example}</p>
@@ -494,17 +501,17 @@
                             <div className="space-y-4 pt-4 border-t border-gray-100 animate-fadeIn">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Why does this combination work for your customers?</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step2.customerJustification} onChange={(e) => updateStepState('step2', { customerJustification: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step2.customerJustification} onChange={(e) => updateStepState('step2', { customerJustification: e.target.value })} />
                                     <WordCountFeedback text={state.step2.customerJustification} minWords={5} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Explain this pricing in simple terms for a customer:</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step2.customerExplanation} onChange={(e) => updateStepState('step2', { customerExplanation: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step2.customerExplanation} onChange={(e) => updateStepState('step2', { customerExplanation: e.target.value })} />
                                     <WordCountFeedback text={state.step2.customerExplanation} minWords={5} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">What is one potential challenge and how will you address it?</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step2.potentialChallenge} onChange={(e) => updateStepState('step2', { potentialChallenge: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step2.potentialChallenge} onChange={(e) => updateStepState('step2', { potentialChallenge: e.target.value })} />
                                     <WordCountFeedback text={state.step2.potentialChallenge} minWords={5} />
                                 </div>
                             </div>
@@ -524,12 +531,12 @@
                         <h3 className="font-bold text-blue-800 flex items-center gap-2"><TrendingUp /> Research & Comparison</h3>
                         <div>
                             <label className="block text-xs font-bold text-blue-700 uppercase mb-1">Direct Competitors & Pricing</label>
-                            <textarea className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm" value={state.step3.competitorPricing} onChange={(e) => updateStepState('step3', { competitorPricing: e.target.value })} placeholder="E.g. DataDog: $15/host..." />
+                            <textarea className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.competitorPricing} onChange={(e) => updateStepState('step3', { competitorPricing: e.target.value })} placeholder="E.g. DataDog: $15/host..." />
                             <WordCountFeedback text={state.step3.competitorPricing} minWords={15} />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-blue-700 uppercase mb-1">Substitute Solutions & Costs</label>
-                            <textarea className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm" value={state.step3.substituteCosts} onChange={(e) => updateStepState('step3', { substituteCosts: e.target.value })} placeholder="E.g. In-house team: $150K/year..." />
+                            <textarea className="laptop-textarea w-full p-2 border border-blue-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.substituteCosts} onChange={(e) => updateStepState('step3', { substituteCosts: e.target.value })} placeholder="E.g. In-house team: $150K/year..." />
                             <WordCountFeedback text={state.step3.substituteCosts} minWords={12} />
                         </div>
                     </div>
@@ -541,28 +548,28 @@
                                 <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Too Expensive</label>
                                 <div className="flex items-center gap-1">
                                     <span className="text-gray-500">$</span>
-                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.tooExpensive} onChange={(e) => updateStepState('step3', { tooExpensive: e.target.value })} />
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500" value={state.step3.tooExpensive} onChange={(e) => updateStepState('step3', { tooExpensive: e.target.value })} />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Getting Expensive</label>
                                 <div className="flex items-center gap-1">
                                     <span className="text-gray-500">$</span>
-                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.gettingExpensive} onChange={(e) => updateStepState('step3', { gettingExpensive: e.target.value })} />
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500" value={state.step3.gettingExpensive} onChange={(e) => updateStepState('step3', { gettingExpensive: e.target.value })} />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Good Value</label>
                                 <div className="flex items-center gap-1">
                                     <span className="text-gray-500">$</span>
-                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.goodValue} onChange={(e) => updateStepState('step3', { goodValue: e.target.value })} />
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500" value={state.step3.goodValue} onChange={(e) => updateStepState('step3', { goodValue: e.target.value })} />
                                 </div>
                             </div>
                             <div>
                                 <label className="block text-[10px] font-bold text-green-700 uppercase mb-1">Bargain Price</label>
                                 <div className="flex items-center gap-1">
                                     <span className="text-gray-500">$</span>
-                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm" value={state.step3.bargainPrice} onChange={(e) => updateStepState('step3', { bargainPrice: e.target.value })} />
+                                    <input type="number" className="w-full p-2 border border-green-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500" value={state.step3.bargainPrice} onChange={(e) => updateStepState('step3', { bargainPrice: e.target.value })} />
                                 </div>
                             </div>
                         </div>
@@ -572,17 +579,17 @@
                         <h3 className="font-bold text-orange-800 flex items-center gap-2"><Target /> Recommended Structure</h3>
                         <div>
                             <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Starter Tier Pricing</label>
-                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm" value={state.step3.starterPricing} onChange={(e) => updateStepState('step3', { starterPricing: e.target.value })} />
+                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.starterPricing} onChange={(e) => updateStepState('step3', { starterPricing: e.target.value })} />
                             <WordCountFeedback text={state.step3.starterPricing} minWords={8} />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Growth Tier Pricing</label>
-                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm" value={state.step3.growthPricing} onChange={(e) => updateStepState('step3', { growthPricing: e.target.value })} />
+                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.growthPricing} onChange={(e) => updateStepState('step3', { growthPricing: e.target.value })} />
                             <WordCountFeedback text={state.step3.growthPricing} minWords={8} />
                         </div>
                         <div>
                             <label className="block text-xs font-bold text-orange-700 uppercase mb-1">Pricing Justification</label>
-                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm" value={state.step3.pricingJustification} onChange={(e) => updateStepState('step3', { pricingJustification: e.target.value })} />
+                            <textarea className="laptop-textarea w-full p-2 border border-orange-200 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.pricingJustification} onChange={(e) => updateStepState('step3', { pricingJustification: e.target.value })} />
                             <WordCountFeedback text={state.step3.pricingJustification} minWords={20} />
                         </div>
                     </div>
@@ -603,7 +610,7 @@
                                      }}>
                                     <div className="flex items-start gap-2">
                                         <div className={`w-4 h-4 rounded border mt-1 flex items-center justify-center ${state.step3.selectedGuardrails.includes(opt.id) ? 'bg-orange-500 border-orange-500' : 'border-gray-300 bg-white'}`}>
-                                            {state.step3.selectedGuardrails.includes(opt.id) && <span className="text-white text-[10px]">✓</span>}
+                                            {state.step3.selectedGuardrails.includes(opt.id) && <CheckCircle size={10} className="text-white inline ml-1" />}
                                         </div>
                                         <div>
                                             <p className="text-xs font-bold">{opt.name}</p>
@@ -618,21 +625,21 @@
                             <div className="space-y-4 animate-fadeIn">
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Guardrail 1 Implementation Details</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.guardrail1} onChange={(e) => updateStepState('step3', { guardrail1: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.guardrail1} onChange={(e) => updateStepState('step3', { guardrail1: e.target.value })} />
                                     <WordCountFeedback text={state.step3.guardrail1} minWords={15} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Guardrail 2 Implementation Details</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.guardrail2} onChange={(e) => updateStepState('step3', { guardrail2: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.guardrail2} onChange={(e) => updateStepState('step3', { guardrail2: e.target.value })} />
                                     <WordCountFeedback text={state.step3.guardrail2} minWords={15} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">Guardrail 3 (Optional)</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.guardrail3} onChange={(e) => updateStepState('step3', { guardrail3: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.guardrail3} onChange={(e) => updateStepState('step3', { guardrail3: e.target.value })} />
                                 </div>
                                 <div>
                                     <label className="block text-sm font-bold text-gray-700 mb-1">How you will explain these guardrails to customers:</label>
-                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm" value={state.step3.customerCommunication} onChange={(e) => updateStepState('step3', { customerCommunication: e.target.value })} />
+                                    <textarea className="laptop-textarea w-full p-2 border border-gray-300 rounded text-sm focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 p-3 resize-none" value={state.step3.customerCommunication} onChange={(e) => updateStepState('step3', { customerCommunication: e.target.value })} />
                                     <WordCountFeedback text={state.step3.customerCommunication} minWords={15} />
                                 </div>
                             </div>
@@ -649,9 +656,8 @@
 
                             <div className="bg-white p-6 rounded-xl shadow-inner mb-6">
                                 <h4 className="font-bold text-gray-700 mb-2 flex items-center gap-2"><FileText /> Markdown Export</h4>
-                                <textarea
-                                    readOnly
-                                    className="w-full h-48 p-4 font-mono text-[10px] border border-gray-200 rounded-lg bg-gray-50"
+                                <textarea readOnly
+                                    className="w-full h-48 p-4 font-mono text-[10px] border border-gray-200 rounded-lg bg-gray-50 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                     value={generateMarkdown()}
                                 />
                             </div>
@@ -772,7 +778,8 @@ Generated: ${new Date().toLocaleDateString()}`;
                             {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
                         </button>
                     </div>
-                </div>
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Pricing & Monetization Workshop — GTM Program — 2026</footer>
+</div>
             );
         };
 

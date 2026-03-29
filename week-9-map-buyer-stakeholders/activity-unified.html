@@ -108,6 +108,25 @@
 
     <script type="text/babel">
         const { useState, useEffect, useMemo } = React;
+
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+        const WordCountFeedback = ({ text = '', minWords = 5 }) => {
+            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+            const isValid = wordCount >= minWords;
+            return (
+                <div className="flex justify-between items-center mt-1">
+                    <span className="text-xs text-gray-500">(write {minWords}+ words)</span>
+                    <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
+                        {wordCount} words {isValid && <CheckCircle size={14} />}
+                    </span>
+                </div>
+            );
+        };
         
         // Global constants and helper functions
         const WORKSHOP_STORAGE_KEY = 'workshopState_buyer_stakeholders';
@@ -143,18 +162,11 @@
         };
 
         // Helper function for word count feedback
-        const WordCountFeedback = ({ text, minWords = 5 }) => {
-            const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isValid = wordCount >= minWords;
-            
-            return (
-                <div className="flex justify-between items-center mt-1">
-                    <span className="text-xs text-gray-500">
-                        (describe in {minWords}+ words)
+        + words)
                     </span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words
-                        {isValid && <span>✓</span>}
+                        {isValid && <CheckCircle size={14} />}
                     </span>
                 </div>
             );
@@ -186,7 +198,7 @@
                                         step.complete ? 'bg-green-500' : 
                                         currentStep >= step.number ? 'bg-orange-500' : 'bg-gray-400'
                                     }`}>
-                                        {step.complete ? '✓' : step.number}
+                                        {step.complete ? <CheckCircle size={20} /> : step.number}
                                     </div>
                                     <div className="ml-3">
                                         <p className="text-sm font-medium text-gray-900">{step.title}</p>
@@ -503,11 +515,10 @@
                                                 { name: 'Consensus Creation', tooltip: "The buyer's thought: 'We need to get everyone on board.'" }
                                             ].map((job) => (
                                                 <div key={job.name} className="flex items-center">
-                                                    <input
-                                                        type="checkbox"
+                                                    <input type="checkbox"
                                                         id={job.name}
                                                         checked={selectedBuyingJobs.includes(job.name)}
-                                                        onChange={(e) => {
+                                                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                             if (e.target.checked) {
                                                                 if (selectedBuyingJobs.length < 3) {
                                                                     setSelectedBuyingJobs([...selectedBuyingJobs, job.name]);
@@ -535,7 +546,7 @@
                                         <div className="mt-2 text-sm">
                                             <span className={selectedBuyingJobs.length >= 2 && selectedBuyingJobs.length <= 3 ? 'text-green-600' : 'text-gray-500'}>
                                                 {selectedBuyingJobs.length} of 2-3 selected
-                                                {selectedBuyingJobs.length >= 2 && selectedBuyingJobs.length <= 3 && <span className="ml-1">✓</span>}
+                                                {selectedBuyingJobs.length >= 2 && selectedBuyingJobs.length <= 3 && <CheckCircle size={14} className="inline ml-1" />}
                                             </span>
                                         </div>
                                     </div>
@@ -556,9 +567,8 @@
                                                         Why is <strong>{job}</strong> a difficult job for your customer?
                                                         <span className="text-red-500">*</span>
                                                     </label>
-                                                    <textarea
-                                                        value={jobJustifications[job] || ''}
-                                                        onChange={(e) => {
+                                                    <textarea value={jobJustifications[job] || ''}
+                                                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                             setJobJustifications(prev => ({
                                                                 ...prev,
                                                                 [job]: e.target.value
@@ -605,13 +615,12 @@
                                         <div className="space-y-3">
                                             {/* Type 1 Option */}
                                             <div className="flex items-start">
-                                                <input 
-                                                    id="type1" 
+                                                <input id="type1"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type1" 
                                                     checked={buyingGroupType === 'Type1'} 
-                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
                                                     className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
                                                 />
                                                 <div className="ml-3 text-sm">
@@ -621,13 +630,12 @@
                                             </div>
                                             {/* Type 2 Option */}
                                             <div className="flex items-start">
-                                                <input 
-                                                    id="type2" 
+                                                <input id="type2"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type2" 
                                                     checked={buyingGroupType === 'Type2'} 
-                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
                                                     className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
                                                 />
                                                 <div className="ml-3 text-sm">
@@ -637,13 +645,12 @@
                                             </div>
                                             {/* Type 3 Option */}
                                             <div className="flex items-start">
-                                                <input 
-                                                    id="type3" 
+                                                <input id="type3"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type3" 
                                                     checked={buyingGroupType === 'Type3'} 
-                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
                                                     className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
                                                 />
                                                 <div className="ml-3 text-sm">
@@ -653,13 +660,12 @@
                                             </div>
                                             {/* Type 4 Option */}
                                             <div className="flex items-start">
-                                                <input 
-                                                    id="type4" 
+                                                <input id="type4"
                                                     name="buyingGroupType" 
                                                     type="radio" 
                                                     value="Type4" 
                                                     checked={buyingGroupType === 'Type4'} 
-                                                    onChange={(e) => setBuyingGroupType(e.target.value)} 
+                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> setBuyingGroupType(e.target.value)}
                                                     className="h-4 w-4 text-orange-600 border-gray-300 focus:ring-orange-500 mt-1"
                                                 />
                                                 <div className="ml-3 text-sm">
@@ -795,10 +801,9 @@
                                                                 {index < 3 && <span className="text-xs text-gray-500 ml-1">(Req)</span>}
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <input
-                                                                    type="text"
+                                                                <input type="text"
                                                                     value={stakeholder.functionalRole}
-                                                                    onChange={(e) => {
+                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].functionalRole = e.target.value;
                                                                         setStakeholders(updated);
@@ -808,10 +813,9 @@
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <input
-                                                                    type="text"
+                                                                <input type="text"
                                                                     value={stakeholder.commonTitles}
-                                                                    onChange={(e) => {
+                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].commonTitles = e.target.value;
                                                                         setStakeholders(updated);
@@ -821,9 +825,8 @@
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <select
-                                                                    value={stakeholder.buyingRole}
-                                                                    onChange={(e) => {
+                                                                <select value={stakeholder.buyingRole}
+                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].buyingRole = e.target.value;
                                                                         setStakeholders(updated);
@@ -842,9 +845,8 @@
                                                                 </select>
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <textarea
-                                                                    value={stakeholder.keyGoals}
-                                                                    onChange={(e) => {
+                                                                <textarea value={stakeholder.keyGoals}
+                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].keyGoals = e.target.value;
                                                                         setStakeholders(updated);
@@ -855,9 +857,8 @@
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
-                                                                <textarea
-                                                                    value={stakeholder.challenges}
-                                                                    onChange={(e) => {
+                                                                <textarea value={stakeholder.challenges}
+                                                                    onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                                         const updated = [...stakeholders];
                                                                         updated[index].challenges = e.target.value;
                                                                         setStakeholders(updated);
@@ -919,7 +920,7 @@
                                         <div className="mt-4 text-sm">
                                             <span className={stakeholders.length >= minStakeholders ? 'text-green-600' : 'text-red-500'}>
                                                 {stakeholders.length} of {minStakeholders}+ stakeholders required
-                                                {stakeholders.length >= minStakeholders && <span className="ml-1">✓</span>}
+                                                {stakeholders.length >= minStakeholders && <CheckCircle size={14} className="inline ml-1" />}
                                             </span>
                                         </div>
                                     </div>
@@ -1006,9 +1007,8 @@
                                                             </td>
                                                             {stakeholders.map((stakeholder, index) => (
                                                                 <td key={index} className="px-3 py-4 border-t">
-                                                                    <textarea
-                                                                        value={stakeholder.enablementArtifact || ''}
-                                                                        onChange={(e) => {
+                                                                    <textarea value={stakeholder.enablementArtifact || ''}
+                                                                        onChange={(e) = className="focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"> {
                                                                             const updated = [...stakeholders];
                                                                             updated[index].enablementArtifact = e.target.value;
                                                                             setStakeholders(updated);
@@ -1033,7 +1033,7 @@
                                                     return (
                                                         <span className={completedCount >= 2 ? 'text-green-600' : 'text-gray-500'}>
                                                             {completedCount} of 2+ stakeholders have enablement artifacts
-                                                            {completedCount >= 2 && <span className="ml-1">✓</span>}
+                                                            {completedCount >= 2 && <CheckCircle size={14} className="inline ml-1" />}
                                                         </span>
                                                     );
                                                 })()}
@@ -1059,10 +1059,9 @@
                                     Congratulations! Your stakeholder mapping workshop is complete. Copy the summary below to share with your team or paste into Google Docs.
                                 </p>
                                 
-                                <textarea
-                                    id="markdownSummary"
+                                <textarea id="markdownSummary"
                                     readOnly
-                                    className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3"
+                                    className="w-full h-64 text-sm p-3 font-mono border border-gray-200 rounded-lg bg-gray-50 resize-none mb-3 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                     value={(() => {
                                         const buyingGroupTypeLabels = {
                                             Type1: 'Type 1: Singular',
@@ -1226,12 +1225,7 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                                 ← Back
                             </button>
 
-                            <button 
-                                onClick={resetAllActivities} 
-                                className="bg-red-500 text-white px-4 py-2 text-sm rounded-lg font-medium hover:bg-red-600 transition-colors"
-                            >
-                                Reset Workshop
-                            </button>
+                            <button className="text-gray-400 text-xs hover:text-red-500 font-medium uppercase tracking-wider" onClick={resetAllActivities}>Reset Workshop</button>
 
                             <button
                                 onClick={() => {
@@ -1264,14 +1258,7 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                             </button>
                         </div>
 
-                        <footer className="max-w-6xl mx-auto text-center text-xs text-gray-500 mt-12 pb-8">
-                            <p>
-                                <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
-                            </p>
-                            <p className="font-semibold mt-1">
-                                ⚠️ Important: Do not clear your browser data before copying your final summary, as all your work will be permanently deleted.
-                            </p>
-                        </footer>
+
                         
                         {/* Bottom Navigation Buttons */}
                         <div className="max-w-[900px] mx-auto px-4 pb-8">
@@ -1291,7 +1278,8 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                             </div>
                         </div>
                     </div>
-                </div>
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">Map Buyer Stakeholders Workshop — GTM Program — 2026</footer>
+</div>
             );
         };
 
