@@ -97,7 +97,7 @@
                     </span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words
-                        {isValid && <span className="font-bold">OK</span>}
+                        {isValid && <CheckCircle size={14} />}
                     </span>
                 </div>
             );
@@ -344,7 +344,7 @@
                                             value={state.customerProfile}
                                             onChange={(e) => updateState({ customerProfile: e.target.value })}
                                             placeholder='Example: "Directors of Engineering at Series A-B SaaS companies who manage critical API infrastructure and experience weekly downtime issues"'
-                                            className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 text-sm resize-none"
                                         />
                                         <WordCountFeedback text={state.customerProfile} minWords={10} />
                                         
@@ -370,7 +370,7 @@
                                                 value={state.competitiveAlternative}
                                                 onChange={(e) => updateState({ competitiveAlternative: e.target.value })}
                                                 placeholder='Example: "Manual API monitoring with basic alerting tools"'
-                                                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                className="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 text-sm"
                                             />
                                             <div className="text-right mt-1">
                                                 <span className={`text-xs ${state.competitiveAlternative.length >= 15 ? 'text-green-600' : 'text-gray-400'}`}>
@@ -385,7 +385,7 @@
                                                 value={state.alternativeDescription}
                                                 onChange={(e) => updateState({ alternativeDescription: e.target.value })}
                                                 placeholder='Example: "Teams use basic monitoring tools that only alert after problems occur. This requires manual investigation and leads to longer downtime because issues aren&apos;t caught proactively."'
-                                                className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 text-sm resize-none"
                                             />
                                             <WordCountFeedback text={state.alternativeDescription} minWords={10} />
                                         </div>
@@ -433,7 +433,7 @@
                                                         updateState({ differentiators: newDiffs });
                                                     }}
                                                     placeholder='Example: "Predictive Machine Learning engine that proactively identifies potential API failures before they impact users."'
-                                                    className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                    className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 text-sm resize-none"
                                                 />
                                                 <div className="text-right mt-1">
                                                     <span className={`text-xs ${state.differentiators[index].length >= 15 ? 'text-green-600' : 'text-gray-400'}`}>
@@ -455,7 +455,7 @@
                                                         updateState({ values: newValues });
                                                     }}
                                                     placeholder='Example: "Reduces API downtime by 80% and prevents an average of $50k in lost revenue per month."'
-                                                    className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                                    className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 text-sm resize-none"
                                                 />
                                                 <WordCountFeedback text={state.values[index]} minWords={10} />
                                             </div>
@@ -493,7 +493,7 @@
                                             value={state.corePain}
                                             onChange={(e) => updateState({ corePain: e.target.value })}
                                             placeholder='Example: "API failures that impact customers and cause revenue loss before teams can respond."'
-                                            className="laptop-textarea w-full p-4 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 text-sm"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 text-sm resize-none"
                                         />
                                         <WordCountFeedback text={state.corePain} minWords={10} />
                                     </div>
@@ -616,7 +616,7 @@
                     </div>
                     
                     <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
-                        Positioning Basics Workshop - GTM Program - 2025
+                        Positioning Basics — GTM Program — 2026
                     </footer>
                 </div>
             );

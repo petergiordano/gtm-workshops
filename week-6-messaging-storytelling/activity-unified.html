@@ -59,10 +59,6 @@
             transition: all 0.3s ease;
             background: white;
         }
-        .choice-card:hover {
-            border-color: #FF9000;
-            box-shadow: 0 4px 12px rgba(255, 144, 0, 0.1);
-        }
         .choice-card.selected {
             border-color: #FF9000;
             background: #FFF7ED;
@@ -160,6 +156,14 @@
                 </div>
             );
         };
+
+        const PrivacyNote = () => (
+            <div className="bg-blue-50 border border-blue-200 text-blue-800 text-xs rounded-lg p-3 my-4">
+                <p>
+                    <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
+                </p>
+            </div>
+        );
 
         const StepIndicator = ({ currentStep, steps, onStepClick }) => (
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
@@ -307,7 +311,7 @@
             const renderStep1 = () => (
                 <div className="animate-fadeIn space-y-8">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-800">1. Craft Your Message Strategy</h2>
+                        <h2 className="text-xl font-bold text-gray-800">Step 1: Craft Your Message Strategy</h2>
                         <p className="text-gray-600">Establish your brand voice and the core messaging pillars that support your value proposition.</p>
                     </div>
 
@@ -390,7 +394,7 @@
             const renderStep2 = () => (
                 <div className="animate-fadeIn space-y-8">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-800">2. Define Your Storytelling Framework</h2>
+                        <h2 className="text-xl font-bold text-gray-800">Step 2: Define Your Storytelling Framework</h2>
                         <p className="text-gray-600">Structure your narrative using a classic change-driven framework to build tension and resolution.</p>
                     </div>
 
@@ -448,7 +452,7 @@
                                 </div>
                             </div>
                             <div className="space-y-4">
-                                <div className="p-6 bg-orange-50 border border-orange-200 rounded-2xl h-full flex flex-col space-y-4">
+                                <div className="p-6 bg-orange-50 border border-orange-200 rounded-lg h-full flex flex-col space-y-4">
                                     <h3 className="font-bold text-orange-800 flex items-center gap-2"><BookOpen /> The Resolution</h3>
                                     <div className="flex-1">
                                         <label className="block text-sm font-bold text-orange-700 mb-1">4. The New World (The Goal)</label>
@@ -480,7 +484,7 @@
             const renderStep3 = () => (
                 <div className="animate-fadeIn space-y-8">
                     <div>
-                        <h2 className="text-xl font-bold text-gray-800">3. Content Creation & Distribution</h2>
+                        <h2 className="text-xl font-bold text-gray-800">Step 3: Content Creation & Distribution</h2>
                         <p className="text-gray-600">Select your key assets and define how you will deliver your message to the market.</p>
                     </div>
 
@@ -548,7 +552,7 @@
                     </div>
 
                     {isStep3Complete() && (
-                        <div className="p-8 bg-green-50 border-2 border-green-200 rounded-2xl animate-fadeIn">
+                        <div className="p-8 bg-green-50 border-2 border-green-200 rounded-lg animate-fadeIn">
                             <h3 className="text-2xl font-bold text-green-800 mb-4 flex items-center gap-3">
                                 <CheckCircle size={32} />
                                 Narrative Strategy Complete
@@ -570,7 +574,7 @@
                                         navigator.clipboard.writeText(generateMarkdown());
                                         alert('Strategy exported to clipboard!');
                                     }}
-                                    className="bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all shadow-lg flex items-center gap-2"
+                                    className="bg-green-600 text-white px-8 py-4 rounded-xl font-bold text-lg hover:bg-green-700 transition-all  flex items-center gap-2"
                                 >
                                     <FileText size={24}/> Copy Strategy Summary
                                 </button>
@@ -641,7 +645,9 @@ Generated: ${new Date().toLocaleDateString()}`;
 
                     <StepIndicator currentStep={state.currentStep} steps={steps} onStepClick={(n) => updateState({ currentStep: n })} />
 
-                    <div className="bg-white rounded-2xl shadow-sm border border-gray-200 p-6 md:p-10 mb-6 min-h-[500px]">
+                    <PrivacyNote />
+
+                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                         {state.currentStep === 1 && renderStep1()}
                         {state.currentStep === 2 && renderStep2()}
                         {state.currentStep === 3 && renderStep3()}
@@ -651,7 +657,7 @@ Generated: ${new Date().toLocaleDateString()}`;
                         <button
                             onClick={() => updateState({ currentStep: Math.max(1, state.currentStep - 1) })}
                             disabled={state.currentStep === 1}
-                            className={`px-6 py-2 rounded-lg font-bold transition-all ${state.currentStep === 1 ? 'opacity-0 pointer-events-none' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
+                            className={`px-6 py-2 rounded-lg font-bold transition-all ${state.currentStep === 1 ? 'bg-gray-200 text-gray-400 cursor-not-allowed' : 'bg-gray-200 text-gray-600 hover:bg-gray-300'}`}
                         >
                             Back
                         </button>
@@ -663,13 +669,17 @@ Generated: ${new Date().toLocaleDateString()}`;
                         </button>
                         <button
                             onClick={() => { if (state.currentStep < 3) updateState({ currentStep: state.currentStep + 1 }); }}
-                            className={`px-8 py-3 rounded-lg font-bold shadow-lg transition-all ${
+                            className={`px-8 py-3 rounded-lg font-bold  transition-all ${
                                 state.currentStep === 3 ? (isStep3Complete() ? 'bg-green-600 text-white hover:bg-green-700' : 'bg-green-600/50 text-white cursor-not-allowed') : 'bg-orange-500 text-white hover:bg-orange-600'
                             }`}
                         >
                             {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
                         </button>
                     </div>
+
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Messaging &amp; Storytelling — GTM Program — 2026
+                    </footer>
                 </div>
             );
         };

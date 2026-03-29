@@ -421,7 +421,7 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                             value={state.step1[stage.id].behaviors}
                                             onChange={(e) => handleStageUpdate(stage.id, 'behaviors', e.target.value)}
                                             placeholder="e.g., Searching on Google, asking peers for recommendations..."
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none"
                                             rows="3"
                                         />
                                     </div>
@@ -434,7 +434,7 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                             value={state.step1[stage.id].channels}
                                             onChange={(e) => handleStageUpdate(stage.id, 'channels', e.target.value)}
                                             placeholder="e.g., Google Search, LinkedIn, Industry Conferences, Word-of-Mouth"
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none"
                                             rows="3"
                                         />
                                     </div>
@@ -447,7 +447,7 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                                             value={state.step1[stage.id].needs}
                                             onChange={(e) => handleStageUpdate(stage.id, 'needs', e.target.value)}
                                             placeholder="e.g., 'How much does it cost?', 'What is the ROI?', 'Which vendors are best?'"
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:ring-1 focus:ring-orange-500 outline-none"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg text-sm transition-all focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 outline-none"
                                             rows="3"
                                         />
                                     </div>
@@ -713,6 +713,9 @@ ${channels.filter(ch => ch.channelName && (!ch.rationale || !ch.metric)).map(ch 
                             {state.currentStep === 3 ? 'Workshop Complete' : 'Continue'}
                         </button>
                     </div>
+                    <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        GTM Channels & Buyer Journey — GTM Program — 2026
+                    </footer>
                 </div>
             );
         };

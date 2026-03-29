@@ -102,6 +102,13 @@
         const WORKSHOP_STORAGE_KEY = 'workshopState_problems_worth_solving';
 
         // Helper components
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
         const WordCountFeedback = ({ text = '', minWords = 5 }) => {
             const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
             const isValid = wordCount >= minWords;
@@ -113,7 +120,7 @@
                     </span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words
-                        {isValid && <span className="font-bold">OK</span>}
+                        {isValid && <CheckCircle size={14} />}
                     </span>
                 </div>
             );
@@ -383,7 +390,7 @@ Problem Statement: ${state.problemStatement}`;
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">When did you first see this problem?</label>
                                         <textarea 
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.momentOfRealization}
                                             onChange={(e) => updateState({ momentOfRealization: e.target.value })}
                                             placeholder="Tell the story of when you saw the problem..."
@@ -393,7 +400,7 @@ Problem Statement: ${state.problemStatement}`;
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">Who was having the problem?</label>
                                         <textarea 
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.whoExperienced}
                                             onChange={(e) => updateState({ whoExperienced: e.target.value })}
                                             placeholder="Who are the people most affected?"
@@ -403,7 +410,7 @@ Problem Statement: ${state.problemStatement}`;
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">Why did it matter to them?</label>
                                         <textarea 
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.whyMatters}
                                             onChange={(e) => updateState({ whyMatters: e.target.value })}
                                             placeholder="How did this hurt their life or work?"
@@ -413,7 +420,7 @@ Problem Statement: ${state.problemStatement}`;
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">What was surprising about it?</label>
                                         <textarea 
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.whatSurprised}
                                             onChange={(e) => updateState({ whatSurprised: e.target.value })}
                                             placeholder="What was odd or unexpected?"
@@ -423,7 +430,7 @@ Problem Statement: ${state.problemStatement}`;
                                     <div>
                                         <label className="block text-sm font-bold text-gray-700 mb-2">How do you know it is real?</label>
                                         <textarea 
-                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                            className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.howRealProblem}
                                             onChange={(e) => updateState({ howRealProblem: e.target.value })}
                                             placeholder="What proof do you have that this is a real issue?"
@@ -489,7 +496,7 @@ Problem Statement: ${state.problemStatement}`;
                                             <button onClick={() => { updateState({ markers: state.markers.filter((_, idx) => idx !== activeMarkerIndex) }); setActiveMarkerIndex(null); }} className="text-red-500 text-xs hover:underline">Remove</button>
                                         </div>
                                         <textarea 
-                                            className="w-full p-2 text-sm border rounded focus:ring-1 focus:ring-orange-300"
+                                            className="w-full p-2 text-sm border rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                             value={state.markers[activeMarkerIndex].notes}
                                             onChange={(e) => updateMarkerNotes(activeMarkerIndex, e.target.value)}
                                             placeholder="Why did you put this here?"
@@ -511,7 +518,7 @@ Problem Statement: ${state.problemStatement}`;
                                     </select>
                                     <label className="block text-sm font-bold">Why did you pick this?</label>
                                     <textarea 
-                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500"
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                         value={state.evidence}
                                         onChange={(e) => updateState({ evidence: e.target.value })}
                                         placeholder="Show your proof and logic..."
@@ -531,7 +538,7 @@ Problem Statement: ${state.problemStatement}`;
                                 <div className="mb-6">
                                     <label className="block text-sm font-bold mb-2">Problem Statement</label>
                                     <textarea 
-                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 font-medium"
+                                        className="laptop-textarea w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 font-medium"
                                         value={state.problemStatement}
                                         onChange={(e) => updateState({ problemStatement: e.target.value })}
                                         placeholder="Write who has it, what it is, and why it matters in one line..."
@@ -564,7 +571,7 @@ Problem Statement: ${state.problemStatement}`;
                                             </div>
                                             <p className="text-xs text-gray-500 mb-3 italic">{c.desc}</p>
                                             <textarea 
-                                                className="w-full p-2 text-sm border border-gray-200 rounded focus:ring-1 focus:ring-orange-400"
+                                                className="w-full p-2 text-sm border border-gray-200 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                 value={state.evidenceScores[c.id]}
                                                 onChange={(e) => updateState({ evidenceScores: { ...state.evidenceScores, [c.id]: e.target.value } })}
                                                 placeholder={`Show your proof for this score...`}
@@ -618,7 +625,7 @@ Problem Statement: ${state.problemStatement}`;
                     </div>
                     
                     <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
-                        Problems Worth Solving Workshop - GTM Program - 2025
+                        Problems Worth Solving — GTM Program — 2026
                     </footer>
                 </div>
             );

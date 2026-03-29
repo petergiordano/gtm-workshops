@@ -122,11 +122,11 @@
             return (
                 <div className="flex justify-between items-center mt-1">
                     <span className="text-xs text-gray-500">
-                        (describe in 5+ words)
+                        (write {minWords}+ words)
                     </span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words
-                        {isValid && <span>✓</span>}
+                        {isValid && <CheckCircle size={14} />}
                     </span>
                 </div>
             );
@@ -144,7 +144,7 @@
         const ForceBox = ({ id, title, question, tooltip, placeholder, value, setter, selectedForces, handleForceSelection }) => {
             const isSelected = selectedForces.includes(id);
             const wordCount = value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isValid = value.trim().length >= 25;
+            const isValid = wordCount >= 5;
             
             return (
                 <div id={id} className={`force-box absolute w-80 p-4 border-2 rounded-xl bg-white shadow-lg transition-all duration-300 ${isSelected ? 'selected' : (isValid ? 'border-green-500' : 'border-gray-200')}`}>
@@ -221,7 +221,7 @@
         // Input field component with enhanced textarea support
         const InputField = ({ label, tooltip, value, setter, placeholder, rows = 3, required = false }) => {
             const wordCount = value.trim().split(/\s+/).filter(w => w.length > 0).length;
-            const isValid = value.trim().length >= 25;
+            const isValid = wordCount >= 5;
             
             return (
                 <div className="mb-6">
@@ -237,7 +237,7 @@
                         onChange={(e) => setter(e.target.value)} 
                         placeholder={placeholder} 
                         rows={rows} 
-                        className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:ring-1 focus:ring-orange-500 laptop-textarea" 
+                        className="w-full p-3 border border-gray-300 rounded-lg text-sm focus:border-orange-500 focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 laptop-textarea" 
                     />
                     <WordCountFeedback text={value} minWords={5} />
                 </div>
@@ -306,7 +306,7 @@
             
             // Check completion status
             const fieldsComplete = useMemo(() => {
-                return [customers, competitors, substitutes, suppliers, newEntrants].every(field => field.trim().length >= 25);
+                return [customers, competitors, substitutes, suppliers, newEntrants].every(field => field.trim().split(/\s+/).filter(w => w.length > 0).length >= 5);
             }, [customers, competitors, substitutes, suppliers, newEntrants]);
 
             const activityComplete = useMemo(() => {
@@ -370,7 +370,6 @@
                                 Activity 1: Competitive Field Snapshot {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Identify the pressures shaping your market, then select the <strong>top two forces</strong> that matter most to your startup right now.</p>
-                            <PrivacyNote />
                              {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
@@ -412,11 +411,11 @@
                             />
                             <div className="flex justify-between items-center mt-1">
                                 <span className="text-xs text-blue-200">
-                                    (describe in 5+ words)
+                                    (write 5+ words)
                                 </span>
                                 <span className={`text-sm flex items-center gap-1 ${competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 ? 'text-white' : 'text-blue-200'}`}>
                                     {competitors.trim().split(/\s+/).filter(w => w.length > 0).length} words
-                                    {competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 && <span>✓</span>}
+                                    {competitors.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 && <CheckCircle size={14} />}
                                 </span>
                             </div>
                             <button 
@@ -486,7 +485,7 @@
                 ];
 
                 // Condition 1: Check that all 14 text fields have meaningful content.
-                const allTextFieldsFilled = textFields.every(field => field.trim().length > 3);
+                const allTextFieldsFilled = textFields.every(field => field.trim().split(/\s+/).filter(w => w.length > 0).length >= 5);
 
                 return allTextFieldsFilled;
             }, [
@@ -553,7 +552,6 @@
                                 Activity 2: Play & Win Choices {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Define your strategic positioning and identify your riskiest assumption to test.</p>
-                            <PrivacyNote />
                              {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
@@ -569,7 +567,7 @@
 
                     {/* Where We Play Section */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                        <h2 className="text-xl font-bold mb-4 text-orange-600">🎯 Where We Play</h2>
+                        <h2 className="text-xl font-bold mb-4 text-gray-800">🎯 Where We Play</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <InputField 
                                 label="Target Segment" 
@@ -608,7 +606,7 @@
 
                     {/* How We Win Section */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                        <h2 className="text-xl font-bold mb-4 text-orange-600">🏆 How We Win</h2>
+                        <h2 className="text-xl font-bold mb-4 text-gray-800">🏆 How We Win</h2>
                         <div className="space-y-6">
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <InputField 
@@ -669,7 +667,7 @@
 
                     {/* Simplified Riskiest Assumption Section */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-                        <h2 className="text-xl font-bold mb-4 text-orange-600">🧪 Test Your Riskiest Assumption</h2>
+                        <h2 className="text-xl font-bold mb-4 text-gray-800">🧪 Test Your Riskiest Assumption</h2>
                         <div className="space-y-6">
                              <InputField 
                                 label="Your Single Riskiest Assumption" 
@@ -821,11 +819,10 @@
                 <div className="max-w-[900px] mx-auto">
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
                         <div className="pt-4">
-                            <h1 onDoubleClick={toggleDevMode} className={`text-2xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
+                            <h1 onDoubleClick={toggleDevMode} className={`text-xl font-bold text-gray-800 cursor-pointer select-none ${devMode ? 'text-orange-600' : ''}`} title="Double-click to toggle dev mode">
                                 Activity 3: Assemble Your Blueprint {devMode && '🔧'}
                             </h1>
                             <p className="text-gray-600 text-sm mt-1">Combine your insights into a single, actionable strategy document.</p>
-                            <PrivacyNote />
                              {devMode && (
                                 <div className="mt-3 pt-3 border-t border-orange-200">
                                     <div className="flex items-center justify-between">
@@ -1129,17 +1126,17 @@
             const workshopProgress = useMemo(() => {
                 const activity1Fields = [customers, competitors, substitutes, suppliers, newEntrants];
                 const activity1SelectionFields = selectedForces.length >= 2 ? 2 : selectedForces.length;
-                const activity1Count = activity1Fields.filter(field => field.trim().length > 3).length + activity1SelectionFields;
+                const activity1Count = activity1Fields.filter(field => field.trim().split(/\s+/).filter(w => w.length > 0).length >= 5).length + activity1SelectionFields;
 
                 const activity2Fields = [
                     targetSegment, specificBuyer, urgentProblem, whereNotToPlay,
                     value1, capability1, value2, capability2, value3, capability3,
                     riskiestAssumption, testObjective, theTest, theMetric
                 ];
-                const activity2Count = activity2Fields.filter(field => (field || '').trim().length > 3).length;
+                const activity2Count = activity2Fields.filter(field => (field || '').trim().split(/\s+/).filter(w => w.length > 0).length >= 5).length;
 
                 const activity3Fields = [criticalCapabilities, requiredSystems, valueMetric, earlySignals, keyRisks, counterMoves, firstTests];
-                const activity3Count = activity3Fields.filter(field => field.trim().length > 3).length;
+                const activity3Count = activity3Fields.filter(field => field.trim().split(/\s+/).filter(w => w.length > 0).length >= 5).length;
 
                 const totalCompleted = activity1Count + activity2Count + activity3Count;
                 const totalRequired = 7 + 14 + 7; // 28 total fields
@@ -1377,14 +1374,17 @@ ${firstTests || '[Not defined]'}
             // Activity 3 step completion logic
             const activity3Step2Complete = useMemo(() => {
                 return criticalCapabilities && requiredSystems && valueMetric && earlySignals &&
-                       criticalCapabilities.trim().length > 3 && requiredSystems.trim().length > 3 &&
-                       valueMetric.trim().length > 3 && earlySignals.trim().length > 3;
+                       criticalCapabilities.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
+                       requiredSystems.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
+                       valueMetric.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
+                       earlySignals.trim().split(/\s+/).filter(w => w.length > 0).length >= 5;
             }, [criticalCapabilities, requiredSystems, valueMetric, earlySignals]);
 
             const activity3Step3Complete = useMemo(() => {
                 return keyRisks && counterMoves && firstTests &&
-                       keyRisks.trim().length > 3 && counterMoves.trim().length > 3 &&
-                       firstTests.trim().length > 3;
+                       keyRisks.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
+                       counterMoves.trim().split(/\s+/).filter(w => w.length > 0).length >= 5 &&
+                       firstTests.trim().split(/\s+/).filter(w => w.length > 0).length >= 5;
             }, [keyRisks, counterMoves, firstTests]);
 
             // Check if current activity is complete for smart navigation
@@ -1517,12 +1517,14 @@ ${firstTests || '[Not defined]'}
                     </div>
 
                     {/* Step Indicator */}
-                    <StepIndicator 
-                        currentStep={currentStep} 
+                    <StepIndicator
+                        currentStep={currentStep}
                         activity1Complete={activity1Complete}
                         activity2Complete={activity2Complete}
                         activity3Complete={activity3Complete}
                     />
+
+                    <PrivacyNote />
 
                     {/* Unified Workshop Progress Bar */}
                     <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 mb-6">
@@ -1580,13 +1582,8 @@ ${firstTests || '[Not defined]'}
                              'Complete Activity 3'}
                         </button>
                     </div>
-                    <footer className="max-w-[900px] mx-auto text-center text-xs text-gray-500 mt-12 pb-8">
-                        <p>
-                            <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
-                        </p>
-                        <p className="font-semibold mt-1">
-                            ⚠️ Important: Do not clear your browser data before copying your final blueprint, as all your work will be permanently deleted.
-                        </p>
+                                        <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Competitive Strategy — GTM Program — 2026
                     </footer>
                 </div>
             );

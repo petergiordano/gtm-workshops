@@ -143,6 +143,13 @@
         };
 
         // Helper function for word count feedback
+        const CheckCircle = ({ size = 20, className = "" }) => (
+            <svg className={`lucide-icon ${className}`} width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22,4 12,14.01 9,11.01"/>
+            </svg>
+        );
+
         const WordCountFeedback = ({ text, minWords = 5 }) => {
             const wordCount = text.trim().split(/\s+/).filter(w => w.length > 0).length;
             const isValid = wordCount >= minWords;
@@ -154,7 +161,7 @@
                     </span>
                     <span className={`text-sm flex items-center gap-1 ${isValid ? 'text-green-600' : 'text-gray-500'}`}>
                         {wordCount} words
-                        {isValid && <span>✓</span>}
+                        {isValid && <CheckCircle size={14} />}
                     </span>
                 </div>
             );
@@ -565,7 +572,7 @@
                                                             }));
                                                         }}
                                                         placeholder={`e.g., Our customers struggle with ${job} because...`}
-                                                        className="laptop-textarea w-full p-3 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                        className="laptop-textarea w-full p-3 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 resize-none"
                                                     />
                                                     <WordCountFeedback text={jobJustifications[job] || ''} minWords={5} />
                                                 </div>
@@ -804,7 +811,7 @@
                                                                         setStakeholders(updated);
                                                                     }}
                                                                     placeholder="e.g., Head of DevOps"
-                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 focus:border-orange-500"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
@@ -817,7 +824,7 @@
                                                                         setStakeholders(updated);
                                                                     }}
                                                                     placeholder="e.g., VP of Engineering, CTO"
-                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                                                                    className="w-full min-w-[140px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 focus:border-orange-500"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
@@ -828,7 +835,7 @@
                                                                         updated[index].buyingRole = e.target.value;
                                                                         setStakeholders(updated);
                                                                     }}
-                                                                    className="w-full min-w-[130px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500"
+                                                                    className="w-full min-w-[130px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 focus:border-orange-500"
                                                                     disabled={index < 3} // Disable for pre-populated roles
                                                                 >
                                                                     <option value="">Select role...</option>
@@ -851,7 +858,7 @@
                                                                     }}
                                                                     placeholder="e.g., Reduce P1 incidents by 50%"
                                                                     rows="2"
-                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 focus:border-orange-500 resize-none"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 text-sm text-gray-500">
@@ -864,7 +871,7 @@
                                                                     }}
                                                                     placeholder="e.g., 10+ hours/week firefighting"
                                                                     rows="2"
-                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded focus:ring-1 focus:ring-orange-500 focus:border-orange-500 resize-none"
+                                                                    className="w-full min-w-[180px] p-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500 focus:border-orange-500 resize-none"
                                                                 />
                                                             </td>
                                                             <td className="px-3 py-4 whitespace-nowrap text-sm font-medium">
@@ -1014,7 +1021,7 @@
                                                                             setStakeholders(updated);
                                                                         }}
                                                                         placeholder="e.g., ROI calculator, technical brief..."
-                                                                        className="w-full h-32 p-2 text-sm border border-gray-300 rounded focus:ring-2 focus:ring-orange-500 focus:border-orange-500"
+                                                                        className="w-full h-32 p-2 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-orange-200 focus:border-orange-500"
                                                                     />
                                                                     <WordCountFeedback text={stakeholder.enablementArtifact || ''} minWords={10} />
                                                                 </td>
@@ -1264,14 +1271,9 @@ ${selectedBuyingJobs.map(job => `\n**${job}:** ${jobJustifications[job] || 'No j
                             </button>
                         </div>
 
-                        <footer className="max-w-6xl mx-auto text-center text-xs text-gray-500 mt-12 pb-8">
-                            <p>
-                                <strong>Note:</strong> Your progress is automatically saved in this browser's local storage. This data is private to your computer and is not sent to any server.
-                            </p>
-                            <p className="font-semibold mt-1">
-                                ⚠️ Important: Do not clear your browser data before copying your final summary, as all your work will be permanently deleted.
-                            </p>
-                        </footer>
+                                            <footer className="mt-12 py-8 border-t border-gray-100 text-center text-xs text-gray-400">
+                        Map Buyer Stakeholders — GTM Program — 2026
+                    </footer>
                         
                         {/* Bottom Navigation Buttons */}
                         <div className="max-w-[900px] mx-auto px-4 pb-8">
