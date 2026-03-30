@@ -218,6 +218,8 @@
 
             const [state, setState] = useState(() => {
                 const saved = loadState();
+                const urlParams = new URLSearchParams(window.location.search);
+                const urlStep = parseInt(urlParams.get('step'), 10);
                 return {
                     currentStep: 1,
                     // Activity 1
@@ -226,7 +228,8 @@
                     mappings: {},
                     // Activity 3
                     responses: {},
-                    ...saved
+                    ...saved,
+                    ...(urlStep >= 1 && urlStep <= 3 ? { currentStep: urlStep } : {})
                 };
             });
 

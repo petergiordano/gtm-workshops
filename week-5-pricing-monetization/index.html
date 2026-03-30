@@ -13,7 +13,7 @@
             min-height: 100vh;
             color: #333;
         }
-        
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -23,7 +23,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e9ecef;
         }
-        
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -32,66 +32,71 @@
             opacity: 0.8;
             transition: opacity 0.3s ease;
         }
-        
+
         .back-link:hover {
             opacity: 1;
         }
-        
+
         h1 {
             margin-bottom: 10px;
             font-size: 2.2em;
             font-weight: 300;
         }
-        
+
+        .activity-list {
+            list-style: none;
+            padding: 0;
+        }
+
         .activity-item {
             background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%);
-            margin-top: 30px;
+            margin-bottom: 15px;
             border-radius: 10px;
             overflow: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .activity-item:hover {
             background: linear-gradient(135deg, #FF6F00 0%, #FF8500 100%);
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(255, 127, 0, 0.25);
         }
-        
+
         .activity-link {
             display: block;
-            padding: 24px;
+            padding: 20px;
             color: white;
             text-decoration: none;
         }
-        
+
         .activity-title {
-            font-size: 1.4em;
+            font-size: 1.2em;
             font-weight: 600;
-            margin-bottom: 8px;
+            margin-bottom: 5px;
             display: flex;
             align-items: center;
         }
-        
+
         .activity-title span {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 28px;
-            height: 28px;
+            width: 24px;
+            height: 24px;
             background-color: white;
             color: #FF7F00;
             border-radius: 50%;
             font-weight: bold;
-            margin-right: 12px;
-            font-size: 0.9em;
+            margin-right: 8px;
+            font-size: 0.875rem;
+            flex-shrink: 0;
         }
 
         .activity-description {
-            font-size: 1em;
-            opacity: 0.9;
-            line-height: 1.5;
+            font-size: 0.9em;
+            opacity: 0.8;
         }
-        
+
         .mt-8 { margin-top: 2rem; }
         .flex { display: flex; }
         .items-center { align-items: center; }
@@ -103,19 +108,40 @@
 <body>
     <div class="container">
         <a href="../index.html" class="back-link">← Back to All Workshops</a>
-        
+
         <h1>Pricing & Monetization</h1>
-        <p style="color: #666; margin-bottom: 20px;">Align your pricing to value and build sustainable guardrails for growth.</p>
-        
-        <div class="activity-item">
-            <a href="activity-unified.html" class="activity-link">
-                <div class="activity-title">
-                    <span>A</span>
-                    Pricing Strategy Workshop
-                </div>
-                <div class="activity-description">A unified 3-step guide to finding your value metric, matching your model, and implementing price points.</div>
-            </a>
-        </div>
+
+        <ul class="activity-list">
+            <li class="activity-item">
+                <a href="activity-unified.html?step=1" class="activity-link">
+                    <div class="activity-title">
+                        <span>1</span>
+                        Value Metric
+                    </div>
+                    <div class="activity-description">Define the core value metric that drives your pricing</div>
+                </a>
+            </li>
+
+            <li class="activity-item">
+                <a href="activity-unified.html?step=2" class="activity-link">
+                    <div class="activity-title">
+                        <span>2</span>
+                        Pricing Model
+                    </div>
+                    <div class="activity-description">Design a hybrid pricing model aligned to buyer value</div>
+                </a>
+            </li>
+
+            <li class="activity-item">
+                <a href="activity-unified.html?step=3" class="activity-link">
+                    <div class="activity-title">
+                        <span>3</span>
+                        Implementation
+                    </div>
+                    <div class="activity-description">Set price points and establish guardrails for sustainable growth</div>
+                </a>
+            </li>
+        </ul>
 
         <div class="mt-8 flex items-center justify-center">
             <a href="https://docs.google.com/presentation/d/1oMAbn1y_zLOE56Ax6rhnoC5Aya_KLIhSL2qC-PdIG8E/edit?usp=sharing" target="_blank" class="flex items-center" style="text-decoration: none;">

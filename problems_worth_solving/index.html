@@ -13,7 +13,7 @@
             min-height: 100vh;
             color: #333;
         }
-        
+
         .container {
             max-width: 600px;
             margin: 0 auto;
@@ -23,7 +23,7 @@
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
             border: 1px solid #e9ecef;
         }
-        
+
         .back-link {
             display: inline-block;
             margin-bottom: 20px;
@@ -32,23 +32,22 @@
             opacity: 0.8;
             transition: opacity 0.3s ease;
         }
-        
+
         .back-link:hover {
             opacity: 1;
         }
-        
+
         h1 {
             margin-bottom: 10px;
             font-size: 2.2em;
             font-weight: 300;
         }
-        
+
         .activity-list {
             list-style: none;
             padding: 0;
-            margin-top: 30px;
         }
-        
+
         .activity-item {
             background: linear-gradient(135deg, #FF7F00 0%, #FF9500 100%);
             margin-bottom: 15px;
@@ -56,32 +55,48 @@
             overflow: hidden;
             transition: all 0.3s ease;
         }
-        
+
         .activity-item:hover {
             background: linear-gradient(135deg, #FF6F00 0%, #FF8500 100%);
             transform: translateY(-3px);
             box-shadow: 0 8px 25px rgba(255, 127, 0, 0.25);
         }
-        
+
         .activity-link {
             display: block;
-            padding: 30px;
+            padding: 20px;
             color: white;
             text-decoration: none;
-            text-align: center;
         }
-        
+
         .activity-title {
-            font-size: 1.5em;
+            font-size: 1.2em;
             font-weight: 600;
             margin-bottom: 5px;
+            display: flex;
+            align-items: center;
         }
-        
+
+        .activity-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            color: #FF7F00;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
         .activity-description {
-            font-size: 1em;
-            opacity: 0.9;
+            font-size: 0.9em;
+            opacity: 0.8;
         }
-        
+
         .mt-8 { margin-top: 2rem; }
         .flex { display: flex; }
         .items-center { align-items: center; }
@@ -92,16 +107,38 @@
 </head>
 <body>
     <div class="container">
-        <a href="../index.html" class="back-link">Back to All Workshops</a>
-        
+        <a href="../index.html" class="back-link">← Back to All Workshops</a>
+
         <h1>Problems Worth Solving</h1>
-        <p>Find out if your startup idea fixes a real problem.</p>
-        
+
         <ul class="activity-list">
             <li class="activity-item">
-                <a href="activity-unified.html" class="activity-link">
-                    <div class="activity-title">Start Workshop</div>
-                    <div class="activity-description">Three steps to check your problem story, map the market, and score your progress.</div>
+                <a href="activity-unified.html?step=1" class="activity-link">
+                    <div class="activity-title">
+                        <span>1</span>
+                        Problem Story
+                    </div>
+                    <div class="activity-description">Articulate how you discovered the problem and what surprised you</div>
+                </a>
+            </li>
+
+            <li class="activity-item">
+                <a href="activity-unified.html?step=2" class="activity-link">
+                    <div class="activity-title">
+                        <span>2</span>
+                        Market Gap
+                    </div>
+                    <div class="activity-description">Map market signals and identify where you will start</div>
+                </a>
+            </li>
+
+            <li class="activity-item">
+                <a href="activity-unified.html?step=3" class="activity-link">
+                    <div class="activity-title">
+                        <span>3</span>
+                        Check Score
+                    </div>
+                    <div class="activity-description">Score your problem across key dimensions to validate its worth solving</div>
                 </a>
             </li>
         </ul>

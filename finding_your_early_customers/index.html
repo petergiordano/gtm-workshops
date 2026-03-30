@@ -76,14 +76,25 @@
             display: flex;
             align-items: center;
         }
-        
+
+        .activity-title span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 24px;
+            height: 24px;
+            background-color: white;
+            color: #FF7F00;
+            border-radius: 50%;
+            font-weight: bold;
+            margin-right: 8px;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+        }
+
         .activity-description {
             font-size: 0.9em;
             opacity: 0.8;
-        }
-        
-        .available {
-            border-left: 4px solid #F1C232;
         }
         
         .mt-8 { margin-top: 2rem; }
@@ -101,12 +112,33 @@
         <h1>Finding Your Early Customers</h1>
         
         <ul class="activity-list">
-            <li class="activity-item available">
-                <a href="activity-unified.html" class="activity-link">
+            <li class="activity-item">
+                <a href="activity-unified.html?step=1" class="activity-link">
                     <div class="activity-title">
-                        Launch Unified Workshop
+                        <span>1</span>
+                        Identify Customers
                     </div>
-                    <div class="activity-description">Identify early market customers, map ECP components, and build your customer hypothesis.</div>
+                    <div class="activity-description">Distinguish early market customers from mainstream buyers</div>
+                </a>
+            </li>
+
+            <li class="activity-item">
+                <a href="activity-unified.html?step=2" class="activity-link">
+                    <div class="activity-title">
+                        <span>2</span>
+                        Map Components
+                    </div>
+                    <div class="activity-description">Map the Early Customer Profile framework to real examples</div>
+                </a>
+            </li>
+
+            <li class="activity-item">
+                <a href="activity-unified.html?step=3" class="activity-link">
+                    <div class="activity-title">
+                        <span>3</span>
+                        Build Your ECP
+                    </div>
+                    <div class="activity-description">Build your own Early Customer Profile hypothesis</div>
                 </a>
             </li>
         </ul>
