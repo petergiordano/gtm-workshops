@@ -35,6 +35,10 @@ See: `.planning/WORKSHOPS.md` for canonical workshop index
 - Update root index.html (card href, number, title)
 - Update WORKSHOPS.md status
 
+## Codebase Map Note
+
+`.planning/codebase/` was generated on 2026-04-08 against the pre-rename directory structure. It is valid for Phase 1 planning but will be stale after Phase 1 completes. **Run `/gsd:map-codebase` after all 7 renames are done, before planning Phase 2.**
+
 ## Next Action
 
 Run `/gsd:plan-phase 1` to plan Plan 1.1 — Workshop 4 rename (Positioning).

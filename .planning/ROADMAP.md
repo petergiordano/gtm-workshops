@@ -43,6 +43,18 @@
 
 ---
 
+## Between Phase 1 and Phase 2 — Remap Codebase
+
+After all 7 renames are committed and verified on GitHub Pages:
+
+```
+/gsd:map-codebase
+```
+
+This refreshes `.planning/codebase/` with correct directory names before planning Workshop 3. STRUCTURE.md and CONCERNS.md in particular will be stale after Phase 1.
+
+---
+
 ## Phase 2 — Build Workshop 3: Customer Value Mapping
 
 **Goal:** Full unified SPA for Workshop 3, matching the standard of all other complete workshops. Replace the `week-4-customer-value-mapping/` stubs.
