@@ -6,7 +6,7 @@
 
 ## Status
 
-Ready to plan Phase 1, Plan 1.1 (Workshop 6 rename: week-5-pricing-monetization → workshop-6-pricing-monetization)
+Ready to plan Phase 1, Plan 1.1 (Workshop 4 rename: positioning_basics → workshop-4-positioning-and-value-proposition-basics)
 
 ## Project Reference
 
@@ -20,13 +20,21 @@ See: `.planning/WORKSHOPS.md` for canonical workshop index
 
 ## Phase Progress
 
-| Phase | Status |
-|-------|--------|
-| Phase 1 — Rename Workshops 6–10 | 🔵 Ready to start |
-| Phase 2 — Build Workshop 3: Customer Value Mapping | ⬜ Not started |
-| Phase 3 — Migrate Workshop 11: Strategic Partnerships | ⬜ Not started |
-| Phase 4 — Cleanup | ⬜ Not started |
+| Phase | Plans | Status |
+|-------|-------|--------|
+| Phase 1 — Renumber and Rename All Workshops (7 renames) | 1.1–1.7 | 🔵 Ready to start |
+| Phase 2 — Build Workshop 3: Customer Value Mapping | 2.1–2.5 | ⬜ Not started |
+| Phase 3 — Migrate Workshop 11: Strategic Partnerships | 3.1–3.5 | ⬜ Not started |
+| Phase 4 — Cleanup | 4.1–4.5 | ⬜ Not started |
+
+## Plan 1.1 Scope
+
+- Rename `positioning_basics/` → `workshop-4-positioning-and-value-proposition-basics/`
+- Update all internal nav links in activity-unified.html
+- Update workshop index.html (title, card links)
+- Update root index.html (card href, number, title)
+- Update WORKSHOPS.md status
 
 ## Next Action
 
-Run `/gsd:plan-phase 1` to plan the first rename (Workshop 6).
+Run `/gsd:plan-phase 1` to plan Plan 1.1 — Workshop 4 rename (Positioning).
