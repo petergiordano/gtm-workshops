@@ -30,7 +30,7 @@ gtm-workshops/
 
 **Activity Naming Patterns:**
 - **A-Version (Standard)**: `[topic]-activity-[1-3]A.html` - Most workshops use this pattern
-- **Unified (Advanced)**: `activity-unified.html` - Weeks 8-9 use this for multi-activity workflows
+- **Unified (Standard)**: `activity-unified.html` - ALL 9 workshops use this pattern (as of 2026-03-29)
 - **Test Data**: All test data stored centrally in `test_data/[topic]-activity-[number]A.json`
 
 ## Commands
@@ -368,16 +368,30 @@ For detailed specifications and implementation guides, refer to:
 - Implement professional markdown export
 - Test dev mode functionality thoroughly
 
+## Landing Page Standards
+
+- **Gold standard**: `week-7-gtm-channels-buyer-journey/index.html` — reference for all workshop index.html design
+- **3-card layout**: Every workshop index.html shows 3 numbered activity cards linking to `activity-unified.html?step=1/2/3`
+- **Card titles/descriptions source of truth**: The `steps` array in each `activity-unified.html` (search `const steps = [`)
+- **URL deep-linking**: SPAs read `?step=N` inside the `useState(() => { ... })` init — URL param overrides localStorage step; pattern:
+  ```javascript
+  const urlParams = new URLSearchParams(window.location.search);
+  const urlStep = parseInt(urlParams.get('step'), 10);
+  // then spread: ...(urlStep >= 1 && urlStep <= 3 ? { currentStep: urlStep } : {})
+  ```
+
+## macOS Shell Gotcha
+
+- Multiline `sed -i` substitutions fail silently on macOS — use `python3` with `content.replace()` for multi-line edits across multiple files
+
 ## Current Project Status
 
-✅ **All 12 core activities implemented** with embedded test data system
-✅ **Complete A-version pattern** established and documented
-✅ **Dev mode functionality** across all activities
+✅ **All 9 workshops unified** — each uses `activity-unified.html` with 3-step SPA
+✅ **All 9 landing pages** — 3-card layout with `?step=1/2/3` deep-linking
+✅ **Dev mode functionality** across all workshops
 ✅ **Professional markdown export** with Google Docs integration
-✅ **Weeks 4-7 implemented** with A-version pattern (3 activities each)
-✅ **Weeks 8-9 implemented** with unified activity pattern
 
-**Workshop Count:** 11+ workshops with 30+ individual activities
+**Workshop Count:** 9 workshops, each with 3 activities in a unified SPA
 
 ## Best Practices for Claude Code
 
