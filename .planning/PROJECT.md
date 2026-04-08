@@ -33,7 +33,7 @@ Facilitators and founders can run structured GTM workshops from any browser, wit
 - Build process or bundler — static site, CDN only, no exceptions
 - External APIs or backend — client-side only
 - Mobile-first design — laptop-optimized (900px max-width) is intentional
-- Renaming workshops 1–5 directories (keep descriptive names, no workshop-N prefix needed)
+- Renaming workshops 1–2 directories (descriptive names `problems_worth_solving/` and `finding_your_early_customers/` are clear enough to keep)
 
 ## Context
 

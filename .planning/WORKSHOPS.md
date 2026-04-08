@@ -13,8 +13,8 @@ Update this file whenever a workshop is renamed, renumbered, built, or migrated.
 | 1 | Problems Worth Solving | `problems_worth_solving/` | ✅ Complete | Unified SPA |
 | 2 | Finding Your Early Customers | `finding_your_early_customers/` | ✅ Complete | Unified SPA |
 | 3 | Customer Value Mapping | `workshop-3-customer-value-mapping/` | 🔴 Not built | Needs full build; currently stubs in `week-4-customer-value-mapping/` |
-| 4 | Positioning and Value Proposition Basics | `positioning_basics/` | ✅ Complete | Unified SPA; dir rename deferred |
-| 5 | Market Entry Readiness | `market_entry_readiness/` | ✅ Complete | Unified SPA; dir rename deferred |
+| 4 | Positioning and Value Proposition Basics | `workshop-4-positioning-and-value-proposition-basics/` | ⚠️ Rename pending | Currently `positioning_basics/`; renumber 3→4 |
+| 5 | Market Entry Readiness | `workshop-5-market-entry-readiness/` | ⚠️ Rename pending | Currently `market_entry_readiness/`; renumber 4→5 |
 | 6 | Monetization and Pricing Strategy | `workshop-6-pricing-monetization/` | ⚠️ Rename pending | Currently `week-5-pricing-monetization/`; title updated |
 | 7 | Messaging and Storytelling | `workshop-7-messaging-storytelling/` | ⚠️ Rename pending | Currently `week-6-messaging-storytelling/`; title updated |
 | 8 | GTM Channels and Buyer Journeys | `workshop-8-gtm-channels-buyer-journey/` | ⚠️ Rename pending | Currently `week-7-gtm-channels-buyer-journey/`; title updated |
@@ -30,19 +30,17 @@ Tracks old → new directory names for the week-# → workshop-# migration.
 
 | Old Directory | New Directory | Status |
 |---------------|---------------|--------|
-| `week-4-customer-value-mapping/` | *(replace with)* `workshop-3-customer-value-mapping/` | 🔴 Build new |
+| `positioning_basics/` | `workshop-4-positioning-and-value-proposition-basics/` | ⚠️ Pending |
+| `market_entry_readiness/` | `workshop-5-market-entry-readiness/` | ⚠️ Pending |
 | `week-5-pricing-monetization/` | `workshop-6-pricing-monetization/` | ⚠️ Pending |
 | `week-6-messaging-storytelling/` | `workshop-7-messaging-storytelling/` | ⚠️ Pending |
 | `week-7-gtm-channels-buyer-journey/` | `workshop-8-gtm-channels-buyer-journey/` | ⚠️ Pending |
 | `week-8-competitive-strategy/` | `workshop-9-competitive-strategy/` | ⚠️ Pending |
 | `week-9-map-buyer-stakeholders/` | `workshop-10-map-buyer-stakeholders/` | ⚠️ Pending |
 | `week-x-strategic-partnerships/` | `workshop-11-strategic-partnerships/` | ⚠️ Pending |
-| `positioning_basics/` | *(keep as-is for now)* | — Deferred |
-| `market_entry_readiness/` | *(keep as-is for now)* | — Deferred |
-| `problems_worth_solving/` | *(keep as-is for now)* | — Deferred |
-| `finding_your_early_customers/` | *(keep as-is for now)* | — Deferred |
-
-> Workshops 1–5 use descriptive directory names (no week- prefix) — renaming them to `workshop-N-*` is deferred until the week-# migration is complete.
+| `week-4-customer-value-mapping/` | *(delete — stubs only, replaced by workshop-3 build)* | 🔴 Remove |
+| `problems_worth_solving/` | *(keep as-is)* | ✅ No rename needed |
+| `finding_your_early_customers/` | *(keep as-is)* | ✅ No rename needed |
 
 ---
 

@@ -6,21 +6,23 @@
 
 ---
 
-## Phase 1 — Rename Workshops 6–10 (week-# → workshop-#)
+## Phase 1 — Renumber and Rename All Workshops (7 renames)
 
-**Goal:** All `week-N-*` directories renamed to `workshop-N-*` with updated numbers and canonical titles. Root index updated. One workshop per plan.
+**Goal:** Every workshop gets a `workshop-N-*` directory name with the correct number and canonical title. Root index updated throughout. One workshop per plan.
 
-**Why sequential:** Each rename touches the root index. Doing them one at a time prevents conflicts and lets us verify GitHub Pages after each.
+**Why sequential:** Each rename touches the root index. One at a time means we can verify GitHub Pages after each and catch any broken links before moving on.
 
 ### Plans
 
-| Plan | Workshop | Old Directory | New Directory | Title Change? |
-|------|---------|---------------|---------------|---------------|
-| 1.1 | Workshop 6 | `week-5-pricing-monetization/` | `workshop-6-pricing-monetization/` | Pricing & Monetization → Monetization and Pricing Strategy |
-| 1.2 | Workshop 7 | `week-6-messaging-storytelling/` | `workshop-7-messaging-storytelling/` | Messaging & Storytelling → Messaging and Storytelling |
-| 1.3 | Workshop 8 | `week-7-gtm-channels-buyer-journey/` | `workshop-8-gtm-channels-buyer-journey/` | GTM Channels & Buyer Journey → GTM Channels and Buyer Journeys |
-| 1.4 | Workshop 9 | `week-8-competitive-strategy/` | `workshop-9-competitive-strategy/` | No title change |
-| 1.5 | Workshop 10 | `week-9-map-buyer-stakeholders/` | `workshop-10-map-buyer-stakeholders/` | How to Map Buying Stakeholders → Buyer Stakeholder Mapping |
+| Plan | Workshop | Old Directory | New Directory | What changes |
+|------|---------|---------------|---------------|--------------|
+| 1.1 | Workshop 4 | `positioning_basics/` | `workshop-4-positioning-and-value-proposition-basics/` | Dir rename + renumber 3→4 |
+| 1.2 | Workshop 5 | `market_entry_readiness/` | `workshop-5-market-entry-readiness/` | Dir rename + renumber 4→5 |
+| 1.3 | Workshop 6 | `week-5-pricing-monetization/` | `workshop-6-pricing-monetization/` | Dir rename + renumber 5→6 + title update |
+| 1.4 | Workshop 7 | `week-6-messaging-storytelling/` | `workshop-7-messaging-storytelling/` | Dir rename + renumber 6→7 + title update |
+| 1.5 | Workshop 8 | `week-7-gtm-channels-buyer-journey/` | `workshop-8-gtm-channels-buyer-journey/` | Dir rename + renumber 7→8 + title update |
+| 1.6 | Workshop 9 | `week-8-competitive-strategy/` | `workshop-9-competitive-strategy/` | Dir rename + renumber 8→9 |
+| 1.7 | Workshop 10 | `week-9-map-buyer-stakeholders/` | `workshop-10-map-buyer-stakeholders/` | Dir rename + renumber 9→10 + title update |
 
 **Each plan does:**
 1. `git mv` old directory to new directory
