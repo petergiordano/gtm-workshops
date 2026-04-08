@@ -7,31 +7,34 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 GTM-Workshops is a static web application for Go-To-Market workshops, built entirely with client-side technologies. No build process, backend, or dependencies required.
 
 ### Workshop Directory Structure
+
+**Target state (post Phase 1):** All workshops use `workshop-N-*` naming. Canonical index: `.planning/WORKSHOPS.md`.
+
 ```
 gtm-workshops/
-├── index.html                          # Main landing page
-├── test_data/                          # Centralized test data (JSON files)
-├── docs/                               # Detailed specifications
-│   ├── activity_standards.md          # Complete design specs
-│   ├── dev-mode-spec.md               # Dev mode implementation guide
-│   └── design-specifications.md       # Visual design standards
-├── finding_your_early_customers/       # Day 2-1 (3 activities)
-├── positioning_basics/                 # Day 2-2 (3 activities)
-├── problems_worth_solving/             # Day 1 (3 activities)
-├── market_entry_readiness/             # Day 3 (3 activities)
-├── week-4-customer-value-mapping/      # Week 4 (3 activities)
-├── week-5-pricing-monetization/        # Week 5 (3 activities)
-├── week-6-messaging-storytelling/      # Week 6 (3 activities)
-├── week-7-gtm-channels-buyer-journey/  # Week 7 (3 activities)
-├── week-8-competitive-strategy/        # Week 8 (unified activity)
-├── week-9-map-buyer-stakeholders/      # Week 9 (unified activity)
-└── week-x-strategic-partnerships/      # Strategic Partnerships (3 activities)
+├── index.html                                          # Main landing page (11 workshops)
+├── test_data/                                          # Centralized test data (JSON files)
+├── docs/                                               # Detailed specifications
+│   ├── activity_standards.md                          # Complete design specs
+│   ├── dev-mode-spec.md                               # Dev mode implementation guide
+│   └── design-specifications.md                       # Visual design standards
+├── problems_worth_solving/                             # Workshop 1 ✅
+├── finding_your_early_customers/                       # Workshop 2 ✅
+├── week-4-customer-value-mapping/                      # Workshop 3 stubs (not built yet)
+├── positioning_basics/          → workshop-4-*         # Workshop 4 ⚠️ rename pending
+├── market_entry_readiness/      → workshop-5-*         # Workshop 5 ⚠️ rename pending
+├── week-5-pricing-monetization/ → workshop-6-*         # Workshop 6 ⚠️ rename pending
+├── week-6-messaging-storytelling/ → workshop-7-*       # Workshop 7 ⚠️ rename pending
+├── week-7-gtm-channels-buyer-journey/ → workshop-8-*   # Workshop 8 ⚠️ rename pending (gold standard)
+├── week-8-competitive-strategy/ → workshop-9-*         # Workshop 9 ⚠️ rename pending
+├── week-9-map-buyer-stakeholders/ → workshop-10-*      # Workshop 10 ⚠️ rename pending
+└── week-x-strategic-partnerships/ → workshop-11-*      # Workshop 11 ⚠️ A-version, migration pending
 ```
 
 **Activity Naming Patterns:**
-- **A-Version (Standard)**: `[topic]-activity-[1-3]A.html` - Most workshops use this pattern
-- **Unified (Standard)**: `activity-unified.html` - ALL 9 workshops use this pattern (as of 2026-03-29)
-- **Test Data**: All test data stored centrally in `test_data/[topic]-activity-[number]A.json`
+- **Unified (Standard)**: `activity-unified.html` — all 9 complete workshops use this pattern
+- **A-Version (Legacy)**: `[topic]-activity-[1-3]A.html` — only in `week-x-strategic-partnerships/`
+- **Test Data**: Unified workshops embed test data directly in HTML; A-version files use `test_data/[topic]-activity-[number]A.json`
 
 ## Commands
 
@@ -370,7 +373,7 @@ For detailed specifications and implementation guides, refer to:
 
 ## Landing Page Standards
 
-- **Gold standard**: `week-7-gtm-channels-buyer-journey/index.html` — reference for all workshop index.html design
+- **Gold standard**: `week-7-gtm-channels-buyer-journey/index.html` — reference for all workshop index.html design (becomes `workshop-8-gtm-channels-buyer-journey/` after Phase 1)
 - **3-card layout**: Every workshop index.html shows 3 numbered activity cards linking to `activity-unified.html?step=1/2/3`
 - **Card titles/descriptions source of truth**: The `steps` array in each `activity-unified.html` (search `const steps = [`)
 - **URL deep-linking**: SPAs read `?step=N` inside the `useState(() => { ... })` init — URL param overrides localStorage step; pattern:
@@ -386,19 +389,22 @@ For detailed specifications and implementation guides, refer to:
 
 ## Current Project Status
 
-✅ **All 9 workshops unified** — each uses `activity-unified.html` with 3-step SPA
-✅ **All 9 landing pages** — 3-card layout with `?step=1/2/3` deep-linking
-✅ **Dev mode functionality** across all workshops
-✅ **Professional markdown export** with Google Docs integration
+**11 workshops total. 9 complete. 2 pending.**
 
-**Workshop Count:** 9 workshops, each with 3 activities in a unified SPA
+✅ Workshops 1, 2, 4–10 — unified SPA, 3-step, dev mode, markdown export, landing pages
+⚠️ Workshop 3 (Customer Value Mapping) — stubs only in `week-4-customer-value-mapping/`, full build pending (Phase 2)
+⚠️ Workshop 11 (Strategic Partnerships) — A-version files in `week-x-strategic-partnerships/`, migration pending (Phase 3)
+
+**Active work (Phase 1):** Rename 7 workshop directories to `workshop-N-*` format. Context captured. Run `/gsd:plan-phase 1` next.
+
+**Gold standard reference:** `week-7-gtm-channels-buyer-journey/` (becomes `workshop-8-gtm-channels-buyer-journey/` after Phase 1)
 
 ## Best Practices for Claude Code
 
 1. **Always check existing activities first** - Copy patterns from similar activities rather than starting from scratch
 2. **Test data is mandatory** - Every activity must have corresponding test data in `test_data/`
 3. **Dev mode is critical** - Always implement dev mode for rapid testing and demonstration
-4. **Use reference files** - `week-5-pricing-monetization/pricing-activity-1A.html` is a good reference implementation
+4. **Use reference files** - `week-7-gtm-channels-buyer-journey/activity-unified.html` is the gold standard unified SPA reference
 5. **Validate locally** - Open HTML files directly in browser to test before committing
 6. **Read docs/** - Check `docs/activity_standards.md` for detailed component specifications
 
