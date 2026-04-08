@@ -6,7 +6,7 @@
 
 ## Status
 
-Ready to plan Phase 1, Plan 1.1 (Workshop 4 rename: positioning_basics → workshop-4-positioning-and-value-proposition-basics)
+Phase 1 context captured. Ready to plan.
 
 ## Project Reference
 
@@ -22,23 +22,29 @@ See: `.planning/WORKSHOPS.md` for canonical workshop index
 
 | Phase | Plans | Status |
 |-------|-------|--------|
-| Phase 1 — Renumber and Rename All Workshops (7 renames) | 1.1–1.7 | 🔵 Ready to start |
+| Phase 1 — Renumber and Rename All Workshops (7 renames) | 1.1–1.7 | 🟡 Context captured, ready to plan |
 | Phase 2 — Build Workshop 3: Customer Value Mapping | 2.1–2.5 | ⬜ Not started |
 | Phase 3 — Migrate Workshop 11: Strategic Partnerships | 3.1–3.5 | ⬜ Not started |
 | Phase 4 — Cleanup | 4.1–4.5 | ⬜ Not started |
 
-## Plan 1.1 Scope
+## Phase 1 Context
 
-- Rename `positioning_basics/` → `workshop-4-positioning-and-value-proposition-basics/`
-- Update all internal nav links in activity-unified.html
-- Update workshop index.html (title, card links)
-- Update root index.html (card href, number, title)
-- Update WORKSHOPS.md status
+Context captured 2026-04-08. Key decisions locked:
+- All titles → full canonical titles from WORKSHOPS.md everywhere (`<title>`, `<h1>`, root index)
+- GitHub Pages verification → hard human checkpoint after each rename before next plan
+- WORKSHOP_STORAGE_KEY → update to `workshopState_workshop_N` pattern
+
+Context file: `.planning/phases/01-renumber-and-rename-all-workshops-7-renames/01-CONTEXT.md`
 
 ## Codebase Map Note
 
-`.planning/codebase/` was generated on 2026-04-08 against the pre-rename directory structure. It is valid for Phase 1 planning but will be stale after Phase 1 completes. **Run `/gsd:map-codebase` after all 7 renames are done, before planning Phase 2.**
+`.planning/codebase/` was generated on 2026-04-08 against the pre-rename directory structure. It is valid for Phase 1 planning but will be **stale after Phase 1 completes**. Run `/gsd:map-codebase` after all 7 renames are done, before planning Phase 2.
+
+## GSD Notes
+
+- ROADMAP.md phase headings were fixed 2026-04-08: changed `—` to `:` in all 4 phase headings (required by gsd-tools parser)
+- Phase directory created: `.planning/phases/01-renumber-and-rename-all-workshops-7-renames/`
 
 ## Next Action
 
-Run `/gsd:plan-phase 1` to plan Plan 1.1 — Workshop 4 rename (Positioning).
+Run `/gsd:plan-phase 1` — context exists, planner will use it directly.
