@@ -6,7 +6,7 @@
 
 ---
 
-## Phase 1 — Renumber and Rename All Workshops (7 renames)
+## Phase 1: Renumber and Rename All Workshops (7 renames)
 
 **Goal:** Every workshop gets a `workshop-N-*` directory name with the correct number and canonical title. Root index updated throughout. One workshop per plan.
 
@@ -55,7 +55,7 @@ This refreshes `.planning/codebase/` with correct directory names before plannin
 
 ---
 
-## Phase 2 — Build Workshop 3: Customer Value Mapping
+## Phase 2: Build Workshop 3 — Customer Value Mapping
 
 **Goal:** Full unified SPA for Workshop 3, matching the standard of all other complete workshops. Replace the `week-4-customer-value-mapping/` stubs.
 
@@ -83,7 +83,7 @@ This refreshes `.planning/codebase/` with correct directory names before plannin
 
 ---
 
-## Phase 3 — Migrate Workshop 11: Strategic Partnerships
+## Phase 3: Migrate Workshop 11 — Strategic Partnerships
 
 **Goal:** Migrate `week-x-strategic-partnerships/` from A-version individual files to unified SPA pattern. Add to root index.
 
@@ -106,7 +106,7 @@ This refreshes `.planning/codebase/` with correct directory names before plannin
 
 ---
 
-## Phase 4 — Cleanup (CONCERNS.md)
+## Phase 4: Cleanup (CONCERNS.md)
 
 **Goal:** Address remaining technical debt. No functional changes — polish and correctness.
 
